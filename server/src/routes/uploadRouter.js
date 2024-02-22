@@ -9,7 +9,7 @@ const storage = new CloudinaryStorage({
     params: {
         folder: 'Booking_Web',
         format: async (req, file) => 'png', // supports promises as well
-        public_id: (req, file) => 'computed-filename-using-request',
+        public_id: (req, file) => file.filename,
     },
 });
 
@@ -17,6 +17,6 @@ const parser = multer({ storage: storage });
 
 //router.post('/upload', parser.single('image'), UploadController.uploadImage)
 router.post('/upload', parser.single('image'), UploadController.uploadSingleImage)
-router.post('/upload_array', parser.array('images', 10), UploadController.uploadArrayImage);
+router.post('/upload_array', parser.array('images'), UploadController.uploadArrayImage);
 
 module.exports = router

@@ -22,31 +22,37 @@ class UploadController {
 
     static async uploadArrayImage(req, res) {
         try {
-            const images = req.files
-            console.log('file: ', images)
-            const uploadImages = []
+            const images = req.files.map((file) => file.path);
+            console.log('>>> check image: ', images);
+
+            const uploadImages = [];
             for (let img of images) {
                 const result = await cloundinary.uploader.upload(img, {
                     upload_preset: 'vnldjdbe',
                     public_id: `unique_id_${Date.now()}`
                 });
-                console.log('>>> check result: ', result)
+                console.log('>>> check result: ', result);
+
                 uploadImages.push({
                     url: result.secure_url,
                     publicId: result.public_id
                 });
             }
+
             return res.status(200).json({
                 message: "Upload image success",
-                datas: urls
-            })
+                datas: uploadImages
+            });
         } catch (e) {
+            console.error('Error uploading images:', e);
             return res.status(500).json({
-                err: e,
+                error: e.message,
                 message: "Internal server error"
-            })
+            });
         }
     }
+
+
 
 }
 

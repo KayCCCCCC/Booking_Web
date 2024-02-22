@@ -17,6 +17,6 @@ const parser = multer({ storage: storage });
 
 //router.post('/upload', parser.single('image'), UploadController.uploadImage)
 router.post('/upload', parser.single('image'), UploadController.uploadSingleImage)
-router.post('/upload_array', parser.array('images', 10), UploadController.uploadArrayImage)
+router.post('/upload_array', parser.array('images', 10), UploadController.uploadArrayImage);
 
 module.exports = router

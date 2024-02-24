@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             allowNull: false,
         },
+        total: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+        },
         statusBooking: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

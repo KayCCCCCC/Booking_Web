@@ -59,7 +59,7 @@ db.range_model_detail.belongsTo(db.range_model, {
     foreignKey: "rangeModelId",
 });
 
-db.sequelize.sync({ logging: console.log, force: false }).then(() => {
+db.sequelize.sync({ logging: false, force: false }).then(() => {
     console.log("Re-sync success");
 });
 module.exports = db;

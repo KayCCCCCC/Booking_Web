@@ -3,10 +3,12 @@ module.exports = (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING,
             allowNull: true,
+            unique: true,
         },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
         },
         password: {
             type: DataTypes.STRING,
@@ -14,15 +16,28 @@ module.exports = (sequelize, DataTypes) => {
         },
         address: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         avatar: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         phone: {
             type: DataTypes.STRING,
+            allowNull: true,
+        },
+        otpCode: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        typeRegister: {
+            type: DataTypes.STRING,
             allowNull: false,
+        },
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: "Active",
+            allowNull: true,
         },
         roleId: {
             type: DataTypes.INTEGER,
@@ -30,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         accountTypeId: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
     });
 

@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        country: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         avatar: {
             type: DataTypes.STRING,
             allowNull: true,

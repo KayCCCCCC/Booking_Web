@@ -3,23 +3,24 @@ const fs = require('fs')
 class UploadController {
     static async uploadSingleImage(req, res) {
         try {
-            // console.log('111111:', req.file)
-            const images = req.file.path
-            console.log('>>> check image: ', images)
+            const images = req.file.path;
+            console.log('>>> check image: ', images);
             const result = await cloundinary.uploader.upload(images, {
                 upload_preset: 'vnldjdbe',
+                public_id: `unique_id_${Date.now()}`
             });
             return res.status(200).json({
                 message: "Upload image success",
                 datas: result
-            })
+            });
         } catch (e) {
             return res.status(500).json({
                 err: e,
                 message: "Internal server error"
-            })
+            });
         }
     }
+
 
     static async uploadArrayImage(req, res) {
         try {

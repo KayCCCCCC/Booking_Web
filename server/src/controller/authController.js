@@ -89,10 +89,13 @@ class AuthController {
 
     static async firstStepRegisteration(req, res) {
         try {
-            const { email, password } = req.body;
+            const { email, password, confirmPassword } = req.body;
             const user = await User.findOne({ where: { email: email } });
             if (user && !parseInt(user.otpCode)) {
                 return res.status(400).json({ message: "Account already exists" });
+            }
+            if (password != confirmPassword) {
+                return res.status(400).json({ message: "Password and ConfirmPassword is not match" });
             }
 
             const OTP = Math.floor(100000 + Math.random() * 900000);

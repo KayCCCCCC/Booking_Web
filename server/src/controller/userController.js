@@ -2,7 +2,7 @@ const db = require('../model/index');
 const bcrypt = require('bcryptjs')
 const sendEmail = require('../utils/sendEmail');
 const cloundinary = require('../utils/cloudinary');
-const { where } = require('sequelize');
+const { faker } = require('@faker-js/faker');
 
 const User = db.user;
 class UserController {
@@ -153,6 +153,46 @@ class UserController {
             return res.status(200).json({ message: "User delete successfully" });
         } catch (error) {
             return res.status(500).json({ message: "Failed to delete user", error });
+        }
+    }
+
+    static async AutoCreateUser(req, res) {
+        try {
+            const listFakeUser = [];
+            for (let i = 0; i < 10; i++) {
+                const OTP = Math.floor(100000 + Math.random() * 900000);
+                const randompass = faker.number.int();
+                const hashedPassword = await bcrypt.hash(JSON.stringify(randompass), 10);
+                let fakeInfo = {
+                    name: faker.person.fullName(),
+                    email: faker.internet.email(),
+                    password: hashedPassword,
+                    address: faker.location.city(),
+                    country: faker.location.country(),
+                    avatar: faker.image.avatar(),
+                    phone: faker.phone.number(),
+                    otpCode: JSON.stringify(OTP),
+                    roleId: faker.number.int({ min: 1, max: 2 }),
+                    typeRegister: faker.helpers.arrayElement(["Normal", "Google"]),
+                }
+                console.log(fakeInfo)
+                const fakeUser = await User.create({
+                    name: fakeInfo.name,
+                    email: fakeInfo.email,
+                    address: fakeInfo.address,
+                    country: fakeInfo.country,
+                    avatar: fakeInfo.avatar,
+                    phone: fakeInfo.phone,
+                    otpCode: fakeInfo.otpCode,
+                    password: fakeInfo.password,
+                    roleId: fakeInfo.roleId,
+                    typeRegister: fakeInfo.typeRegister,
+                });
+                listFakeUser.push(fakeUser)
+            }
+            return res.status(200).json({ message: "Success" })
+        } catch (error) {
+            return res.status(500).json({ message: "Failed to AutoCreateUser user", error });
         }
     }
 }

@@ -31,8 +31,8 @@ class AuthController {
                 return res.status(500).send({ message: "Account has been banned" });
             }
 
-            const access_token = await Token.generateAccessToken({ id: user.id });
-            const refresh_token = await Token.generateRefreshToken({ id: user.id });
+            const access_token = await Token.generateAccessToken({ id: user.id, role: user.roleId });
+            const refresh_token = await Token.generateRefreshToken({ id: user.id, role: user.roleId });
             await res.cookie("refreshtoken", refresh_token, {
                 httpOnly: true,
                 maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
@@ -89,12 +89,12 @@ class AuthController {
 
     static async firstStepRegisteration(req, res) {
         try {
-            const { email, password, confirmPassword } = req.body;
+            const { email, password, confirmpassword } = req.body;
             const user = await User.findOne({ where: { email: email } });
             if (user && !parseInt(user.otpCode)) {
                 return res.status(400).json({ message: "Account already exists" });
             }
-            if (password != confirmPassword) {
+            if (password != confirmpassword) {
                 return res.status(400).json({ message: "Password and ConfirmPassword is not match" });
             }
 

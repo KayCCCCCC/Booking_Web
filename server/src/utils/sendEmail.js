@@ -20,7 +20,7 @@ const sendEmail = async (email, OTPCode) => {
             },
         });
 
-        transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+        transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' })); // gửi ảnh qua email
 
         const result = await transporter.sendMail({
             from: process.env.MAIL_ACCOUNT,
@@ -37,7 +37,6 @@ const sendEmail = async (email, OTPCode) => {
         });
 
         // console.log("Email sent successfully:", result);
-
         return result;
     } catch (error) {
         console.error("Error sending email:", error);

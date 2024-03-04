@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    depends_on:
+      - database
+    ports:
+      - "5000:5000"
+    working_dir: /server
+    volumes:
+      - ./:/server
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: booking
+
+  database:
+    image: postgres:latest
+    volumes:
+      - booking-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: booking
+
+volumes:
+  booking-postgres-data:

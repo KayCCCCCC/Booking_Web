@@ -1,184 +1,150 @@
-import ThemeSwitcher from "./ThemeSwitcher";
-import Logo from "./Logo";
-import UserButton from "./UserButton";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from "./ui/navigation-menu";
-import { NavigationMenuTrigger } from "@radix-ui/react-navigation-menu";
-import { NavLink } from "react-router-dom";
-const hotelComponents: { id: number; title: string; to: string }[] = [
-  {
-    id: 1,
-    title: "Commercial Hotel",
-    to: "/hotels/commercial",
-  },
-  {
-    id: 2,
-    title: "Resort Hotel",
-    to: "/hotels/resort",
-  },
-  {
-    id: 3,
-    title: "Hostel",
-    to: "/hotels/hostel",
-  },
-  {
-    id: 4,
-    title: "Services Apartment",
-    to: "/hotels/services-apartment",
-  },
-];
-const flightComponents: { id: number; title: string; to: string }[] = [
-  {
-    id: 1,
-    title: "VietNameAirLines",
-    to: "flights/vietname-airlines",
-  },
-  {
-    id: 2,
-    title: "Bambo Air Ways",
-    to: "flights/bambo-airways ",
-  },
-  {
-    id: 3,
-    title: "Vietjet Air",
-    to: "flights/vietjet-air",
-  },
-];
-export default function NavBar() {
-  return (
-    <header className="flex w-full items-center justify-between h-[60px] p-4 px-8 mx-2">
-      <Logo />
+// import React from "react";
 
-      <NavigationMenu>
-        <NavigationMenuList className="flex gap-6 text-[1.1rem]">
-          <NavigationMenuItem>
-            <NavLink to="/home" >
-              {({ isActive }) => (
-                <span
-                  className={`${
-                    isActive
-                      ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                      : ""
-                  } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                >
-                  Home
-                </span>
-              )}
-            </NavLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <NavLink to="/hotels">
-                {({ isActive }) => (
-                  <span
-                    className={`${
-                      isActive
-                        ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                        : ""
-                    } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                  >
-                    Hotel
-                  </span>
-                )}
-              </NavLink>{" "}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[300px]   p-3  md:w-[500px] md:grid-cols-2 lg:w-[500px]">
-                {hotelComponents.map((hotel) => (
-                  <NavLink key={hotel.id} to={hotel.to} className={"font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black w-fit p-2 rounded hover:font-normal"}>
-                    {hotel.title}
-                  </NavLink>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <NavLink to="flights">
-                {({ isActive }) => (
-                  <span
-                    className={`${
-                      isActive
-                        ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                        : ""
-                    } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                  >
-                    Flights
-                  </span>
-                )}
-              </NavLink>
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px]  p-3 md:w-[400px] md:grid-cols-3 lg:w-[500px]">
-                {flightComponents.map((flight) => (
-                  <NavLink to={flight.to} key={flight.id} className={"font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black w-fit p-2 rounded hover:font-normal"}>
-                    {flight.title}
-                  </NavLink>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <NavLink to="/transports">
-                {({ isActive }) => (
-                  <span
-                    className={`${
-                      isActive
-                        ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                        : ""
-                    } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                  >
-                    Transports
-                  </span>
-                )}
-              </NavLink>
-            </NavigationMenuTrigger>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <NavLink to="/tours">
-                {({ isActive }) => (
-                  <span
-                    className={`${
-                      isActive
-                        ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                        : ""
-                    } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                  >
-                    Tours
-                  </span>
-                )}
-              </NavLink>
-            </NavigationMenuTrigger>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>
-              <NavLink to="/coupons">
-                {({ isActive }) => (
-                  <span
-                    className={`${
-                      isActive
-                        ? "bg-neutral-600 text-white font-normal dark:bg-slate-100 dark:text-black"
-                        : ""
-                    } rounded-md px-3 py-1 font-light hover:bg-neutral-700 hover:text-white hover:dark:bg-slate-200 hover:dark:text-black`}
-                  >
-                    Coupons
-                  </span>
-                )}
-              </NavLink>
-            </NavigationMenuTrigger>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <div className="flex gap-3 ">
-        <ThemeSwitcher />
-        <UserButton />
-      </div>
-    </header>
-  );
-}
+// import { NavLink } from "react-router-dom";
+
+// import {
+//   NavigationMenu,
+//   NavigationMenuContent,
+//   NavigationMenuItem,
+//   NavigationMenuLink,
+//   NavigationMenuList,
+//   NavigationMenuTrigger,
+//   navigationMenuTriggerStyle,
+// } from "./ui/navigation-menu";
+// import { cn } from "@/lib/utils";
+
+// const hotelComponents: { id: number; title: string; to: string }[] = [
+//   {
+//     id: 1,
+//     title: "Commercial Hotel",
+//     to: "/hotels/commercial",
+//   },
+//   {
+//     id: 2,
+//     title: "Resort Hotel",
+//     to: "/hotels/resort",
+//   },
+//   {
+//     id: 3,
+//     title: "Hostel",
+//     to: "/hotels/hostel",
+//   },
+//   {
+//     id: 4,
+//     title: "Services Apartment",
+//     to: "/hotels/services-apartment",
+//   },
+// ];
+// const flightComponents: { id: number; title: string; to: string }[] = [
+//   {
+//     id: 1,
+//     title: "VietNameAirLines",
+//     to: "flights/vietname-airlines",
+//   },
+//   {
+//     id: 2,
+//     title: "Bambo Air Ways",
+//     to: "flights/bambo-airways ",
+//   },
+//   {
+//     id: 3,
+//     title: "Vietjet Air",
+//     to: "flights/vietjet-air",
+//   },
+// ];
+
+// const NavBar: React.FC = () => {
+//   return (
+   
+//     <NavigationMenu >
+//       <NavigationMenuList>
+//         <NavigationMenuItem>
+//         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+
+//           {/* <NavigationMenuTrigger> */}
+//             <NavLink to={"/home"}>Home</NavLink>
+//           {/* </NavigationMenuTrigger> */}
+//         </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//           <NavigationMenuTrigger>
+//             <NavLink to={"/hotels"}>Hotels</NavLink>
+//           </NavigationMenuTrigger>
+//           <NavigationMenuContent>
+//             <ul className="grid gap-3 p-4 lg:w-[400px] ">
+//               {hotelComponents.map((hotel, index) => (
+//                 <ListItem to={hotel.to} key={index}>{hotel.title}</ListItem>
+//               ))}
+//             </ul>
+//           </NavigationMenuContent>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//           <NavigationMenuTrigger>
+//             <NavLink to={"/flights"}>Flights</NavLink>
+//           </NavigationMenuTrigger>
+//           <NavigationMenuContent>
+//             <ul className="grid gap-3 p-4 lg:w-[400px] ">
+//               {flightComponents.map((flight, index) => (
+//                 <ListItem to={flight.to} key={index}>{flight.title}</ListItem>
+//               ))}
+//             </ul>
+//           </NavigationMenuContent>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+//           {/* <NavigationMenuTrigger> */}
+//             <NavLink to={"/homestays"}>Homestays</NavLink>
+//           {/* </NavigationMenuTrigger> */}
+//         </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+//           {/* <NavigationMenuTrigger> */}
+//             <NavLink to={"/transports"}>Transports</NavLink>
+//           {/* </NavigationMenuTrigger> */}
+//         </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuItem>
+//         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+//           {/* <NavigationMenuTrigger> */}
+//             <NavLink to={"/tours"}>Tours</NavLink>
+//           {/* </NavigationMenuTrigger> */}
+//         </NavigationMenuLink>
+//         </NavigationMenuItem>
+//         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+//           {/* <NavigationMenuTrigger> */}
+//             <NavLink to={"/coupons"}>Coupons</NavLink>
+//           {/* </NavigationMenuTrigger> */}
+//         </NavigationMenuLink>
+//       </NavigationMenuList>
+//     </NavigationMenu>
+//   );
+// };
+
+// export default NavBar;
+// const ListItem = React.forwardRef<
+//   React.ElementRef<"a">,
+//   React.ComponentPropsWithoutRef<"a"> & { to: string }
+// >(({ className, title, children, to, ...props }, ref) => {
+//   return (
+//     <li>
+//       <NavigationMenuLink asChild>
+//         <NavLink
+//           to={to}
+//           ref={ref}
+//           className={cn(
+//             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+//             className
+//           )}
+//           {...props}
+//         >
+//           <div className="text-sm font-medium leading-none">{title}</div>
+//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+//             {children}
+//           </p>
+//         </NavLink>
+//       </NavigationMenuLink>
+//     </li>
+//   );
+// });
+// ListItem.displayName = "ListItem";

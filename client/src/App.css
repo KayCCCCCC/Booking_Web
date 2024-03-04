@@ -1,7 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 .App {
-    box-sizing: border-box;
-    font-family:'Mukta', sans-serif;;
-  }
-  
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

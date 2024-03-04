@@ -1,16 +1,16 @@
 import { Avatar, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
+  // DropdownMenuContent,
+  // DropdownMenuGroup,
+  // DropdownMenuItem,
+  // DropdownMenuLabel,
+  // DropdownMenuSeparator,
+  // DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const UserButton = () => {
+const UserButton : React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -18,7 +18,7 @@ const UserButton = () => {
           <AvatarImage src="/defaultavatar.png" alt="@defaultAvatar"  className="w-[33px] h-[33px] object-contain "/>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      {/* <DropdownMenuContent>
         <DropdownMenuLabel>My account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -35,7 +35,7 @@ const UserButton = () => {
             <DropdownMenuShortcut></DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-      </DropdownMenuContent>
+      </DropdownMenuContent> */}
     </DropdownMenu>
   );
 };

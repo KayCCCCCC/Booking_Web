@@ -5,7 +5,7 @@ export default function Logo() {
   return (
     <div
       className="text-[2rem] font-semibold w-fit text-transparent bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-pink-500 via-red-500 to-yellow-500 bg-clip-text  
-    font-bold hover:cursor-pointer
+      hover:cursor-pointer
     ">
       Explora
     </div>

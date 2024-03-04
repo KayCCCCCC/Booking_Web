@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cloundinary = require('./src/utils/cloudinary')
 
 const webRoutes = require('./src/routes/index');
-const sequelize = require("./src/database/connectDb");
+const sequelize = require("./src/database/connectDbPg");
 
 const db = require('./src/model/index')
 

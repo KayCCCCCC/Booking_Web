@@ -1,10 +1,10 @@
 
-import  { useEffect, useState } from "react";
+import  React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 
-const ThemeSwitcher = () => {
+const ThemeSwitcher: React.FC = () => {
     const {theme, setTheme} = useTheme();
     const [mounted, setMounted] = useState(false);
 

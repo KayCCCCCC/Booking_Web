@@ -11,8 +11,16 @@ module.exports = (sequelize, DataTypes) => {
         nameOfModel: {
             type: DataTypes.STRING,
             allowNull: false
-        }
+        },
+        rate: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        numberRate: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
     });
 
-    return Model
+    return Model;
 };

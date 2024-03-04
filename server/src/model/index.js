@@ -16,6 +16,7 @@ db.range = require("./rangeModel")(sequelize, DataTypes);
 db.range_model = require("./range_modelModel")(sequelize, DataTypes);
 db.range_model_detail = require("./range_model_detailModel")(sequelize, DataTypes);
 db.country = require("./countryModel")(sequelize, DataTypes);
+db.model_images = require("./modelImgaesModel")(sequelize, DataTypes);
 
 
 //relation
@@ -51,6 +52,10 @@ db.voucher.belongsTo(db.model, {
     foreignKey: "modelId",
 });
 
+db.model.hasMany(db.model_images)
+db.model_images.belongsTo(db.model, {
+    foreignKey: "modelId",
+});
 
 db.model.belongsToMany(db.range, { through: 'range_model', foreignKey: 'modelId' });
 db.range.belongsToMany(db.model, { through: 'range_model', foreignKey: 'rangeId' });

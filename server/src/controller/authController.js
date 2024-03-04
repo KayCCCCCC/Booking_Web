@@ -151,7 +151,7 @@ class AuthController {
 
     static async setInfo(req, res, next) {
         try {
-            const { name, email, country } = req.body;
+            const { name, email, country, address } = req.body;
             const user = await User.findOne({ where: { email: email } });
 
             if (!user) {
@@ -160,6 +160,7 @@ class AuthController {
 
             user.name = name;
             user.country = country;
+            user.address = address
             user.roleId = 2;
             user.save();
 

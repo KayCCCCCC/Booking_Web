@@ -17,6 +17,9 @@ db.range_model = require("./range_modelModel")(sequelize, DataTypes);
 db.range_model_detail = require("./range_model_detailModel")(sequelize, DataTypes);
 db.country = require("./countryModel")(sequelize, DataTypes);
 db.model_images = require("./modelImgaesModel")(sequelize, DataTypes);
+db.flight = require('./flightModel')(sequelize, DataTypes);
+db.car = require('./carModel')(sequelize, DataTypes);
+db.hotel = require('./hotelModel')(sequelize, DataTypes);
 
 
 //relation
@@ -46,6 +49,31 @@ db.modelType.hasMany(db.model)
 db.model.belongsTo(db.modelType, {
     foreignKey: "modelTypeId",
 });
+
+// db.model.hasOne(db.hotel)
+// db.hotel.belongsTo(db.model, {
+//     foreignKey: "modelId",
+// });
+
+// db.model.hasOne(db.flight)
+// db.flight.belongsTo(db.model, {
+//     foreignKey: "modelId",
+// });
+
+// db.model.hasOne(db.car)
+// db.car.belongsTo(db.model, {
+//     foreignKey: "modelId",
+// });
+
+db.model.hasOne(db.hotel)
+db.hotel.belongsTo(db.model);
+
+db.model.hasOne(db.flight)
+db.flight.belongsTo(db.model);
+
+db.model.hasOne(db.car)
+db.car.belongsTo(db.model);
+
 
 db.model.hasMany(db.voucher)
 db.voucher.belongsTo(db.model, {

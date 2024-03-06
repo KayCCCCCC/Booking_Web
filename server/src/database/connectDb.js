@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 require("dotenv").config();
 
+// console.log("mysql", process.env.DB_DSN)
 const sequelize = new Sequelize(
     process.env.DB_NAME || 'booking_web',
     process.env.DB_USER || 'root',
@@ -9,7 +10,6 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         dialect: "mysql",
         operatorsAliases: 0,
-
         pool: {
             max: 5,
             min: 0,

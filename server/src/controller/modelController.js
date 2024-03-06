@@ -1,10 +1,14 @@
 const { faker } = require('@faker-js/faker');
+const { Op } = require('sequelize');
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
 
 const Model = db.model
 const ModelType = db.modelType
 const ModelImages = db.model_images
+const Hotel = db.hotel
+const Flight = db.flight
+const Car = db.car
 
 class ModelController {
     static async AutoCreateModalType(req, res) {
@@ -16,7 +20,7 @@ class ModelController {
             ]
             for (const item of listType) {
                 await ModelType.create({
-                    type: item,
+                    typeName: item,
                 });
             }
             return res.status(200).json({ message: "Model types created successfully!" });
@@ -284,5 +288,337 @@ class ModelController {
             return res.status(500).json({ message: "Something went wrong!" });
         }
     }
+
+    static async AutoCreateFlights(req, res) {
+        try {
+            const listModel = await Model.findAll({ where: { modelTypeId: 1 } });
+            const createdFlights = [];
+            for (const model of listModel) {
+                const existModel = await Flight.findOne({ where: { modelId: model.id } })
+                if (existModel == null) {
+                    const departureTime = faker.date.future();
+                    const arrivalTime = faker.date.future();
+                    const origin = faker.location.city();
+                    const destination = faker.location.city();
+                    const flightNumber = faker.airline.flightNumber();
+
+                    // Create the flight
+                    const newFlight = await Flight.create({
+                        departureTime: departureTime,
+                        arrivalTime: arrivalTime,
+                        origin: origin,
+                        destination: destination,
+                        flightNumber: flightNumber,
+                        price: faker.number.int({ min: 100, max: 1000 }) * 1000,
+                        seatCapacity: faker.number.int({ min: 100, max: 300 }),
+                        availableSeats: faker.number.int({ min: 50, max: 200 }),
+                        airline: faker.company.name(),
+                        modelId: model.id
+                    });
+
+                    createdFlights.push(newFlight);
+                } else {
+                    continue;
+                }
+            }
+
+            return res.status(200).json({
+                message: `Auto creation of ${listModel.length} flights successful`,
+                data: createdFlights
+            });
+        } catch (error) {
+            console.error("Error AutoCreateFlights:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async AutoCreateHotels(req, res) {
+        try {
+            const listModel = await Model.findAll({ where: { modelTypeId: 2 } });
+            const createdHotels = [];
+            for (const model of listModel) {
+                const existModel = await Hotel.findOne({ where: { modelId: model.id } })
+                if (!existModel) {
+                    const checkInDate = faker.date.future();
+                    const checkOutDate = faker.date.future();
+                    const amenities = faker.word.words();
+
+                    // Create the hotel
+                    const newHotel = await Hotel.create({
+                        checkInDate: checkInDate,
+                        checkOutDate: checkOutDate,
+                        amenities: amenities,
+                        pricePerNight: faker.number.int({ min: 50, max: 500 }),
+                        bookingStatus: "available",
+                        contactPerson: faker.person.fullName(),
+                        contactEmail: faker.internet.email(),
+                        modelId: model.id
+                    });
+
+                    createdHotels.push(newHotel);
+                } else {
+                    continue;
+                }
+            }
+
+            return res.status(200).json({
+                message: `Auto creation of ${listModel.length} hotels successful`,
+                data: createdHotels
+            });
+        } catch (error) {
+            console.error("Error AutoCreateHotels:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async AutoCreateCars(req, res) {
+        try {
+            const listModel = await Model.findAll({ where: { modelTypeId: 3 } });
+            const createdBikes = [];
+            for (const model of listModel) {
+                const existModel = await Car.findOne({ where: { modelId: model.id } })
+                if (!existModel) {
+                    const typeOptions = ["Four-Wheeler", "Seven-Seater", "Two-Wheeler"];
+                    const color = faker.color.rgb();
+                    const sizeOptions = ["S", "M", "L"];
+                    const availabilityOptions = ["available", "unavailable", "under maintenance"]
+
+                    // Choose a random type and size
+                    const randomTypeIndex = Math.floor(Math.random() * typeOptions.length);
+                    const randomSizeIndex = Math.floor(Math.random() * sizeOptions.length);
+                    const randomAvailabilityIndex = Math.floor(Math.random() * availabilityOptions.length);
+
+                    // Create the bike
+                    const newBike = await Car.create({
+                        type: typeOptions[randomTypeIndex],
+                        color: color,
+                        size: sizeOptions[randomSizeIndex],
+                        pricePerHour: faker.number.int({ min: 5, max: 50 }),
+                        availability: availabilityOptions[randomAvailabilityIndex],
+                        location: faker.location.city(),
+                        modelId: model.id
+                    });
+
+                    createdBikes.push(newBike);
+                } else {
+                    continue;
+                }
+            }
+
+            return res.status(200).json({
+                message: `Auto creation of ${listModel.length} bikes successful`,
+                data: createdBikes
+            });
+        } catch (error) {
+            console.error("Error AutoCreateBikes:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async FilterHotel(req, res) {
+        try {
+
+            const { address, rate, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail } = req.query;
+
+            const modelFilterOptions = {};
+            if (address || rate) {
+                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
+                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                const filteredModels = await Model.findAll({ where: modelFilterOptions });
+
+                //check model is hotel
+                const modelHotelIds = filteredModels
+                    .filter(model => model.modelTypeId === 2)
+                    .map(model => model.id);
+
+                const hotelFilterOptions = { modelId: modelHotelIds };
+                if (checkInDate) hotelFilterOptions.checkInDate = checkInDate;
+                if (checkOutDate) hotelFilterOptions.checkOutDate = checkOutDate;
+                if (amenities) hotelFilterOptions.amenities = { [Op.like]: `%${amenities}%` };
+                if (numberOfRooms) hotelFilterOptions.numberOfRooms = numberOfRooms;
+                if (numberOfGuestsPerRoom) hotelFilterOptions.numberOfGuestsPerRoom = numberOfGuestsPerRoom;
+                if (pricePerNight) hotelFilterOptions.pricePerNight = pricePerNight;
+                if (bookingStatus) hotelFilterOptions.bookingStatus = { [Op.like]: `%${bookingStatus}%` };
+                if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
+                if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
+
+                // Tìm các khách sạn phù hợp với điều kiện filter
+                const filteredHotels = await Hotel.findAll({
+                    where: hotelFilterOptions,
+                    include: {
+                        model: Model,
+                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    }
+                });
+
+
+                return res.status(200).json({
+                    message: "Filtered hotels successfully",
+                    data: filteredHotels
+                });
+            } else {
+                const hotelFilterOptions = {};
+                if (checkInDate) hotelFilterOptions.checkInDate = checkInDate;
+                if (checkOutDate) hotelFilterOptions.checkOutDate = checkOutDate;
+                if (amenities) hotelFilterOptions.amenities = { [Op.like]: `%${amenities}%` };
+                if (numberOfRooms) hotelFilterOptions.numberOfRooms = numberOfRooms;
+                if (numberOfGuestsPerRoom) hotelFilterOptions.numberOfGuestsPerRoom = numberOfGuestsPerRoom;
+                if (pricePerNight) hotelFilterOptions.pricePerNight = pricePerNight;
+                if (bookingStatus) hotelFilterOptions.bookingStatus = { [Op.like]: `%${bookingStatus}%` };
+                if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
+                if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
+                // Tìm các khách sạn phù hợp với điều kiện filter
+                const filteredHotels = await Hotel.findAll({
+                    where: hotelFilterOptions,
+                    include: {
+                        model: Model,
+                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    }
+                });
+
+
+                return res.status(200).json({
+                    message: "Filtered hotels successfully",
+                    data: filteredHotels
+                });
+            }
+
+
+        } catch (error) {
+            console.error("Error FilterHotel:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async FilterFlight(req, res) {
+        try {
+            const { address, rate, origin, destination, departureTime, arrivalTime, airline, price, seatCapacity, availableSeats } = req.query;
+            const modelFilterOptions = {};
+            if (address || rate) {
+                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
+                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                const filteredModels = await Model.findAll({ where: modelFilterOptions });
+
+                //check model is hotel
+                const modelFlightIds = filteredModels
+                    .filter(model => model.modelTypeId === 1)
+                    .map(model => model.id);
+                const flightFilterOptions = { modelId: modelFlightIds };
+                if (origin) flightFilterOptions.origin = { [Op.like]: `%${origin}%` };
+                if (destination) flightFilterOptions.destination = { [Op.like]: `%${destination}%` };
+                if (departureTime) flightFilterOptions.departureTime = departureTime;
+                if (arrivalTime) flightFilterOptions.arrivalTime = arrivalTime;
+                if (airline) flightFilterOptions.airline = { [Op.like]: `%${airline}%` };
+                if (price) flightFilterOptions.price = price;
+                if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
+                if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
+
+                const filteredFlights = await Flight.findAll({
+                    where: flightFilterOptions,
+                    include: {
+                        model: Model,
+                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    }
+                });
+
+                return res.status(200).json({
+                    message: "Filtered flights successfully",
+                    data: filteredFlights
+                });
+            } else {
+                const flightFilterOptions = {};
+                if (origin) flightFilterOptions.origin = { [Op.like]: `%${origin}%` };
+                if (destination) flightFilterOptions.destination = { [Op.like]: `%${destination}%` };
+                if (departureTime) flightFilterOptions.departureTime = departureTime;
+                if (arrivalTime) flightFilterOptions.arrivalTime = arrivalTime;
+                if (airline) flightFilterOptions.airline = { [Op.like]: `%${airline}%` };
+                if (price) flightFilterOptions.price = price;
+                if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
+                if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
+
+                const filteredFlights = await Flight.findAll({
+                    where: flightFilterOptions,
+                    include: {
+                        model: Model,
+                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    }
+                });
+
+                return res.status(200).json({
+                    message: "Filtered flights successfully",
+                    data: filteredFlights
+                });
+            }
+        } catch (error) {
+            console.error("Error FilterFlight:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async FilterCar(req, res) {
+        try {
+            const { address, rate, type, color, size, pricePerHour, availability, location } = req.query;
+            const modelFilterOptions = {}
+            if (address || rate) {
+                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
+                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                const filteredModels = await Model.findAll({ where: modelFilterOptions });
+
+                //check model is hotel
+                const modelCarIds = filteredModels
+                    .filter(model => model.modelTypeId === 3)
+                    .map(model => model.id);
+                const carFilterOptions = { modelId: modelCarIds };
+                if (type) carFilterOptions.type = { [Op.like]: `%${type}%` };
+                if (color) carFilterOptions.color = { [Op.like]: `%${color}%` };
+                if (size) carFilterOptions.size = { [Op.like]: `%${size}%` };
+                if (pricePerHour) carFilterOptions.pricePerHour = pricePerHour;
+                if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
+                if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
+
+                const filteredCars = await Car.findAll({
+                    where: carFilterOptions,
+                    include: {
+                        model: Model,
+                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    }
+                });
+
+                return res.status(200).json({
+                    message: "Filtered cars successfully",
+                    data: filteredCars
+                });
+            }
+
+            const carFilterOptions = {};
+            if (type) carFilterOptions.type = { [Op.like]: `%${type}%` };
+            if (color) carFilterOptions.color = { [Op.like]: `%${color}%` };
+            if (size) carFilterOptions.size = { [Op.like]: `%${size}%` };
+            if (pricePerHour) carFilterOptions.pricePerHour = pricePerHour;
+            if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
+            if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
+
+            const filteredCars = await Car.findAll({
+                where: carFilterOptions,
+                include: {
+                    model: Model,
+                    attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                }
+            });
+
+            return res.status(200).json({
+                message: "Filtered cars successfully",
+                data: filteredCars
+            });
+        } catch (error) {
+            console.error("Error FilterCar:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+
+
+
+
 }
 exports.ModelController = ModelController

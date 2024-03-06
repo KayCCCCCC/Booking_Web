@@ -41,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: "Active",
             allowNull: true,
         },
+        policyAccepted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: true,
+        },
         roleId: {
             type: DataTypes.INTEGER,
             allowNull: false,

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const ModelType = sequelize.define("modelType", {
-        type: {
+        typeName: {
             type: DataTypes.STRING,
             allowNull: false,
         },

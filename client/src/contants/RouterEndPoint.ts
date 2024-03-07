@@ -1,14 +1,12 @@
 enum RouterEndPoint {
-    // HOME
-    Home = "/home",
+  // HOME
+  Home = "/home",
 
+  // SERVICES
 
-    // SERVICES
-
-
-    // AUTH
-    SignIn = "/sign-in",
-    SignUp = "/sign-up"
+  // AUTH
+  SignIn = "/sign-in",
+  SignUp = "/sign-up"
 }
 
-export default RouterEndPoint;
+export default RouterEndPoint

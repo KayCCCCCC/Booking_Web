@@ -1,13 +1,10 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import HomeLayout from "./components/layout/HomeLayout";
-import HomePage from "./pages/HomePage";
-import ModelsPage from "./pages/customer/ModelsPage";
-import VoucherPage from "./pages/manager/VoucherPage";
-import ToursPage from "./pages/ToursPage";
-import RouterEndPoint from "./contants/RouterEndPoint";
-import SignInPage from "./pages/SignInPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import SignUpPage from './pages/SignUpPage';
+import { createBrowserRouter, Navigate } from "react-router-dom"
+import RouterEndPoint from "./contants/RouterEndPoint"
+import SignInPage from "./pages/SignIn/SignInPage"
+import NotFoundPage from "./pages/NotFound/NotFoundPage"
+import SignUpPage from "./pages/SignUp/SignUpPage"
+import HomePage from "./pages/Home/HomePage"
+import HomeLayout from "./components/global/templates/HomeLayout"
 
 const router = createBrowserRouter([
   {
@@ -16,47 +13,23 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to={RouterEndPoint.Home} />,
+        element: <Navigate to={RouterEndPoint.Home} />
       },
       {
         path: RouterEndPoint.Home,
-        element: <HomePage />,
-      },
-      {
-        path: "/hotels",
-        element: <ModelsPage />,
-      },
-      {
-        path: "/flights",
-        element: <ModelsPage />,
-      },
-      {
-        path: "/coupons",
-        element: <VoucherPage />,
-      },
-      {
-        path: "/hotels/:type",
-        element: <ModelsPage />,
-      },
-      {
-        path: "/flights/:type",
-        element: <ModelsPage />,
-      },
-      {
-        path: "tours",
-        element: <ToursPage />,
-      },
-    ],
+        element: <HomePage />
+      }
+    ]
   },
   {
     path: RouterEndPoint.SignIn,
-    element: <SignInPage />,
+    element: <SignInPage />
   },
   {
     path: RouterEndPoint.SignUp,
-    element: <SignUpPage />,
+    element: <SignUpPage />
   },
-  { path: "*", element: <NotFoundPage /> },
-]);
+  { path: "*", element: <NotFoundPage /> }
+])
 
-export default router;
+export default router

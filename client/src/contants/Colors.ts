@@ -1,5 +1,5 @@
 enum Colors {
-    Primary = "#fff",
-    Secondary = "#f0f1f7",
+  Primary = "#fff",
+  Secondary = "#f0f1f7"
 }
-export default Colors;
+export default Colors

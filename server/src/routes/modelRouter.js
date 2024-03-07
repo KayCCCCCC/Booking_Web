@@ -22,5 +22,12 @@ router.patch("/update/:id", parser.array('images', 10), ModelController.UpdateMo
 router.delete("/delete/:id", ModelController.DeleteModel)
 router.get("/get-all", ModelController.GetAllModels)
 router.post("/auto-create-model", ModelController.AutoCreate)
+router.post("/auto-create-hotel", ModelController.AutoCreateHotels)
+router.post("/auto-create-flight", ModelController.AutoCreateFlights)
+router.post("/auto-create-car", ModelController.AutoCreateCars)
+router.get("/filter-hotel", ModelController.FilterHotel)
+router.get("/filter-flight", ModelController.FilterFlight)
+router.get("/filter-car", ModelController.FilterCar)
+router.get("/getNearbyModels", ModelController.GetNearbyModels)
 
 module.exports = router;

@@ -89,8 +89,10 @@ class AuthController {
 
     static async firstStepRegisteration(req, res) {
         try {
-            const { email, password, confirmpassword } = req.body;
+            const { email, password, confirmpassword, policyAccepted } = req.body;
+
             const user = await User.findOne({ where: { email: email } });
+
             if (user && !parseInt(user.otpCode)) {
                 return res.status(400).json({ message: "Account already exists" });
             }
@@ -98,22 +100,27 @@ class AuthController {
                 return res.status(400).json({ message: "Password and ConfirmPassword is not match" });
             }
 
-            const OTP = Math.floor(100000 + Math.random() * 900000);
-            await sendEmail(email, OTP);
-            const hashedPassword = await bcrypt.hash(password, 10);
-            if (user) {
-                user.otpCode = OTP;
-                user.password = hashedPassword;
-                await user.save();
-            } else {
+            if (policyAccepted) {
+
+                const OTP = Math.floor(100000 + Math.random() * 900000);
+                await sendEmail(email, OTP);
+                const hashedPassword = await bcrypt.hash(password, 10);
+
                 await User.create({
                     email: email,
                     otpCode: OTP,
                     password: hashedPassword,
                     roleId: 2,
+                    status: "InActive",
                     typeRegister: "normal-register",
+                    policyAccepted: policyAccepted
+                });
+            } else {
+                return res.status(200).send({
+                    message: "Cancel register",
                 });
             }
+
             return res.status(200).send({
                 message: "Succcess. Check your mail to get OTP code",
             });
@@ -137,7 +144,7 @@ class AuthController {
             if (OTPCode != user.otpCode) {
                 return res.status(400).json({ message: "OTP code not correct." });
             }
-
+            user.status = "Active"
             user.otpCode = 0;
             await user.save();
 

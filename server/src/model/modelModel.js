@@ -12,6 +12,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        latitude: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        longitude: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
         rate: {
             type: DataTypes.FLOAT,
             allowNull: true,
@@ -19,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
         numberRate: {
             type: DataTypes.INTEGER,
             allowNull: true,
+        },
+        address_location: {
+            type: DataTypes.GEOMETRY('POINT'),
+            allowNull: true,
+            defaultValue: null,
         },
     });
 

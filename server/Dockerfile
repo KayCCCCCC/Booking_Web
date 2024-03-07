@@ -10,7 +10,10 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm install
 
-# Expose port 3000
+# Copy the rest of your application
+COPY . .
+
+# Expose port 5000
 EXPOSE 5000
 
 # Command to run the application

@@ -259,6 +259,8 @@ class ModelController {
                     latitude: latitude,
                     longitude: longitude,
                     modelTypeId: faker.number.int({ min: 1, max: 3 }),
+                    rate: Math.ceil(faker.number.float({ min: 3, max: 5 })),
+                    numberRate: faker.number.int({ min: 5, max: 10 }),
                     address_location: { type: 'Point', coordinates: [longitude, latitude] }
                 });
 
@@ -623,18 +625,29 @@ class ModelController {
     }
 
     static async GetNearbyModels(req, res) {
-        const { latitude, longitude, distance } = req.body;
+        const { latitude, longitude, distance, rate } = req.body;
         try {
             const models = await Model.findAll({
-                where: literal(`
-                    ST_Distance(
-                        ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                        "model"."address_location"
-                    ) < ${distance}
-                `),
-                attributes: ['id', 'nameOfModel', 'address', 'rate', 'numberRate'],
+                where: {
+                    [Op.and]: [
+                        literal(`
+                            ST_Distance(
+                                ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
+                                "model"."address_location"
+                            ) < ${distance}
+                        `),
+                        {
+                            // rate: {
+                            //     [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
+                            // }
+                        }
+                    ]
+                },
             });
-            return res.status(200).json(models);
+            return res.status(200).json({
+                success: true,
+                data: models
+            });
         } catch (error) {
             console.error("Error in getNearbyModelsOne:", error);
             return res.status(500).json({ message: "Something went wrong!" });

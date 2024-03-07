@@ -28,5 +28,6 @@ router.post("/auto-create-car", ModelController.AutoCreateCars)
 router.get("/filter-hotel", ModelController.FilterHotel)
 router.get("/filter-flight", ModelController.FilterFlight)
 router.get("/filter-car", ModelController.FilterCar)
+router.get("/getNearbyModels", ModelController.GetNearbyModels)
 
 module.exports = router;

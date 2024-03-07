@@ -1,5 +1,6 @@
 const { faker } = require('@faker-js/faker');
-const { Op } = require('sequelize');
+const { Op, literal, col, fn } = require("sequelize");
+const sequelize = require('../database/connectDbPg')
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
 
@@ -247,13 +248,18 @@ class ModelController {
                 const description = faker.lorem.sentence();
                 const address = faker.location.streetAddress();
                 const nameOfModel = faker.company.name();
+                const latitude = parseFloat(faker.location.latitude());
+                const longitude = parseFloat(faker.location.longitude());
 
                 // Create the model
                 const newModel = await Model.create({
                     description: description,
                     address: address,
                     nameOfModel: nameOfModel,
+                    latitude: latitude,
+                    longitude: longitude,
                     modelTypeId: faker.number.int({ min: 1, max: 3 }),
+                    address_location: { type: 'Point', coordinates: [longitude, latitude] }
                 });
 
                 createdModels.push(newModel);
@@ -616,9 +622,24 @@ class ModelController {
         }
     }
 
-
-
-
+    static async GetNearbyModels(req, res) {
+        const { latitude, longitude, distance } = req.body;
+        try {
+            const models = await Model.findAll({
+                where: literal(`
+                    ST_Distance(
+                        ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
+                        "model"."address_location"
+                    ) < ${distance}
+                `),
+                attributes: ['id', 'nameOfModel', 'address', 'rate', 'numberRate'],
+            });
+            return res.status(200).json(models);
+        } catch (error) {
+            console.error("Error in getNearbyModelsOne:", error);
+            return res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
 
 }
 exports.ModelController = ModelController

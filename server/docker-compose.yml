@@ -1,29 +1,33 @@
-version: '3.8'
-
 services:
-  app:
-    restart: always
-    build: .
-    depends_on:
-      - database
-    ports:
-      - "5001:5000"
-    working_dir: /server
-    volumes:
-      - ./:/server
+  postgresdb:
+    image: postgres
+    restart: unless-stopped
+    env_file: ./.env
     environment:
-      DB_DSN: postgres://postgres:secret@database:5432/booking
+      - POSTGRES_USER=$POSTGRESDB_USER
+      - POSTGRES_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+      - POSTGRES_DB=$POSTGRESDB_DATABASE
+    ports:
+      - $POSTGRESDB_LOCAL_PORT:$POSTGRESDB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/postgres
 
-  database:
-    image: postgres:latest
-    volumes:
-      - booking-postgres-data:/var/lib/postgresql/data
+  app:
+    depends_on:
+      - postgresdb
+    build: /
+    restart: unless-stopped
+    env_file: ./.env
     ports:
-      - "5433:5432"
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: booking
+      - DB_HOST=postgresdb
+      - DB_USER=$POSTGRESDB_USER
+      - DB_PASSWORD=$POSTGRESDB_ROOT_PASSWORD
+      - DB_NAME=$POSTGRESDB_DATABASE
+      - DB_PORT=$POSTGRESDB_DOCKER_PORT
+    stdin_open: true
+    tty: true
 
 volumes:
-  booking-postgres-data:
+  db:

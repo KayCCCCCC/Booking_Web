@@ -3,6 +3,7 @@ const { Op, literal, col, fn } = require("sequelize");
 const sequelize = require('../database/connectDbPg')
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
+const axios = require('axios')
 
 const Model = db.model
 const ModelType = db.modelType
@@ -242,53 +243,60 @@ class ModelController {
 
     static async AutoCreate(req, res) {
         try {
+            const response = await axios.get('https://countriesnow.space/api/v0.1/countries/positions');
+            const listModel = response.data.data
+            // console.log(listModel)
+
             const createdModels = [];
-            for (let i = 0; i < 5; i++) {
+            for (const model of listModel) {
 
                 const description = faker.lorem.sentence();
                 const address = faker.location.streetAddress();
-                const nameOfModel = faker.company.name();
-                const latitude = parseFloat(faker.location.latitude());
-                const longitude = parseFloat(faker.location.longitude());
+                const name = model.name;
+                const latitude = parseFloat(model.lat);
+                const longitude = parseFloat(model.long);
+                const iso2 = model.iso2;
 
                 // Create the model
                 const newModel = await Model.create({
                     description: description,
                     address: address,
-                    nameOfModel: nameOfModel,
+                    name: name,
+                    iso2: iso2,
                     latitude: latitude,
                     longitude: longitude,
                     modelTypeId: faker.number.int({ min: 1, max: 3 }),
-                    rate: Math.ceil(faker.number.float({ min: 3, max: 5 })),
+                    rate: Math.floor(faker.number.float({ min: 10, max: 50 }) / 10),
                     numberRate: faker.number.int({ min: 5, max: 10 }),
                     address_location: { type: 'Point', coordinates: [longitude, latitude] }
                 });
 
                 createdModels.push(newModel);
                 // Generate random images for the model
-                const images = [];
-                for (let j = 0; j < 3; j++) {
 
-                    const imageUrl = faker.image.url();
+                // const images = [];
+                // for (let j = 0; j < 3; j++) {
 
-                    const result = await cloundinary.uploader.upload(imageUrl, {
-                        upload_preset: 'vnldjdbe',
-                        public_id: `unique_id_${Date.now()}`
-                    });
+                //     const imageUrl = faker.image.url();
 
-                    const createdImage = await ModelImages.create({
-                        url: result.secure_url,
-                        publicId: result.public_id,
-                        modelId: newModel.id
-                    });
+                //     const result = await cloundinary.uploader.upload(imageUrl, {
+                //         upload_preset: 'vnldjdbe',
+                //         public_id: `unique_id_${Date.now()}`
+                //     });
 
-                    images.push(createdImage);
-                }
+                //     const createdImage = await ModelImages.create({
+                //         url: result.secure_url,
+                //         publicId: result.public_id,
+                //         modelId: newModel.id
+                //     });
+
+                //     images.push(createdImage);
+                // }
             }
 
             // Return success response with the created models
             return res.status(200).json({
-                message: "Auto creation of 10 models with 6 images each successful",
+                message: "Auto create successful",
                 data: createdModels
             });
         } catch (error) {
@@ -637,9 +645,9 @@ class ModelController {
                             ) < ${distance}
                         `),
                         {
-                            // rate: {
-                            //     [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
-                            // }
+                            rate: {
+                                [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
+                            }
                         }
                     ]
                 },

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { Input } from "../../global/atoms/input"
 import { useEffect, useState } from "react"
 import Combobox from "../../global/molecules/Combobox"
-import { getNationsInTheWorld } from "@/lib/services/api"
+import { getNationsInTheWorld } from "@/lib/services/country.api"
 import { Country } from "@/lib/interface/country"
 
 type UpdateInformationProps = {

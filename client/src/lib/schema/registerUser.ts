@@ -31,4 +31,4 @@ export const registerUserSchema = z
     message: "Confirm password must be matched with password"
   })
 
-export type registerUserSchemaType = z.infer<typeof registerUserSchema>
+// export type registerUserSchemaType = z.infer<typeof registerUserSchema>

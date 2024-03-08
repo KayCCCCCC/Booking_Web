@@ -6,9 +6,10 @@ import { useState } from "react"
 import { FaFacebook, FaGoogle, FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import { Button } from "../../global/atoms/button"
 import { Link } from "react-router-dom"
-import { registerUserSchema, registerUserSchemaType } from "../../../lib/schema/registerUser"
+import { registerUserSchema } from "../../../lib/schema/registerUser"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Checkbox } from "../../global/atoms/checkbox"
+import { RegisterUser } from "@/lib/interface/user.interface"
 
 interface RegisterProps {
   success: () => void
@@ -17,7 +18,7 @@ const Register = ({ success }: RegisterProps) => {
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
   const [isShowPasswordConfirm, setIsShowPasswordConfirm] = useState<boolean>(false)
 
-  const form = useForm<registerUserSchemaType>({
+  const form = useForm<RegisterUser>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: {
       email: "",

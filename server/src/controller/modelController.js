@@ -644,11 +644,11 @@ class ModelController {
                                 "model"."address_location"
                             ) < ${distance}
                         `),
-                        {
-                            rate: {
-                                [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
-                            }
-                        }
+                        // {
+                        //     rate: {
+                        //         [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
+                        //     }
+                        // }
                     ]
                 },
             });
@@ -661,6 +661,29 @@ class ModelController {
             return res.status(500).json({ message: "Something went wrong!" });
         }
     }
+
+    static async CalculateDistanceKilometers(req, res) {
+        const { lon1, lat1, lon2, lat2 } = req.body;
+        const earthRadiusKilometers = 6371; // Bán kính trái đất trong kilômét
+
+        // Chuyển đổi độ sang radian
+        const degreesToRadians = (degrees) => {
+            return degrees * Math.PI / 180;
+        };
+
+        const dLat = degreesToRadians(lat2 - lat1);
+        const dLon = degreesToRadians(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distanceMeters = earthRadiusKilometers * c * 1000; // Chuyển đổi sang mét
+        const distanceKilometers = distanceMeters / 1000; // Chuyển đổi sang kilômét
+        return res.status(200).json({
+            distance: distanceKilometers + " km"
+        });
+    }
+
 
 }
 exports.ModelController = ModelController

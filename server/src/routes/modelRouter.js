@@ -29,5 +29,6 @@ router.get("/filter-hotel", ModelController.FilterHotel)
 router.get("/filter-flight", ModelController.FilterFlight)
 router.get("/filter-car", ModelController.FilterCar)
 router.get("/getNearbyModels", ModelController.GetNearbyModels)
+router.get("/distance", ModelController.CalculateDistanceKilometers)
 
 module.exports = router;

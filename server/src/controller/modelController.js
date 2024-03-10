@@ -25,10 +25,16 @@ class ModelController {
                     typeName: item,
                 });
             }
-            return res.status(200).json({ message: "Model types created successfully!" });
+            return res.status(200).json({
+                success: true,
+                message: "Model types created successfully!"
+            });
         } catch (error) {
             console.error("Error creating type:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -37,6 +43,7 @@ class ModelController {
             const modelId = req.params.id;
             if (!modelId) {
                 return res.status(400).json({
+                    success: false,
                     message: "ModelId is required"
                 });
             } else {
@@ -57,6 +64,7 @@ class ModelController {
                     result.images = images;
 
                     return res.status(200).json({
+                        success: true,
                         message: `Data of Model with Id ${modelId}`,
                         data: {
                             result,
@@ -65,13 +73,17 @@ class ModelController {
                     });
                 } else {
                     return res.status(400).json({
+                        success: false,
                         message: `Data of Model with Id ${modelId} not found`,
                     });
                 }
             }
         } catch (error) {
             console.error("Error GetModelById:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -112,12 +124,16 @@ class ModelController {
             }
 
             res.status(200).json({
+                success: true,
                 message: "Create model successfully",
                 data: result
             });
         } catch (error) {
             console.error("Error CreateModel:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -131,7 +147,10 @@ class ModelController {
             const model = await Model.findByPk(modelId);
 
             if (!model) {
-                return res.status(404).json({ message: "Model not found" });
+                return res.status(404).json({
+                    success: false,
+                    message: "Model not found"
+                });
             }
 
             const images = req.files.map((file) => file.path);
@@ -196,12 +215,16 @@ class ModelController {
 
             // Return success response
             return res.status(200).json({
+                success: true,
                 message: "Model updated successfully",
                 data: model
             });
         } catch (error) {
             console.error("Error UpdateModel:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -212,17 +235,24 @@ class ModelController {
             const model = await Model.findByPk(modelId);
 
             if (!model) {
-                return res.status(404).json({ message: "Model not found" });
+                return res.status(404).json({
+                    success: false,
+                    message: "Model not found"
+                });
             }
 
             await model.destroy();
 
             return res.status(200).json({
+                success: true,
                 message: "Model deleted successfully"
             });
         } catch (error) {
             console.error("Error DeleteModel:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -232,12 +262,16 @@ class ModelController {
             const models = await Model.findAll();
 
             return res.status(200).json({
+                success: true,
                 message: "Models retrieved successfully",
                 data: models
             });
         } catch (error) {
             console.error("Error GetAllModels:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -296,12 +330,16 @@ class ModelController {
 
             // Return success response with the created models
             return res.status(200).json({
+                success: true,
                 message: "Auto create successful",
                 data: createdModels
             });
         } catch (error) {
             console.error("Error AutoCreate:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -339,12 +377,16 @@ class ModelController {
             }
 
             return res.status(200).json({
+                success: true,
                 message: `Auto creation of ${listModel.length} flights successful`,
                 data: createdFlights
             });
         } catch (error) {
             console.error("Error AutoCreateFlights:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -378,12 +420,16 @@ class ModelController {
             }
 
             return res.status(200).json({
+                success: true,
                 message: `Auto creation of ${listModel.length} hotels successful`,
                 data: createdHotels
             });
         } catch (error) {
             console.error("Error AutoCreateHotels:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -422,12 +468,16 @@ class ModelController {
             }
 
             return res.status(200).json({
+                success: true,
                 message: `Auto creation of ${listModel.length} bikes successful`,
                 data: createdBikes
             });
         } catch (error) {
             console.error("Error AutoCreateBikes:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -469,6 +519,7 @@ class ModelController {
 
 
                 return res.status(200).json({
+                    success: true,
                     message: "Filtered hotels successfully",
                     data: filteredHotels
                 });
@@ -494,6 +545,7 @@ class ModelController {
 
 
                 return res.status(200).json({
+                    success: true,
                     message: "Filtered hotels successfully",
                     data: filteredHotels
                 });
@@ -502,7 +554,10 @@ class ModelController {
 
         } catch (error) {
             console.error("Error FilterHotel:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -538,6 +593,7 @@ class ModelController {
                 });
 
                 return res.status(200).json({
+                    success: true,
                     message: "Filtered flights successfully",
                     data: filteredFlights
                 });
@@ -561,13 +617,17 @@ class ModelController {
                 });
 
                 return res.status(200).json({
+                    success: true,
                     message: "Filtered flights successfully",
                     data: filteredFlights
                 });
             }
         } catch (error) {
             console.error("Error FilterFlight:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -601,6 +661,7 @@ class ModelController {
                 });
 
                 return res.status(200).json({
+                    success: true,
                     message: "Filtered cars successfully",
                     data: filteredCars
                 });
@@ -623,12 +684,16 @@ class ModelController {
             });
 
             return res.status(200).json({
+                success: true,
                 message: "Filtered cars successfully",
                 data: filteredCars
             });
         } catch (error) {
             console.error("Error FilterCar:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -644,11 +709,11 @@ class ModelController {
                                 "model"."address_location"
                             ) < ${distance}
                         `),
-                        // {
-                        //     rate: {
-                        //         [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
-                        //     }
-                        // }
+                        {
+                            rate: {
+                                [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
+                            }
+                        }
                     ]
                 },
             });
@@ -658,7 +723,10 @@ class ModelController {
             });
         } catch (error) {
             console.error("Error in getNearbyModelsOne:", error);
-            return res.status(500).json({ message: "Something went wrong!" });
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
         }
     }
 
@@ -680,6 +748,7 @@ class ModelController {
         const distanceMeters = earthRadiusKilometers * c * 1000; // Chuyển đổi sang mét
         const distanceKilometers = distanceMeters / 1000; // Chuyển đổi sang kilômét
         return res.status(200).json({
+            success: true,
             distance: distanceKilometers + " km"
         });
     }

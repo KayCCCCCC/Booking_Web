@@ -21,18 +21,21 @@ class UserController {
 
             if (userList) {
                 res.status(200).json({
+                    success: true,
                     message: "List of User",
                     data: userList
                 })
             } else {
                 res.status(400).json({
+                    success: false,
                     message: "List User is Null",
                 })
             }
         } catch (error) {
-            return res
-                .status(500)
-                .json({ message: "Failed to do somthing exceptional" });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to do somthing exceptional"
+            });
         }
     }
     static async GetById(req, res) {
@@ -48,11 +51,13 @@ class UserController {
                 })
                 if (result) {
                     res.status(200).json({
+                        success: true,
                         message: `Data of User with Id ${userId}`,
                         data: result
                     })
                 } else {
                     res.status(400).json({
+                        success: false,
                         message: `Data of User with Id ${userId} not found`,
                     })
                 }
@@ -70,7 +75,10 @@ class UserController {
             let user = await User.findOne({ where: { email } });
 
             if (user) {
-                return res.status(400).json({ message: "Account already exists" });
+                return res.status(400).json({
+                    success: false,
+                    message: "Account already exists"
+                });
             }
 
             const avatar = req.file.path;
@@ -98,9 +106,15 @@ class UserController {
                 country: country || ''
             });
 
-            return res.status(200).send({ message: "Success. Created new Account" });
+            return res.status(200).send({
+                success: true,
+                message: "Success. Created new Account"
+            });
         } catch (error) {
-            return res.status(500).json({ message: "Failed to create account", error });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to create account", error
+            });
         }
     }
 
@@ -112,7 +126,10 @@ class UserController {
             const user = await User.findByPk(userId);
 
             if (!user) {
-                return res.status(404).json({ message: "User not found" });
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
             }
 
             const avatar = req.file.path;
@@ -130,9 +147,15 @@ class UserController {
 
             await user.save();
 
-            return res.status(200).json({ message: "User updated successfully", user });
+            return res.status(200).json({
+                success: true,
+                message: "User updated successfully", user
+            });
         } catch (error) {
-            return res.status(500).json({ message: "Failed to update user", error });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to update user", error
+            });
         }
     }
 
@@ -143,16 +166,25 @@ class UserController {
             const user = await User.findByPk(userId);
 
             if (!user) {
-                return res.status(404).json({ message: "User not found" });
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
             }
 
             user.status = "InActive"
 
             await user.save();
 
-            return res.status(200).json({ message: "User delete successfully" });
+            return res.status(200).json({
+                success: true,
+                message: "User delete successfully"
+            });
         } catch (error) {
-            return res.status(500).json({ message: "Failed to delete user", error });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to delete user", error
+            });
         }
     }
 
@@ -190,9 +222,15 @@ class UserController {
                 });
                 listFakeUser.push(fakeUser)
             }
-            return res.status(200).json({ message: "Success" })
+            return res.status(200).json({
+                success: true,
+                message: "Success"
+            })
         } catch (error) {
-            return res.status(500).json({ message: "Failed to AutoCreateUser user", error });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to AutoCreateUser user", error
+            });
         }
     }
 }

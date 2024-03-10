@@ -19,16 +19,24 @@ class AuthController {
 
             if (!user || !user.name)
                 return res
-                    .status(500)
-                    .send({ message: "This account does not exist." });
+                    .status(500).send({
+                        success: false,
+                        message: "This account does not exist."
+                    });
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(400).send({ message: "Password incorrect." });
+                return res.status(400).send({
+                    success: false,
+                    message: "Password incorrect."
+                });
             }
 
             if (user.status === "InActive") {
-                return res.status(500).send({ message: "Account has been banned" });
+                return res.status(500).send({
+                    success: false,
+                    message: "Account has been banned"
+                });
             }
 
             const access_token = await Token.generateAccessToken({ id: user.id, role: user.roleId });
@@ -40,8 +48,10 @@ class AuthController {
                 secure: true,
             });
             return res.status(200).send({
-                message: "Login successful",
-                access_token: access_token
+                success: true,
+                message: "Login Success",
+                access_token: access_token,
+                data: user
             });
         } catch (error) {
             return res
@@ -54,18 +64,29 @@ class AuthController {
         try {
             const rf_token = req.cookies.refreshtoken;
             if (!rf_token) {
-                return res.status(400).json({ message: "Please login now" });
+                return res.status(400).json({
+                    success: false,
+                    message: "Please login now"
+                });
             }
 
             const decode = jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET);
-            if (!decode) return res.status(400).json({ message: "Please login now" });
+            if (!decode) return res.status(400).json({
+                success: false,
+                message: "Please login now"
+            });
             if (decode.id) {
                 const user = await User.findByPk(decode.id, {
                     attributes: ["id", "name", "email"]
                 });
 
                 const access_token = await Token.generateAccessToken({ id: user.id });
-                return res.status(200).json({ access_token, user });
+                return res.status(200).json(
+                    {
+                        success: false,
+                        access_token,
+                        user
+                    });
             }
         } catch (error) {
             return res
@@ -81,9 +102,15 @@ class AuthController {
                 httpOnly: true,
                 sameSite: "none",
             });
-            return res.status(200).send({ message: "Logged out" });
+            return res.status(200).send({
+                success: false,
+                message: "Logged out"
+            });
         } catch (error) {
-            return res.status(500).send({ message: "Logout error" });
+            return res.status(500).send({
+                success: false,
+                message: "Logout error"
+            });
         }
     }
 
@@ -94,16 +121,21 @@ class AuthController {
             const user = await User.findOne({ where: { email: email } });
 
             if (user && !parseInt(user.otpCode)) {
-                return res.status(400).json({ message: "Account already exists" });
+                return res.status(400).json({
+                    success: false,
+                    message: "Account already exists"
+                });
             }
             if (password != confirmpassword) {
-                return res.status(400).json({ message: "Password and ConfirmPassword is not match" });
+                return res.status(400).json({
+                    success: false,
+                    message: "Password and ConfirmPassword is not match"
+                });
             }
 
             if (policyAccepted) {
 
                 const OTP = Math.floor(100000 + Math.random() * 900000);
-                await sendEmail(email, OTP);
                 const hashedPassword = await bcrypt.hash(password, 10);
 
                 await User.create({
@@ -115,19 +147,26 @@ class AuthController {
                     typeRegister: "normal-register",
                     policyAccepted: policyAccepted
                 });
+
+                await sendEmail(email, OTP);
             } else {
                 return res.status(200).send({
+                    success: false,
                     message: "Cancel register",
                 });
             }
 
             return res.status(200).send({
+                success: true,
                 message: "Succcess. Check your mail to get OTP code",
             });
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Failed to do something exceptional" });
+                .json({
+                    success: false,
+                    message: "Failed to do something exceptional"
+                });
         }
     }
 
@@ -138,21 +177,33 @@ class AuthController {
             const user = await User.findOne({ where: { email: email } });
 
             if (!user) {
-                return res.status(400).json({ message: "User not found." });
+                return res.status(400).json({
+                    success: false,
+                    message: "User not found."
+                });
             }
 
             if (OTPCode != user.otpCode) {
-                return res.status(400).json({ message: "OTP code not correct." });
+                return res.status(400).json({
+                    success: false,
+                    message: "OTP code not correct."
+                });
             }
             user.status = "Active"
             user.otpCode = 0;
             await user.save();
 
-            return res.status(200).send({ message: "Register successfully." });
+            return res.status(200).send({
+                success: true,
+                message: "Register successfully."
+            });
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Failed to do somthing exceptional." });
+                .json({
+                    success: false,
+                    message: "Failed to do somthing exceptional."
+                });
         }
     }
 
@@ -162,7 +213,10 @@ class AuthController {
             const user = await User.findOne({ where: { email: email } });
 
             if (!user) {
-                return res.status(400).json({ message: "User not found." });
+                return res.status(400).json({
+                    success: false,
+                    message: "User not found."
+                });
             }
 
             user.name = name;
@@ -171,11 +225,17 @@ class AuthController {
             user.roleId = 2;
             user.save();
 
-            return res.status(200).send({ message: "Update info success." });
+            return res.status(200).send({
+                success: true,
+                message: "Update info success."
+            });
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Failed to do somthing exceptional." });
+                .json({
+                    success: false,
+                    message: "Failed to do somthing exceptional."
+                });
         }
     }
 }

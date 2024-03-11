@@ -7,7 +7,7 @@ class UploadController {
             console.log('>>> check image: ', images);
             const result = await cloundinary.uploader.upload(images, {
                 upload_preset: 'vnldjdbe',
-                public_id: `unique_id_${Date.now()}`
+                public_id: `unique_id_${Date.now()}`,
             });
             return res.status(200).json({
                 success: true,

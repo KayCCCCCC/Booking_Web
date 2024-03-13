@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Checkbox } from "../../global/atoms/checkbox"
 import { RegisterUser } from "@/lib/interface/user.interface"
 import { firstStepSignUp } from "@/lib/services/AuthServices"
-import { registerUserSchema } from "@/lib/schema/RegisterUser"
+import { registerUserSchema } from "@/lib/schema/registerUser"
 
 interface RegisterProps {
   success: () => void

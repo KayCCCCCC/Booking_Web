@@ -116,7 +116,7 @@ class AuthController {
 
     static async firstStepRegisteration(req, res) {
         try {
-            const { email, password, confirmpassword, policyAccepted } = req.body;
+            const { email, password, confirmPassword, policyAccepted } = req.body;
 
             const user = await User.findOne({ where: { email: email } });
 
@@ -126,7 +126,7 @@ class AuthController {
                     message: "Account already exists"
                 });
             }
-            if (password != confirmpassword) {
+            if (password != confirmPassword) {
                 return res.status(400).json({
                     success: false,
                     message: "Password and ConfirmPassword is not match"
@@ -157,6 +157,7 @@ class AuthController {
             }
 
             return res.status(200).send({
+                email: email,
                 success: true,
                 message: "Succcess. Check your mail to get OTP code",
             });
@@ -209,7 +210,7 @@ class AuthController {
 
     static async setInfo(req, res, next) {
         try {
-            const { name, email, country, address } = req.body;
+            const { userName, email, country, address } = req.body;
             const user = await User.findOne({ where: { email: email } });
 
             if (!user) {
@@ -219,7 +220,7 @@ class AuthController {
                 });
             }
 
-            user.name = name;
+            user.name = userName;
             user.country = country;
             user.address = address
             user.roleId = 2;

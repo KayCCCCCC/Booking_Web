@@ -7,7 +7,7 @@ export const registerUserSchema = z
         required_error: "Email is required"
       })
       .email({
-        message: "Must be a valid email with ...@gmail.com"
+        message: "Must be a valid email with @gmail.com or @..."
       }),
     password: z
       .string({
@@ -23,12 +23,11 @@ export const registerUserSchema = z
       .min(8, {
         message: "Password must be at least 8 degits"
       }),
-    policyAccepted: z.boolean({
-      required_error: "Please accept our policy to register an account"
-    })
+    policyAccepted: z.boolean()
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Confirm password must be matched with password"
+    message: "Confirm password must be matched with password",
+    path: ["confirmPassword"]
   })
 
 // export type registerUserSchemaType = z.infer<typeof registerUserSchema>

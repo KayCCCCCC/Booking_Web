@@ -5,14 +5,26 @@ import { useForm } from "react-hook-form"
 import { Input } from "../../global/atoms/input"
 import { useEffect, useState } from "react"
 import Combobox from "../../global/molecules/Combobox"
-import { getNationsInTheWorld } from "@/lib/services/country.api"
+import { getNationsInTheWorld } from "@/lib/services/CountryServices"
 import { Country } from "@/lib/interface/country"
+import { UpdateInforUserSchemaType } from "@/lib/schema/UpdateInfoUser"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { UpdateInfoUserSchema } from "./../../../lib/schema/UpdateInfoUser"
+import { updateInforUser } from "@/lib/services/AuthServices"
+import { useDispatch, useSelector } from "react-redux"
+import { setCredentials } from "@/store/slices/AuthSlice"
+import { RootState } from "@/store/store"
+import { useNavigate } from "react-router-dom"
+import { ChevronRight } from "lucide-react"
 
 type UpdateInformationProps = {
   success: () => void
 }
 
 const UpdateInformation = ({ success }: UpdateInformationProps) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { loading } = useSelector((state: RootState) => state.auth)
   const [nation, setNation] = useState<string>("")
   const handleSetNation = (nation: string) => {
     setNation(nation)
@@ -25,25 +37,47 @@ const UpdateInformation = ({ success }: UpdateInformationProps) => {
     }
     getCountries()
   }, [])
-  const form = useForm()
+  const form = useForm<UpdateInforUserSchemaType>({
+    resolver: zodResolver(UpdateInfoUserSchema),
+    values: {
+      email: "HieuTTSE172576@fpt.edu.vn",
+      userName: "",
+      country: nation,
+      address: ""
+    }
+  })
+  const onSubmit = async (data: UpdateInforUserSchemaType) => {
+    try {
+      const response = await updateInforUser({ data })
+      if (response.success) {
+        success()
+        dispatch(setCredentials(response))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const handleSkip = () => {
+    navigate("/home")
+  }
   return (
-    <Card className="bg-white text-main ">
-      <CardHeader>
-        <CardHeader className="flex flex-col items-center justify-center">
-          <CardTitle className="text-center text-2xl font-bold">Complete your profile</CardTitle>
-          <CardDescription>Please enter Your Name, Country and Address</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center">
-          <Form {...form}>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card className="bg-white text-main ">
+          <CardHeader className="flex flex-col items-center justify-center">
+            <CardTitle className="text-center text-2xl font-bold">Complete your profile</CardTitle>
+            <CardDescription>Please enter Your Name, Country and Address</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center">
             <div className="flex w-[300px] flex-col gap-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input className="rounded" {...field} placeholder="Type your name" />
+                      <Input className="rounded" placeholder="Type your name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -60,20 +94,28 @@ const UpdateInformation = ({ success }: UpdateInformationProps) => {
                   <FormItem>
                     <FormLabel>Address</FormLabel>
                     <FormControl>
-                      <Input className="rounded" {...field} placeholder="Type your address" />
+                      <Input className="rounded" placeholder="Type your address" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex items-center justify-center">
-          <Button className="w-[300px] rounded text-white">Submit</Button>
-        </CardFooter>
-      </CardHeader>
-    </Card>
+          </CardContent>
+          <CardFooter className="flex flex-col items-center justify-center">
+            <Button className="w-[300px] rounded text-white" type="submit" disabled={loading}>
+              Submit
+            </Button>
+            <div>
+              <Button onClick={handleSkip} className=" mt-2 bg-transparent hover:bg-slate-100">
+                Skip
+                <ChevronRight />
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   )
 }
 

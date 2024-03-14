@@ -8,18 +8,19 @@ import { Button } from "../../global/atoms/button"
 import { Link } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Checkbox } from "../../global/atoms/checkbox"
-import { RegisterUser } from "@/lib/interface/user.interface"
+import { useDispatch } from "react-redux"
+import { signUpFirstStep } from "@/store/slices/AuthSlice"
 import { firstStepSignUp } from "@/lib/services/AuthServices"
-import { registerUserSchema } from "@/lib/schema/registerUser"
-
+import { RegisterUserSchema, RegisterUserSchemaType } from "../../../lib/schema/registerUser"
 interface RegisterProps {
   success: () => void
 }
 const Register = ({ success }: RegisterProps) => {
+  const dispatch = useDispatch()
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
   const [isShowPasswordConfirm, setIsShowPasswordConfirm] = useState<boolean>(false)
-  const form = useForm<RegisterUser>({
-    resolver: zodResolver(registerUserSchema),
+  const form = useForm<RegisterUserSchemaType>({
+    resolver: zodResolver(RegisterUserSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -28,12 +29,16 @@ const Register = ({ success }: RegisterProps) => {
     }
   })
 
-  const onSubmit = async (data: RegisterUser) => {
-    try {console.log(data);
-    
+  const onSubmit = async (data: RegisterUserSchemaType) => {
+    try {
+      console.log(data)
+
       const response = await firstStepSignUp({ data })
       if (response.success) {
+        dispatch(signUpFirstStep(response.data?.email))
         success()
+      } else {
+        console.log(response.message)
       }
     } catch (error) {
       console.log(error)
@@ -125,14 +130,14 @@ const Register = ({ success }: RegisterProps) => {
               <FormField
                 control={form.control}
                 name="policyAccepted"
-                render={({field}) => (
+                render={({ field }) => (
                   <FormItem className="start-0 flex items-center justify-center gap-x-2 ">
                     <FormControl>
                       <Checkbox
                         id="policyAccepted"
                         className="data-[state=checked]:bg-grey-300 bg-white "
                         checked={field.value}
-                        onCheckedChange={(isChecked)=>field.onChange(isChecked ? true : false)}
+                        onCheckedChange={(isChecked) => field.onChange(isChecked ? true : false)}
                       />
                     </FormControl>
                     <FormLabel className="text-xs text-main  " htmlFor="policyAccepted">

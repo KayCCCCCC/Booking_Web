@@ -12,19 +12,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { UpdateInfoUserSchema } from "./../../../lib/schema/UpdateInfoUser"
 import { updateInforUser } from "@/lib/services/AuthServices"
 import { useDispatch, useSelector } from "react-redux"
-import { setCredentials } from "@/store/slices/AuthSlice"
+import { setInfor } from "@/store/slices/AuthSlice"
 import { RootState } from "@/store/store"
 import { useNavigate } from "react-router-dom"
 import { ChevronRight } from "lucide-react"
 
-type UpdateInformationProps = {
-  success: () => void
-}
-
-const UpdateInformation = ({ success }: UpdateInformationProps) => {
+const UpdateInformation = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { loading } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
   const [nation, setNation] = useState<string>("")
   const handleSetNation = (nation: string) => {
     setNation(nation)
@@ -39,19 +35,22 @@ const UpdateInformation = ({ success }: UpdateInformationProps) => {
   }, [])
   const form = useForm<UpdateInforUserSchemaType>({
     resolver: zodResolver(UpdateInfoUserSchema),
-    values: {
-      email: "HieuTTSE172576@fpt.edu.vn",
-      userName: "",
+    defaultValues: {
+      email: user.email,
+      name: "",
       country: nation,
-      address: ""
+      address: "",
+      phone: ""
     }
   })
   const onSubmit = async (data: UpdateInforUserSchemaType) => {
     try {
+      console.log(data)
+
       const response = await updateInforUser({ data })
       if (response.success) {
-        success()
-        dispatch(setCredentials(response))
+        dispatch(setInfor(response.data))
+        handleSkip()
       }
     } catch (error) {
       console.log(error)
@@ -72,12 +71,25 @@ const UpdateInformation = ({ success }: UpdateInformationProps) => {
             <div className="flex w-[300px] flex-col gap-y-4">
               <FormField
                 control={form.control}
-                name="userName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input className="rounded" placeholder="Type your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input className="rounded" placeholder="Type your phone" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,7 +115,7 @@ const UpdateInformation = ({ success }: UpdateInformationProps) => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center">
-            <Button className="w-[300px] rounded text-white" type="submit" disabled={loading}>
+            <Button className="w-[300px] rounded text-white" type="submit" disabled={form.formState.isSubmitting}>
               Submit
             </Button>
             <div>

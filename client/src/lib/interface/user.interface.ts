@@ -6,16 +6,19 @@ export interface RegisterUser {
 }
 
 export interface OtpUser {
+  email: string
   otpCode: string
 }
 
 export interface CompletedInformationUser {
+  email: string
   userName: string
   country: string
   address: string
+  phone: string
 }
 
-export interface User extends RegisterUser, OtpUser, CompletedInformationUser {
+export interface User extends RegisterUser, Omit<OtpUser, "email">, Omit<CompletedInformationUser, "email"> {
   typeRegiter: string
   roleId: number
   status: string

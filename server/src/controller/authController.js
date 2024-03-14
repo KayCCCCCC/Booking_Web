@@ -334,6 +334,67 @@ class AuthController {
         }
     }
 
+    static async ReSendOTP(req, res) {
+        try {
+            const { email } = req.body
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
+
+            const user = await User.findOne({ where: { email: email.toLowerCase() } });
+
+            if (user == null) {
+                return res.status(400).json({
+                    success: false,
+                    message: "User not found."
+                });
+            }
+
+            if (user.OTPCode != "0" && user.status == "InActive") {
+                const now = new Date();
+
+                if (user.createdAt.getTime() < now) {
+                    const OTP = Math.floor(100000 + Math.random() * 900000);
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 2);
+
+                    await User.update({
+                        otpCode: OTP,
+                        createdAt: now
+                    }, { where: { email: email.toLowerCase() } });
+
+                    await sendEmail(email, OTP);
+
+                    const userAfter = await User.findOne({ where: { email: email.toLowerCase() } });
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Success. Check your email to get the OTP code",
+                        data: {
+                            user: {
+                                email: userAfter.email
+                            }
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        message: "OTP code is not expired."
+                    });
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to do something exceptional."
+            });
+        }
+    }
+
 }
 
 exports.AuthController = AuthController;

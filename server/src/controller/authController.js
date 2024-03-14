@@ -198,9 +198,16 @@ class AuthController {
                 }
             }
 
+            const userAfter = await User.findOne({ where: { email: email.toLowerCase() } });
+
             return res.status(200).json({
                 success: true,
                 message: "Success. Check your email to get the OTP code",
+                data: {
+                    user: {
+                        email: userAfter.email
+                    }
+                }
             });
         } catch (error) {
             console.error(error);

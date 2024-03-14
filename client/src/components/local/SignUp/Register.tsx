@@ -10,8 +10,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Checkbox } from "../../global/atoms/checkbox"
 import { useDispatch } from "react-redux"
 import { signUpFirstStep } from "@/store/slices/AuthSlice"
+import { RegisterUserSchema, RegisterUserSchemaType } from '@/lib/schema/RegisterUser';
 import { firstStepSignUp } from "@/lib/services/AuthServices"
-import { RegisterUserSchema, RegisterUserSchemaType } from "../../../lib/schema/registerUser"
+
 interface RegisterProps {
   success: () => void
 }

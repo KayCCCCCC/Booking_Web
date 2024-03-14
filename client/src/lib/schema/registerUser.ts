@@ -25,9 +25,9 @@ export const RegisterUserSchema = z
       }),
     policyAccepted: z.boolean()
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Confirm password must be matched with password",
-    path: ["confirmPassword"]
-  })
+  // .refine((data) => data.password === data.confirmPassword, {
+  //   message: "Confirm password must be matched with password",
+  //   path: ["confirmPassword"]
+  // })
 
 export type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>

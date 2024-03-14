@@ -118,7 +118,15 @@ class AuthController {
         try {
             const { email, password, confirmPassword, policyAccepted } = req.body;
 
-            const user = await User.findOne({ where: { email: email } });
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
+
+            const user = await User.findOne({ where: { email: email.toLowerCase() } });
 
             if (user && !parseInt(user.otpCode)) {
                 return res.status(400).json({
@@ -126,50 +134,74 @@ class AuthController {
                     message: "Account already exists"
                 });
             }
-            if (password != confirmPassword) {
+            if (password !== confirmPassword) {
                 return res.status(400).json({
                     success: false,
-                    message: "Password and ConfirmPassword is not match"
+                    message: "Password and ConfirmPassword do not match"
                 });
             }
 
-            if (policyAccepted) {
+            if (!policyAccepted) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Policy is not Accepted",
+                });
+            }
 
+            if (user == null) {
                 const OTP = Math.floor(100000 + Math.random() * 900000);
                 const hashedPassword = await bcrypt.hash(password, 10);
+                const now = new Date();
+                now.setMinutes(now.getMinutes() + 2);
 
                 await User.create({
-                    email: email,
+                    email: email.toLowerCase(),
                     otpCode: OTP,
                     password: hashedPassword,
                     roleId: 2,
                     status: "InActive",
                     typeRegister: "normal-register",
-                    policyAccepted: policyAccepted
+                    policyAccepted: policyAccepted,
+                    createdAt: now
                 });
 
                 await sendEmail(email, OTP);
+
             } else {
-                return res.status(200).send({
-                    success: false,
-                    message: "Cancel register",
-                });
+                const now = new Date();
+
+                if (user.createdAt.getTime() < now) {
+                    const OTP = Math.floor(100000 + Math.random() * 900000);
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 2);
+
+                    await User.update({
+                        otpCode: OTP,
+                        createdAt: now
+                    }, { where: { email: email.toLowerCase() } });
+
+                    await sendEmail(email, OTP);
+                } else {
+                    return res.status(400).json({
+                        message: "OTP code is not expired."
+                    });
+                }
             }
 
             return res.status(200).send({
                 email: email,
                 success: true,
-                message: "Succcess. Check your mail to get OTP code",
+                message: "Success. Check your email to get the OTP code",
             });
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    success: false,
-                    message: "Failed to do something exceptional"
-                });
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to process the request"
+            });
         }
     }
+
 
     static async submitOTP(req, res) {
         try {
@@ -190,13 +222,35 @@ class AuthController {
                     message: "OTP code not correct."
                 });
             }
-            user.status = "Active"
-            user.otpCode = 0;
-            await user.save();
+
+            const now = new Date();
+
+            const twoMinutesAgo = new Date(now.getTime() - (2 * 60 * 1000));
+
+            if (user.createdAt > twoMinutesAgo) {
+                user.status = "Active"
+                user.otpCode = 0;
+                await user.save();
+            } else {
+                return res.status(400).send({
+                    success: false,
+                    message: "OTP code is expired.",
+                });
+            }
+
+            const access_token = await Token.generateAccessToken({ id: user.id, role: user.roleId });
+            const refresh_token = await Token.generateRefreshToken({ id: user.id, role: user.roleId });
+            await res.cookie("refreshtoken", refresh_token, {
+                httpOnly: true,
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
+                sameSite: "none",
+                secure: true,
+            });
 
             return res.status(200).send({
                 success: true,
-                message: "Register successfully."
+                message: "Register successfully.",
+                access_token: access_token
             });
         } catch (error) {
             return res
@@ -228,7 +282,13 @@ class AuthController {
 
             return res.status(200).send({
                 success: true,
-                message: "Update info success."
+                message: "Update info success.",
+                user: {
+                    email: user.email,
+                    name: user.name,
+                    country: user.country,
+                    address: user.address
+                }
             });
         } catch (error) {
             return res

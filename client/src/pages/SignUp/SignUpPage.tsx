@@ -11,13 +11,12 @@ const SignUpPage = () => {
   const confirmOTPSuccess = useCallback(() => {
     setStatus(2)
   }, [])
-  const updateSuccess = useCallback(() => {}, [])
   return (
     <div className=" flex  ">
       <div className="flex min-h-[100vh] w-1/2 items-center justify-center bg-secondary">
         {status === 0 && <Register success={registerSuccess} />}
         {status === 1 && <ConfirmOTP success={confirmOTPSuccess} minuteLimit={3} />}
-        {status === 2 && <UpdateInformation success={updateSuccess} />}
+        {status === 2 && <UpdateInformation />}
       </div>
     </div>
   )

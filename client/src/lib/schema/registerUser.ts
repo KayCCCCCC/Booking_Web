@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const registerUserSchema = z
+export const RegisterUserSchema = z
   .object({
     email: z
       .string({
@@ -13,15 +13,15 @@ export const registerUserSchema = z
       .string({
         required_error: "Password is required"
       })
-      .min(8, {
-        message: "Password must be at least 8 degits"
+      .min(4, {
+        message: "Password must be at least 4 degits"
       }),
     confirmPassword: z
       .string({
         required_error: "Confirm password is required"
       })
-      .min(8, {
-        message: "Password must be at least 8 degits"
+      .min(4, {
+        message: "Password must be at least 4 degits"
       }),
     policyAccepted: z.boolean()
   })
@@ -30,4 +30,4 @@ export const registerUserSchema = z
     path: ["confirmPassword"]
   })
 
-// export type registerUserSchemaType = z.infer<typeof registerUserSchema>
+export type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>

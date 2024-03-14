@@ -2,6 +2,7 @@ const db = require("../model/index");
 const sendEmail = require("../utils/sendEmail");
 const { Token } = require("../utils/generateToken");
 const bcrypt = require("bcryptjs");
+const cloundinary = require('../utils/cloudinary');
 const jwt = require("jsonwebtoken");
 
 const User = db.user;
@@ -51,7 +52,16 @@ class AuthController {
                 success: true,
                 message: "Login Success",
                 access_token: access_token,
-                data: user
+                data: {
+                    user: {
+                        name: user.name,
+                        email: user.email,
+                        address: user.address,
+                        country: user.country,
+                        avatar: user.avatar,
+                        phone: user.phone
+                    }
+                }
             });
         } catch (error) {
             return res
@@ -188,10 +198,16 @@ class AuthController {
                 }
             }
 
-            return res.status(200).send({
-                email: email,
+            const userAfter = await User.findOne({ where: { email: email.toLowerCase() } });
+
+            return res.status(200).json({
                 success: true,
                 message: "Success. Check your email to get the OTP code",
+                data: {
+                    // user: {
+                    email: userAfter.email
+                    // }
+                }
             });
         } catch (error) {
             console.error(error);
@@ -222,12 +238,16 @@ class AuthController {
                     message: "OTP code not correct."
                 });
             }
-
             const now = new Date();
+            now.setHours(now.getHours() + 7);
 
-            const twoMinutesAgo = new Date(now.getTime() - (2 * 60 * 1000));
+            const userCreatedAt = new Date(user.createdAt);
 
-            if (user.createdAt > twoMinutesAgo) {
+            const twoMinutesAgo = new Date(userCreatedAt.getTime() - (2 * 60 * 1000));
+
+            userCreatedAt.setHours(userCreatedAt.getHours() + 7);
+
+            if (now > twoMinutesAgo && now < userCreatedAt) {
                 user.status = "Active"
                 user.otpCode = 0;
                 await user.save();
@@ -250,7 +270,12 @@ class AuthController {
             return res.status(200).send({
                 success: true,
                 message: "Register successfully.",
-                access_token: access_token
+                access_token: access_token,
+                data: {
+                    // user: {
+                        email
+                    // }
+                }
             });
         } catch (error) {
             return res
@@ -264,8 +289,8 @@ class AuthController {
 
     static async setInfo(req, res, next) {
         try {
-            const { userName, email, country, address } = req.body;
-            const user = await User.findOne({ where: { email: email } });
+            const { name, email, country, address, phone } = req.body;
+            const user = await User.findOne({ where: { email } });
 
             if (!user) {
                 return res.status(400).json({
@@ -274,31 +299,46 @@ class AuthController {
                 });
             }
 
-            user.name = userName;
-            user.country = country;
-            user.address = address
-            user.roleId = 2;
-            user.save();
+            const avatar = req.file ? req.file.path : null;
+            if (avatar) {
+                const result = await cloundinary.uploader.upload(avatar, {
+                    upload_preset: 'vnldjdbe',
+                    public_id: `unique_id_${Date.now()}`
+                });
+                user.avatar = result.secure_url || "";
+            }
 
-            return res.status(200).send({
+            user.name = name || user.name;
+            user.country = country || user.country;
+            user.address = address || user.address;
+            user.phone = phone || user.phone;
+            user.roleId = 2;
+
+            await user.save();
+
+            return res.status(200).json({
                 success: true,
                 message: "Update info success.",
-                user: {
-                    email: user.email,
-                    name: user.name,
-                    country: user.country,
-                    address: user.address
+                data: {
+                    // user: {
+                        name: user.name,
+                        email: user.email,
+                        address: user.address,
+                        country: user.country,
+                        avatar: user.avatar,
+                        phone: user.phone
+                    // }
                 }
             });
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    success: false,
-                    message: "Failed to do somthing exceptional."
-                });
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to do something exceptional."
+            });
         }
     }
+
 }
 
 exports.AuthController = AuthController;

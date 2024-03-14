@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form"
 import { OTPConfirmSchema, OTPConfirmSchemaType } from "./../../../lib/schema/OTPConfirm"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { confirmOtp } from "@/lib/services/AuthServices"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/store/store"
+import { setToken } from "@/store/slices/AuthSlice"
 
 interface ConfirmOTPProps {
   success: () => void
@@ -18,15 +21,15 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
   const [activeOTPIndex, setActiveOTPIndex] = useState<number>(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isResend, setIsResend] = useState<boolean>(false)
-
+  const { user } = useSelector((state: RootState) => state?.auth)
   const form = useForm<OTPConfirmSchemaType>({
     resolver: zodResolver(OTPConfirmSchema),
     values: {
       OTPCode: OTP.toString().replaceAll(",", ""),
-      email: "HieuTTSE172576@fpt.edu.vn"
+      email: user.email
     }
   })
-
+  const dispatch = useDispatch()
   const handleOnChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
     const { value } = target
     const newOTP: string[] = [...OTP]
@@ -40,16 +43,15 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
   }
   const handleResendOTP = () => {
     setIsResend(true)
-    console.log(isResend)
   }
   const onSubmit = async (data: OTPConfirmSchemaType) => {
-    console.log(111111111111)
     try {
-      console.log(data)
       const response = await confirmOtp({ data })
-      console.log(response)
       if (response.success) {
+        dispatch(setToken(response))
         success()
+      } else {
+        console.log(response.message)
       }
     } catch (error) {
       console.log(error)
@@ -59,7 +61,7 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
   useEffect(() => {
     inputRef.current?.focus()
   }, [activeOTPIndex])
-console.log(form.formState);
+  console.log(form.formState)
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>

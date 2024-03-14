@@ -1,7 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit"
-
+const initUser = {
+  name: "",
+  email: "",
+  address: "",
+  country: "",
+  avatar: "",
+  phone: ""
+}
 const initialAuth = {
-  user: null,
+  user: initUser,
   token: null,
   error: null,
   isAuthenticated: false,
@@ -16,10 +23,23 @@ const authSlice = createSlice({
       state.loading = true
     },
     setCredentials: (state, action) => {
-      const { data, token } = action.payload
-      state.user = data
-      state.token = token
+      const { data, access_token } = action.payload
+      state.user = data.user
+      state.token = access_token
       state.isAuthenticated = true
+      state.loading = false
+      state.error = null
+    },
+    setToken: (state, action) => {
+      const { data, access_token } = action.payload
+      state.token = access_token
+      state.user.email = data.email
+      state.isAuthenticated = true
+      state.loading = false
+      state.error = null
+    },
+    setInfor: (state, action) => {
+      state.user = action.payload
       state.loading = false
       state.error = null
     },
@@ -28,15 +48,20 @@ const authSlice = createSlice({
       state.error = action.payload
     },
     logOut: (state) => {
-      state.user = null
+      state.user = initUser
       state.token = null
+      state.loading = false
+      state.error = null
     },
     signUpFirstStep: (state, action) => {
-      state.user = action.payload
+      state.user.email = action.payload
+      state.loading = false
+      state.error = null
     }
   },
   extraReducers() {}
 })
-export const { signInRequest, setCredentials, signInFailure, logOut,signUpFirstStep } = authSlice.actions
+export const { signInRequest, setCredentials, signInFailure, logOut, signUpFirstStep, setToken, setInfor } =
+  authSlice.actions
 export default authSlice.reducer
 // export const selectCurrentUser = (state) => state.auth.user

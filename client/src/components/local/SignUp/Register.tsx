@@ -8,11 +8,10 @@ import { Button } from "../../global/atoms/button"
 import { Link } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Checkbox } from "../../global/atoms/checkbox"
-import { RegisterUser } from "@/lib/interface/user.interface"
-import { registerUserSchema } from "@/lib/schema/registerUser"
 import { useDispatch } from "react-redux"
 import { signUpFirstStep } from "@/store/slices/AuthSlice"
 import { firstStepSignUp } from "@/lib/services/AuthServices"
+import { RegisterUserSchema, RegisterUserSchemaType } from "@/lib/schema/RegisterUser"
 
 interface RegisterProps {
   success: () => void
@@ -21,8 +20,8 @@ const Register = ({ success }: RegisterProps) => {
   const dispatch = useDispatch()
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
   const [isShowPasswordConfirm, setIsShowPasswordConfirm] = useState<boolean>(false)
-  const form = useForm<RegisterUser>({
-    resolver: zodResolver(registerUserSchema),
+  const form = useForm<RegisterUserSchemaType>({
+    resolver: zodResolver(RegisterUserSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -31,14 +30,16 @@ const Register = ({ success }: RegisterProps) => {
     }
   })
 
-  const onSubmit = async (data: RegisterUser) => {
+  const onSubmit = async (data: RegisterUserSchemaType) => {
     try {
       console.log(data)
 
       const response = await firstStepSignUp({ data })
       if (response.success) {
-        dispatch(signUpFirstStep(response.data))
+        dispatch(signUpFirstStep(response.data?.email))
         success()
+      } else {
+        console.log(response.message)
       }
     } catch (error) {
       console.log(error)

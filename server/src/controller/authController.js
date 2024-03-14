@@ -14,6 +14,14 @@ class AuthController {
     static async login(req, res) {
         try {
             const { email, password } = req.body;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
             const user = await User.findOne({
                 where: { email: email }
             });

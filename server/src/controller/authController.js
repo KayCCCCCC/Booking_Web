@@ -74,12 +74,18 @@ class AuthController {
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Failed to do somthing exceptional" });
+                .json({ message: "Failed to do something exceptional" });
         }
     }
 
     static async LoginWithGoogle(req, res) {
         const { email, avatar, name } = req.body
+        if (email == null || avatar == null || name == null) {
+            res.status(400).json({
+                success: false,
+                message: "Failed to do something exceptional with google",
+            })
+        }
         const userExist = await User.findOne({
             where: { email: email }
         })
@@ -166,7 +172,7 @@ class AuthController {
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Failed to do somthing exceptional" });
+                .json({ message: "Failed to do something exceptional" });
         }
     }
 
@@ -347,7 +353,7 @@ class AuthController {
                 .status(500)
                 .json({
                     success: false,
-                    message: "Failed to do somthing exceptional."
+                    message: "Failed to do something exceptional."
                 });
         }
     }
@@ -386,12 +392,12 @@ class AuthController {
                 message: "Update info success.",
                 data: {
                     // user: {
-                        name: user.name,
-                        email: user.email,
-                        address: user.address,
-                        country: user.country,
-                        avatar: user.avatar,
-                        phone: user.phone
+                    name: user.name,
+                    email: user.email,
+                    address: user.address,
+                    country: user.country,
+                    avatar: user.avatar,
+                    phone: user.phone
                     // }
                 }
             });

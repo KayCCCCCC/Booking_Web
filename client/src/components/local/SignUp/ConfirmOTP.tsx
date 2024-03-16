@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "../../global/atoms/button"
 import Timer from "../../global/molecules/Timer"
 import { useForm } from "react-hook-form"
-import { OTPConfirmSchema, OTPConfirmSchemaType } from "./../../../lib/schema/OTPConfirm"
+import { OTPConfirmSchema, OTPConfirmSchemaType } from "../../../lib/schema/SignUp/OTPConfirm"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { confirmOtp } from "@/lib/services/AuthServices"
 import { useDispatch, useSelector } from "react-redux"

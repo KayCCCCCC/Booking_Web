@@ -1,8 +1,9 @@
 import { Outlet } from "react-router-dom"
-import ThemeProvider from "../organisms/ThemeProvider"
+import ThemeProvider from "@/components/global/organisms/context/ThemeProvider"
 import Header from "../organisms/Header"
 import Banner from "../organisms/Banner"
-import { Toaster } from "../atoms/toaster"
+import { ToastContainer } from "react-toastify"
+
 const HomeLayout = () => {
   return (
     <ThemeProvider>
@@ -15,7 +16,7 @@ const HomeLayout = () => {
       </div>
       <main className="flex w-full flex-grow justify-center  dark:bg-neutral-950">
         <Outlet />
-        <Toaster />
+        <ToastContainer />
       </main>
     </ThemeProvider>
   )

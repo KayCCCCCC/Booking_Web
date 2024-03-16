@@ -1,5 +1,6 @@
-import ThemeProvider from "@/components/global/organisms/ThemeProvider"
+import ThemeProvider from "@/components/global/organisms/context/ThemeProvider"
 import Header from "../organisms/Header"
+import { ToastContainer } from "react-toastify"
 import { Outlet } from "react-router-dom"
 
 const MainLayout = () => {
@@ -9,6 +10,7 @@ const MainLayout = () => {
       <div>
         <Outlet />
       </div>
+      <ToastContainer />
     </ThemeProvider>
   )
 }

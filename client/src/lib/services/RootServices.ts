@@ -1,3 +1,4 @@
+import { errorNotify } from "@/components/global/atoms/notify"
 import { HOST } from "@/contants/API"
 import axios, { AxiosError, AxiosResponse } from "axios"
 
@@ -7,9 +8,14 @@ const api = axios.create({
     "Content-Type": "application/json"
   }
 })
-
+interface errorDataProps {
+  success: boolean
+  message: string
+}
 const handleApiError = (error: AxiosError) => {
-  console.error("Error: ", error)
+  const { response } = error
+  const dataError = response?.data as errorDataProps
+  errorNotify(dataError.message)
   throw error
 }
 
@@ -28,6 +34,7 @@ export const get = async <T>(url: string): Promise<AxiosResponse<T>> => {
 export const post = async <T>(url: string, data: unknown): Promise<AxiosResponse<T>> => {
   try {
     const response = await api.post<T>(url, data)
+    console.log(response)
     return response
   } catch (error) {
     if (error instanceof AxiosError) {

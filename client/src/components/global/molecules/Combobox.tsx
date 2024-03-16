@@ -1,7 +1,7 @@
 import * as React from "react"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/cn"
 import { Button } from "@/components/global/atoms/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/global/atoms/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/global/atoms/popover"

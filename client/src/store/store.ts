@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
 import { persistReducer, persistStore } from "redux-persist"
-import { composeWithDevTools } from '@redux-devtools/extension';
+import { composeWithDevTools } from "@redux-devtools/extension"
 import storage from "redux-persist/lib/storage"
 import AuthSlice from "./slices/AuthSlice"
 

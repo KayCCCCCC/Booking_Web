@@ -3,6 +3,8 @@ const upload = require('../utils/storageImg')
 const router = require("express").Router();
 router.post("/login", AuthController.login);
 router.post("/login-google", AuthController.LoginWithGoogle);
+router.post("/resend-pass", AuthController.ResetPassWord);
+router.patch("/update-pass", AuthController.UpdatePassword);
 router.post("/logout", AuthController.logout);
 router.post("/first-step-registeration", AuthController.firstStepRegisteration);
 router.post("/submitOTP", AuthController.submitOTP);

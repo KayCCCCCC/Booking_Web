@@ -290,9 +290,123 @@ class AuthController {
     }
 
 
+    static async ResetPassWord(req, res) {
+        try {
+            const { email } = req.body
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
+
+            const user = await User.findOne({ where: { email: email.toLowerCase() } });
+
+            if (user == null) {
+                return res.status(400).json({
+                    success: false,
+                    message: "User not found."
+                });
+            }
+
+            if (user.status == "Active") {
+
+                const now = new Date();
+
+                if (user.createdAt.getTime() < now) {
+                    const OTP = Math.floor(100000 + Math.random() * 900000);
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 2);
+
+                    await User.update({
+                        otpCode: OTP,
+                        createdAt: now
+                    }, { where: { email: email.toLowerCase() } });
+
+                    await sendEmail(email, OTP);
+
+                    const userAfter = await User.findOne({ where: { email: email.toLowerCase() } });
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Success. Check your email to get the OTP code",
+                        data: {
+                            user: {
+                                email: userAfter.email
+                            }
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        message: "OTP code is not expired."
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    message: "Account has not been verified yet"
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to do something exceptional."
+            });
+        }
+    }
+
+    static async UpdatePassword(req, res) {
+        try {
+            const { email, password } = req.body
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
+
+            const user = await User.findOne({ where: { email: email.toLowerCase() } });
+
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                return res.status(400).send({
+                    success: false,
+                    message: "The new password cannot be the same as the old password."
+                });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const newPasswordHash = await bcrypt.hash(password, salt);
+
+            await User.update({ password: newPasswordHash }, { where: { email: email.toLowerCase() } });
+
+            return res.status(200).json({
+                success: true,
+                message: "Password updated successfully."
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to do something exceptional."
+            });
+        }
+    }
+
     static async submitOTP(req, res) {
         try {
             const { email, OTPCode } = req.body;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
 
             const user = await User.findOne({ where: { email: email } });
 
@@ -361,6 +475,15 @@ class AuthController {
     static async setInfo(req, res, next) {
         try {
             const { name, email, country, address, phone } = req.body;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email.toLowerCase())) {
+                return res.status(400).json({
+                    message: `Invalid email format ${email.toLowerCase()}`
+                });
+            }
+
             const user = await User.findOne({ where: { email } });
 
             if (!user) {
@@ -370,13 +493,17 @@ class AuthController {
                 });
             }
 
-            const avatar = req.file ? req.file.path : null;
-            if (avatar) {
-                const result = await cloundinary.uploader.upload(avatar, {
-                    upload_preset: 'vnldjdbe',
-                    public_id: `unique_id_${Date.now()}`
-                });
-                user.avatar = result.secure_url || "";
+            let avatar = "";
+            if (req.file) {
+                try {
+                    const result = await cloundinary.uploader.upload(req.file.path, {
+                        upload_preset: 'vnldjdbe',
+                        public_id: `unique_id_${Date.now()}`
+                    });
+                    avatar = result.secure_url || "";
+                } catch (error) {
+                    console.error("Error uploading avatar:", error);
+                }
             }
 
             user.name = name || user.name;
@@ -384,6 +511,7 @@ class AuthController {
             user.address = address || user.address;
             user.phone = phone || user.phone;
             user.roleId = 2;
+            user.avatar = avatar;
 
             await user.save();
 
@@ -391,24 +519,23 @@ class AuthController {
                 success: true,
                 message: "Update info success.",
                 data: {
-                    // user: {
                     name: user.name,
                     email: user.email,
                     address: user.address,
                     country: user.country,
                     avatar: user.avatar,
                     phone: user.phone
-                    // }
                 }
             });
         } catch (error) {
             console.error(error);
             return res.status(500).json({
                 success: false,
-                message: "Failed to do something exceptional."
+                message: "Failed to update info."
             });
         }
     }
+
 
     static async ReSendOTP(req, res) {
         try {
@@ -458,9 +585,15 @@ class AuthController {
                     });
                 } else {
                     return res.status(400).json({
+                        success: false,
                         message: "OTP code is not expired."
                     });
                 }
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: "Account is active"
+                })
             }
         } catch (error) {
             console.error(error);

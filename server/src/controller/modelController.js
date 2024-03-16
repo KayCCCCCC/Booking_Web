@@ -3,6 +3,7 @@ const { Op, literal, col, fn, gte } = require("sequelize");
 const sequelize = require('../database/connectDbPg')
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
+const provinces = require('../database/dataJson')
 const axios = require('axios')
 
 const Model = db.model
@@ -11,6 +12,7 @@ const ModelImages = db.model_images
 const Hotel = db.hotel
 const Flight = db.flight
 const Car = db.car
+const Destination = db.destination
 
 class ModelController {
     static async AutoCreateModalType(req, res) {
@@ -275,7 +277,64 @@ class ModelController {
         }
     }
 
-    static async AutoCreate(req, res) {
+    static async AutoCreateDestination(req, res) {
+        try {
+            // const response = await axios.get('https://countriesnow.space/api/v0.1/countries/positions');
+            // const listModel = response.data.data;
+
+            const creationPromises = provinces?.provinces?.map(async (model) => {
+                const description = faker.lorem.sentence();
+                const address = faker.location.streetAddress();
+                const name = model.name;
+                const latitude = parseFloat(model.lat);
+                const longitude = parseFloat(model.lon);
+                const iso2 = model.iso2 ? model.iso2 : '';
+
+                const newModel = await Destination.create({
+                    description: description,
+                    address: address,
+                    name: name,
+                    iso2: iso2,
+                    latitude: latitude,
+                    longitude: longitude,
+                    modelTypeId: faker.number.int({ min: 1, max: 3 }),
+                    rate: Math.floor(faker.number.float({ min: 10, max: 50 }) / 10),
+                    numberRate: faker.number.int({ min: 5, max: 10 }),
+                    address_location: { type: 'Point', coordinates: [longitude, latitude] }
+                });
+
+                // const imageUrl = faker.image.url();
+                // const result = await cloundinary.uploader.upload(imageUrl, {
+                //     upload_preset: 'vnldjdbe',
+                //     public_id: `unique_id_${Date.now()}`
+                // });
+
+                // const createdImage = await ModelImages.create({
+                //     url: result.secure_url,
+                //     publicId: result.public_id,
+                //     modelId: newModel.id
+                // });
+
+                return newModel;
+            });
+
+            const createdModels = await Promise.all(creationPromises);
+
+            return res.status(200).json({
+                success: true,
+                message: "Auto create successful",
+                data: createdModels
+            });
+        } catch (error) {
+            console.error("Error AutoCreate:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async AutoCreateModel(req, res) {
         try {
             const response = await axios.get('https://countriesnow.space/api/v0.1/countries/positions');
             const listModel = response.data.data;
@@ -689,21 +748,22 @@ class ModelController {
 
     static async GetNearbyModels(req, res) {
         const { address, distance, rate } = req.body;
-        const modelFind = await Model.findOne({
+        const modelFind = await Destination.findOne({
             where: { address: address },
             attributes: ['latitude', 'longitude'] // Chỉ lấy các thuộc tính latitude và longitude
         });
+
         const { longitude, latitude } = modelFind.dataValues
 
 
         try {
-            const models = await Model.findAll({
+            const models = await Destination.findAll({
                 where: {
                     [Op.and]: [
                         literal(`
                             ST_Distance(
                                 ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                                "model"."address_location"
+                                "destination"."address_location"
                             ) < ${distance}
                         `),
                         {

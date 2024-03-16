@@ -1,7 +1,6 @@
 import Logo from "../molecules/Logo"
 import UserButton from "../molecules/UserButton"
 // import NavBar from "./NavBar";
-import Sidebar from "./Sidebar"
 import { cn } from "@/lib/utils/cn"
 
 interface HeaderProps {

@@ -1,4 +1,3 @@
-import React from "react";
 
 const ContentHome = () => {
   return <div>ContentHome</div>;

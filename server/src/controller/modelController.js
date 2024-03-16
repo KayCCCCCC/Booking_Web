@@ -728,27 +728,67 @@ class ModelController {
     }
 
     static async CalculateDistanceKilometers(req, res) {
-        const { lon1, lat1, lon2, lat2 } = req.body;
-        const earthRadiusKilometers = 6371; // Bán kính trái đất trong kilômét
+        try {
+            const { addressFrom, addressTo } = req.body;
 
-        // Chuyển đổi độ sang radian
-        const degreesToRadians = (degrees) => {
-            return degrees * Math.PI / 180;
-        };
+            // Lấy thông tin về địa chỉ xuất phát
+            const modelFrom = await Model.findOne({
+                where: { address: addressFrom },
+                attributes: ['latitude', 'longitude']
+            });
 
-        const dLat = degreesToRadians(lat2 - lat1);
-        const dLon = degreesToRadians(lon2 - lon1);
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distanceMeters = earthRadiusKilometers * c * 1000; // Chuyển đổi sang mét
-        const distanceKilometers = distanceMeters / 1000; // Chuyển đổi sang kilômét
-        return res.status(200).json({
-            success: true,
-            distance: distanceKilometers + " km"
-        });
+            if (!modelFrom) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Address From Not Found"
+                });
+            }
+
+            const { longitude: lon1, latitude: lat1 } = modelFrom.dataValues;
+
+            // Lấy thông tin về địa chỉ đích
+            const modelTo = await Model.findOne({
+                where: { address: addressTo },
+                attributes: ['latitude', 'longitude']
+            });
+
+            if (!modelTo) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Address To Not Found"
+                });
+            }
+
+            const { longitude: lon2, latitude: lat2 } = modelTo.dataValues;
+
+            const earthRadiusKilometers = 6371; // Bán kính trái đất trong kilômét
+
+            // Chuyển đổi độ từ dạng độ sang radian
+            const degreesToRadians = (degrees) => {
+                return degrees * Math.PI / 180;
+            };
+
+            const dLat = degreesToRadians(lat2 - lat1);
+            const dLon = degreesToRadians(lon2 - lon1);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distanceKilometers = earthRadiusKilometers * c;
+
+            return res.status(200).json({
+                success: true,
+                distance: distanceKilometers.toFixed(2) + " km" // Làm tròn đến 2 chữ số thập phân
+            });
+        } catch (error) {
+            console.error("Error in CalculateDistanceKilometers:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Đã xảy ra lỗi!"
+            });
+        }
     }
+
 
 
 }

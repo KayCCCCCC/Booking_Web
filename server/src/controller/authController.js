@@ -78,6 +78,63 @@ class AuthController {
         }
     }
 
+    static async LoginWithGoogle(req, res) {
+        const { email, avatar, name } = req.body
+        const userExist = await User.findOne({
+            where: { email: email }
+        })
+        if (userExist == null) {
+            const createUser = await User.create({
+                email,
+                name,
+                avatar,
+                roleId: 2,
+                typeRegister: "google",
+                policyAccepted: true
+            });
+            const access_token = await Token.generateAccessToken({ id: createUser.id, role: createUser.roleId });
+            const refresh_token = await Token.generateRefreshToken({ id: createUser.id, role: createUser.roleId });
+            await res.cookie("refreshtoken", refresh_token, {
+                httpOnly: true,
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
+                sameSite: "none",
+                secure: true,
+            });
+            return res.status(200).send({
+                success: true,
+                message: "Login Success",
+                access_token: access_token,
+                data: {
+                    user: {
+                        name: createUser.name,
+                        email: createUser.email,
+                        address: createUser.address,
+                        country: createUser.country,
+                        avatar: createUser.avatar,
+                        phone: createUser.phone
+                    }
+                }
+            });
+        } else {
+            const access_token = await Token.generateAccessToken({ id: userExist.id, role: userExist.roleId });
+            return res.status(200).send({
+                success: true,
+                message: "Login Success",
+                access_token: access_token,
+                data: {
+                    user: {
+                        name: userExist.name,
+                        email: userExist.email,
+                        address: userExist.address,
+                        country: userExist.country,
+                        avatar: userExist.avatar,
+                        phone: userExist.phone
+                    }
+                }
+            });
+        }
+    }
+
     static async refresh_token(req, res, next) {
         try {
             const rf_token = req.cookies.refreshtoken;

@@ -1,7 +1,15 @@
+"use client"
 import React, { useEffect, useRef, useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../global/atoms/card"
 import { Button } from "../../global/atoms/button"
 import Timer from "../../global/molecules/Timer"
+import { useForm } from "react-hook-form"
+import { OTPConfirmSchema, OTPConfirmSchemaType } from "./../../../lib/schema/OTPConfirm"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { confirmOtp } from "@/lib/services/AuthServices"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/store/store"
+import { setToken } from "@/store/slices/AuthSlice"
 
 interface ConfirmOTPProps {
   success: () => void
@@ -9,11 +17,19 @@ interface ConfirmOTPProps {
 }
 let currentOTPIndex: number = 0
 const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
-  const [OTP, setOTP] = useState<string[]>(new Array(4).fill(""))
+  const [OTP, setOTP] = useState<string[]>(new Array(6).fill(""))
   const [activeOTPIndex, setActiveOTPIndex] = useState<number>(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isResend, setIsResend] = useState<boolean>(false)
-  // const [minuteNumber, setMinuteNumber] = useState<number>(minuteLimit);
+  const { user } = useSelector((state: RootState) => state?.auth)
+  const form = useForm<OTPConfirmSchemaType>({
+    resolver: zodResolver(OTPConfirmSchema),
+    values: {
+      OTPCode: OTP.toString().replaceAll(",", ""),
+      email: user.email
+    }
+  })
+  const dispatch = useDispatch()
   const handleOnChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
     const { value } = target
     const newOTP: string[] = [...OTP]
@@ -27,17 +43,29 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
   }
   const handleResendOTP = () => {
     setIsResend(true)
-    console.log(isResend)
   }
-  const handleSubmitOTP = () => {}
+  const onSubmit = async (data: OTPConfirmSchemaType) => {
+    try {
+      const response = await confirmOtp({ data })
+      if (response.success) {
+        dispatch(setToken(response))
+        success()
+      } else {
+        console.log(response.message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [activeOTPIndex])
+  console.log(form.formState)
 
   return (
-    <Card className="bg-white ">
-      <CardHeader>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Card className="bg-white ">
         <CardHeader className="flex flex-col items-center justify-center">
           <CardTitle className="text-center text-2xl font-bold">Verify your account</CardTitle>
           <CardDescription>Please enter 4 digits code sent to the registered email.</CardDescription>
@@ -50,8 +78,8 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
                   ref={index === activeOTPIndex ? inputRef : null}
                   type="number"
                   className="spin-button-none h-12 w-16 rounded border-[1px] border-main bg-transparent
-                  text-center text-xl font-semibold text-main outline-none transition 
-                  focus:border-gray-700 focus:text-main "
+                        text-center text-xl font-semibold text-main outline-none transition 
+                        focus:border-gray-700 focus:text-main "
                   onChange={handleOnChange}
                   onKeyDown={(e) => handleOnKeyDown(e, index)}
                   value={OTP[index]}
@@ -60,6 +88,7 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
               </React.Fragment>
             ))}
           </div>
+
           <div className="ml-auto flex gap-x-2 pr-4 pt-2 text-sm">
             <div className="cursor-pointer text-sm text-purple-800" onClick={handleResendOTP}>
               Resend OTP again?
@@ -68,12 +97,12 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-center">
-          <Button onClick={handleSubmitOTP} className="w-2/3 rounded text-white">
+          <Button type="submit" className="w-2/3 rounded text-white" disabled={form.formState.isSubmitting}>
             Verify
           </Button>
         </CardFooter>
-      </CardHeader>
-    </Card>
+      </Card>
+    </form>
   )
 }
 

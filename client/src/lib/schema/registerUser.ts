@@ -1,34 +1,33 @@
 import { z } from "zod"
 
-export const registerUserSchema = z
+export const RegisterUserSchema = z
   .object({
     email: z
       .string({
         required_error: "Email is required"
       })
       .email({
-        message: "Must be a valid email with ...@gmail.com"
+        message: "Must be a valid email with @gmail.com or @..."
       }),
     password: z
       .string({
         required_error: "Password is required"
       })
-      .min(8, {
-        message: "Password must be at least 8 degits"
+      .min(4, {
+        message: "Password must be at least 4 degits"
       }),
     confirmPassword: z
       .string({
         required_error: "Confirm password is required"
       })
-      .min(8, {
-        message: "Password must be at least 8 degits"
+      .min(4, {
+        message: "Password must be at least 4 degits"
       }),
-    policyAccepted: z.boolean({
-      required_error: "Please accept our policy to register an account"
-    })
+    policyAccepted: z.boolean()
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Confirm password must be matched with password"
-  })
+  // .refine((data) => data.password === data.confirmPassword, {
+  //   message: "Confirm password must be matched with password",
+  //   path: ["confirmPassword"]
+  // })
 
-// export type registerUserSchemaType = z.infer<typeof registerUserSchema>
+export type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>

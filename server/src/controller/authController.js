@@ -269,9 +269,9 @@ class AuthController {
                 success: true,
                 message: "Success. Check your email to get the OTP code",
                 data: {
-                    user: {
-                        email: userAfter.email
-                    }
+                    // user: {
+                    email: userAfter.email
+                    // }
                 }
             });
         } catch (error) {
@@ -335,7 +335,12 @@ class AuthController {
             return res.status(200).send({
                 success: true,
                 message: "Register successfully.",
-                access_token: access_token
+                access_token: access_token,
+                data: {
+                    // user: {
+                        email
+                    // }
+                }
             });
         } catch (error) {
             return res
@@ -380,14 +385,14 @@ class AuthController {
                 success: true,
                 message: "Update info success.",
                 data: {
-                    user: {
+                    // user: {
                         name: user.name,
                         email: user.email,
                         address: user.address,
                         country: user.country,
                         avatar: user.avatar,
                         phone: user.phone
-                    }
+                    // }
                 }
             });
         } catch (error) {

@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser');
 const cloundinary = require('./src/utils/cloudinary')
+require('./firebaseConfig.js')
 
 const webRoutes = require('./src/routes/index');
 const sequelize = require("./src/database/connectDbPg");

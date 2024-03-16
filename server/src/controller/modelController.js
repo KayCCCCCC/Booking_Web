@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker');
-const { Op, literal, col, fn } = require("sequelize");
+const { Op, literal, col, fn, gte } = require("sequelize");
 const sequelize = require('../database/connectDbPg')
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
@@ -278,12 +278,9 @@ class ModelController {
     static async AutoCreate(req, res) {
         try {
             const response = await axios.get('https://countriesnow.space/api/v0.1/countries/positions');
-            const listModel = response.data.data
-            // console.log(listModel)
+            const listModel = response.data.data;
 
-            const createdModels = [];
-            for (const model of listModel) {
-
+            const creationPromises = listModel.map(async (model) => {
                 const description = faker.lorem.sentence();
                 const address = faker.location.streetAddress();
                 const name = model.name;
@@ -291,7 +288,6 @@ class ModelController {
                 const longitude = parseFloat(model.long);
                 const iso2 = model.iso2;
 
-                // Create the model
                 const newModel = await Model.create({
                     description: description,
                     address: address,
@@ -305,30 +301,23 @@ class ModelController {
                     address_location: { type: 'Point', coordinates: [longitude, latitude] }
                 });
 
-                createdModels.push(newModel);
-                // Generate random images for the model
+                const imageUrl = faker.image.url();
+                const result = await cloundinary.uploader.upload(imageUrl, {
+                    upload_preset: 'vnldjdbe',
+                    public_id: `unique_id_${Date.now()}`
+                });
 
-                // const images = [];
-                // for (let j = 0; j < 3; j++) {
+                const createdImage = await ModelImages.create({
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    modelId: newModel.id
+                });
 
-                //     const imageUrl = faker.image.url();
+                return newModel;
+            });
 
-                //     const result = await cloundinary.uploader.upload(imageUrl, {
-                //         upload_preset: 'vnldjdbe',
-                //         public_id: `unique_id_${Date.now()}`
-                //     });
+            const createdModels = await Promise.all(creationPromises);
 
-                //     const createdImage = await ModelImages.create({
-                //         url: result.secure_url,
-                //         publicId: result.public_id,
-                //         modelId: newModel.id
-                //     });
-
-                //     images.push(createdImage);
-                // }
-            }
-
-            // Return success response with the created models
             return res.status(200).json({
                 success: true,
                 message: "Auto create successful",
@@ -342,6 +331,7 @@ class ModelController {
             });
         }
     }
+
 
     static async AutoCreateFlights(req, res) {
         try {
@@ -698,7 +688,14 @@ class ModelController {
     }
 
     static async GetNearbyModels(req, res) {
-        const { latitude, longitude, distance, rate } = req.body;
+        const { address, distance, rate } = req.body;
+        const modelFind = await Model.findOne({
+            where: { address: address },
+            attributes: ['latitude', 'longitude'] // Chỉ lấy các thuộc tính latitude và longitude
+        });
+        const { longitude, latitude } = modelFind.dataValues
+
+
         try {
             const models = await Model.findAll({
                 where: {

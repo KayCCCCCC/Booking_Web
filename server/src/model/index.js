@@ -50,21 +50,6 @@ db.model.belongsTo(db.modelType, {
     foreignKey: "modelTypeId",
 });
 
-// db.model.hasOne(db.hotel)
-// db.hotel.belongsTo(db.model, {
-//     foreignKey: "modelId",
-// });
-
-// db.model.hasOne(db.flight)
-// db.flight.belongsTo(db.model, {
-//     foreignKey: "modelId",
-// });
-
-// db.model.hasOne(db.car)
-// db.car.belongsTo(db.model, {
-//     foreignKey: "modelId",
-// });
-
 db.model.hasOne(db.hotel)
 db.hotel.belongsTo(db.model);
 

@@ -6,7 +6,19 @@ enum RouterEndPoint {
 
   // AUTH
   SignIn = "/sign-in",
-  SignUp = "/sign-up"
+  SignUp = "/sign-up",
+
+  //DESTINATION
+  Destinations = "/destinations",
+
+  // STAYS
+  Stays = "/stays",
+
+  // TRANSPORTS
+  Transports = "/transports",
+
+  // COUPONS
+  Coupons = "/coupons",
 }
 
 export default RouterEndPoint

@@ -1,16 +1,20 @@
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../global/atoms/form"
-import { FaFacebook, FaGoogle, FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import { Input } from "../../global/atoms/input"
 import { Button } from "../../global/atoms/button"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { LoginUserSchemaType } from "@/lib/schema/LoginUser"
+import { LoginUserSchemaType } from "@/lib/schema/SignIn/LoginUser"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LoginUserSchema } from "./../../../lib/schema/LoginUser"
-import { login } from "@/lib/services/AuthServices"
+import { LoginUserSchema } from "../../../lib/schema/SignIn/LoginUser"
+import { login, loginWithGG } from "@/lib/services/AuthServices"
 import { useDispatch } from "react-redux"
 import { setCredentials } from "@/store/slices/AuthSlice"
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth"
+import { GGAccountType } from "@/lib/schema/SignUp/GGAcount"
+import { toast } from "sonner"
+import { Eye, EyeOff } from "lucide-react"
+
 const Login = () => {
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
   const navigate = useNavigate()
@@ -25,7 +29,27 @@ const Login = () => {
   const onSubmit = async (data: LoginUserSchemaType) => {
     try {
       const response = await login({ data })
-      console.log(response)
+      if (response.success) {
+        dispatch(setCredentials(response))
+        navigate("/home")
+      } else {
+        toast(response.message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const auth = getAuth()
+  const handleLoginWithGG = async () => {
+    const provider = new GoogleAuthProvider()
+    const { user } = await signInWithPopup(auth, provider)
+    const data: GGAccountType = {
+      email: user.email,
+      name: user.displayName,
+      avatar: user.photoURL
+    }
+    try {
+      const response = await loginWithGG({ data })
 
       if (response.success) {
         dispatch(setCredentials(response))
@@ -81,7 +105,7 @@ const Login = () => {
                         onClick={() => setIsShowPassword((pre) => !pre)}
                         className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
                       >
-                        {!isShowPassword ? <FaRegEye size={20} /> : <FaRegEyeSlash size={20} />}
+                        {!isShowPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                       </FormControl>
                     </div>
                     <FormMessage />
@@ -112,12 +136,15 @@ const Login = () => {
         </Link>
       </div>
       <div className="font-semibold text-main">OR</div>
-      <div className="flex gap-x-2 py-2 text-main ">
-        <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded  bg-secondary hover:opacity-85">
-          <FaFacebook size={25} />
+      <div className="flex gap-x-4 py-2 text-main ">
+        <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded  bg-secondary hover:opacity-85">
+        <img src="/assets/facebook.webp" className="h-10 w-10"/>
         </div>
-        <div className="flex h-10 w-10 cursor-pointer items-center  justify-center rounded  bg-secondary hover:opacity-85">
-          <FaGoogle size={25} />
+        <div
+          className="flex h-12 w-12 cursor-pointer items-center  justify-center rounded  bg-secondary hover:opacity-85"
+          onClick={handleLoginWithGG}
+        >
+          <img src="/assets/google.png" className="h-10 w-10"/>
         </div>
       </div>
     </div>

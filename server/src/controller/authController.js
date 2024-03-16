@@ -457,9 +457,9 @@ class AuthController {
                 message: "Register successfully.",
                 access_token: access_token,
                 data: {
-                    // user: {
-                    email
-                    // }
+                    user: {
+                        email
+                    }
                 }
             });
         } catch (error) {

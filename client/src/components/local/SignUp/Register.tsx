@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../global/atoms/form"
 import { Input } from "../../global/atoms/input"
 import { useState } from "react"
-import { FaFacebook, FaGoogle, FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import { Button } from "../../global/atoms/button"
 import { Link } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,7 +10,8 @@ import { Checkbox } from "../../global/atoms/checkbox"
 import { useDispatch } from "react-redux"
 import { signUpFirstStep } from "@/store/slices/AuthSlice"
 import { firstStepSignUp } from "@/lib/services/AuthServices"
-import { RegisterUserSchema, RegisterUserSchemaType } from "../../../lib/schema/registerUser"
+import { RegisterUserSchema, RegisterUserSchemaType } from "../../../lib/schema/SignUp/RegisterUser"
+import { Eye, EyeOff } from "lucide-react"
 
 interface RegisterProps {
   success: () => void
@@ -32,17 +32,13 @@ const Register = ({ success }: RegisterProps) => {
 
   const onSubmit = async (data: RegisterUserSchemaType) => {
     try {
-      console.log(data)
-
       const response = await firstStepSignUp({ data })
       if (response.success) {
         dispatch(signUpFirstStep(response.data?.email))
         success()
-      } else {
-        console.log(response.message)
       }
     } catch (error) {
-      console.log(error)
+      throw error
     }
   }
   return (
@@ -64,7 +60,7 @@ const Register = ({ success }: RegisterProps) => {
                     <FormControl>
                       <Input placeholder="Email" type="email" {...field} className="rounded" autoComplete="email" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -89,10 +85,10 @@ const Register = ({ success }: RegisterProps) => {
                         onClick={() => setIsShowPassword((prev) => !prev)}
                         className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
                       >
-                        {!isShowPassword ? <FaRegEye size={20} /> : <FaRegEyeSlash size={20} />}
+                        {!isShowPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                       </div>
                     </div>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -118,13 +114,13 @@ const Register = ({ success }: RegisterProps) => {
                         className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
                       >
                         {!isShowPasswordConfirm ? (
-                          <FaRegEye size={20} onClick={() => setIsShowPasswordConfirm(true)} />
+                          <Eye size={20} onClick={() => setIsShowPasswordConfirm(true)} />
                         ) : (
-                          <FaRegEyeSlash size={20} onClick={() => setIsShowPasswordConfirm(false)} />
+                          <EyeOff size={20} onClick={() => setIsShowPasswordConfirm(false)} />
                         )}
                       </div>
                     </div>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -149,10 +145,11 @@ const Register = ({ success }: RegisterProps) => {
                         </Link>
                       </div>
                     </FormLabel>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full rounded text-white" disabled={form.formState.isSubmitting}>
+              <Button type="submit" className="w-full rounded text-white" disabled={form.formState.isLoading}>
                 Create account
               </Button>
             </div>
@@ -165,15 +162,6 @@ const Register = ({ success }: RegisterProps) => {
           <Link to={"/sign-in"} className="font-bold text-purple-900">
             Sign in
           </Link>
-        </div>
-        <div className="font-semibold text-main">OR</div>
-        <div className="flex gap-x-2 py-2 text-main ">
-          <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded  bg-secondary hover:opacity-85">
-            <FaFacebook size={25} />
-          </div>
-          <div className="flex h-10 w-10 cursor-pointer items-center  justify-center rounded  bg-secondary hover:opacity-85">
-            <FaGoogle size={25} />
-          </div>
         </div>
       </CardFooter>
     </Card>

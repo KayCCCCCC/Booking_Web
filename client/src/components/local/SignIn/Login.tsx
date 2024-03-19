@@ -123,7 +123,7 @@ const Login = () => {
                 )}
               /> */}
             </div>
-            <Button type="submit" className="rounded text-white" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="rounded text-white bg-main" disabled={form.formState.isSubmitting}>
               Submit
             </Button>
           </div>

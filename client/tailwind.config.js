@@ -21,13 +21,17 @@ module.exports = {
       colors: {
         main: "#2d3748",
         primary: "#111c43",
-        secondary: "#f3f6f8"
+        secondary: "#f3f6f8",
+        mainLight: "#D6A266",
+        mainDark: "#1B3232",
+        bgLight: "#FDE8D0"
+
 
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "1rem",
+        md: "0.5rem",
+        sm: "0.25rem",
       },
       keyframes: {
         "accordion-down": {

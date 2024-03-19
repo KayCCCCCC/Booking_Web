@@ -17,6 +17,7 @@ const upload = require('../utils/storageImg')
 // const parser = multer({ storage: storage });
 
 router.post("/auto-create-model-type", ModelController.AutoCreateModalType)
+router.post("/auto-create-destination-type", ModelController.AutoCreateDestinationType)
 router.post("/create", upload.array('images', 10), ModelController.CreateModel)
 router.get("/getBy/:id", ModelController.GetModelById)
 router.patch("/update/:id", upload.array('images', 10), ModelController.UpdateModel)
@@ -31,6 +32,8 @@ router.get("/filter-hotel", ModelController.FilterHotel)
 router.get("/filter-flight", ModelController.FilterFlight)
 router.get("/filter-car", ModelController.FilterCar)
 router.get("/getNearbyModels", ModelController.GetNearbyModels)
+router.get("/getNearbyDestinations", ModelController.GetNearbyDestination)
 router.get("/distance", ModelController.CalculateDistanceKilometers)
+router.get("/distance_destination", ModelController.CalculateDistanceDesKilometers)
 
 module.exports = router;

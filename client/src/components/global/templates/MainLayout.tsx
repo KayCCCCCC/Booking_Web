@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom"
 const MainLayout = () => {
   return (
     <ThemeProvider>
-      <Header />
+      <div className="bg-bgLight"><Header /></div>
       <div>
         <Outlet />
       </div>

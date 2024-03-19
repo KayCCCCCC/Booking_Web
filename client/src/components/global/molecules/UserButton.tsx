@@ -1,12 +1,12 @@
 import { Avatar, AvatarImage } from "../atoms/avatar"
 import {
   DropdownMenu,
-  // DropdownMenuContent,
-  // DropdownMenuGroup,
-  // DropdownMenuItem,
-  // DropdownMenuLabel,
-  // DropdownMenuSeparator,
-  // DropdownMenuShortcut,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger
 } from "../atoms/dropdown-menu"
 
@@ -18,7 +18,7 @@ const UserButton: React.FC = () => {
           <AvatarImage src="/defaultavatar.png" alt="@defaultAvatar" className="h-[33px] w-[33px] object-contain " />
         </Avatar>
       </DropdownMenuTrigger>
-      {/* <DropdownMenuContent>
+      <DropdownMenuContent className="bg-mainLight">
         <DropdownMenuLabel>My account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -35,7 +35,7 @@ const UserButton: React.FC = () => {
             <DropdownMenuShortcut></DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-      </DropdownMenuContent> */}
+      </DropdownMenuContent>
     </DropdownMenu>
   )
 }

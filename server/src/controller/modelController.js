@@ -293,10 +293,30 @@ class ModelController {
                 }
             });
 
+            const groupedModels = models.reduce((acc, curr) => {
+                const modelId = curr.modelId;
+                if (!acc[modelId]) {
+                    acc[modelId] = {
+                        modelId: modelId,
+                        description: curr.model.description,
+                        address: curr.model.address,
+                        name: curr.model.name,
+                        rate: curr.model.rate,
+                        numberRate: curr.model.numberRate,
+                        urls: [curr.url]
+                    };
+                } else {
+                    acc[modelId].urls.push(curr.url);
+                }
+                return acc;
+            }, {});
+
+            const result = Object.values(groupedModels);
+
             return res.status(200).json({
                 success: true,
                 message: "Models retrieved successfully",
-                data: models
+                data: result
             });
         } catch (error) {
             console.error("Error in GetAllModels:", error);
@@ -310,7 +330,6 @@ class ModelController {
 
     static async GetAllDestination(req, res) {
         try {
-
             const destinations = await DestinationImages.findAll({
                 attributes: ["url", "destinationId"],
                 include: {
@@ -319,19 +338,40 @@ class ModelController {
                 }
             });
 
+            const groupedDestinations = destinations.reduce((acc, curr) => {
+                const destinationId = curr.destinationId;
+                if (!acc[destinationId]) {
+                    acc[destinationId] = {
+                        destinationId: destinationId,
+                        description: curr.destination.description,
+                        address: curr.destination.address,
+                        name: curr.destination.name,
+                        rate: curr.destination.rate,
+                        numberRate: curr.destination.numberRate,
+                        urls: [curr.url]
+                    };
+                } else {
+                    acc[destinationId].urls.push(curr.url);
+                }
+                return acc;
+            }, {});
+
+            const result = Object.values(groupedDestinations);
+
             return res.status(200).json({
                 success: true,
-                message: "Destination retrieved successfully",
-                data: destinations
+                message: "Destinations retrieved successfully",
+                data: result
             });
         } catch (error) {
-            console.error("Error GetAllDestination:", error);
+            console.error("Error in GetAllDestination:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"
             });
         }
     }
+
 
     static async AutoCreateDestination(req, res) {
         try {

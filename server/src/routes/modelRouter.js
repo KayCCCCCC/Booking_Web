@@ -35,5 +35,6 @@ router.get("/getNearbyModels", ModelController.GetNearbyModels)
 router.get("/getNearbyDestinations", ModelController.GetNearbyDestination)
 router.get("/distance", ModelController.CalculateDistanceKilometers)
 router.get("/distance_destination", ModelController.CalculateDistanceDesKilometers)
+router.get("/list-type-destination", ModelController.getListTypeDestination)
 
 module.exports = router;

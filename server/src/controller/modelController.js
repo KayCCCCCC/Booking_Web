@@ -976,6 +976,31 @@ class ModelController {
         }
     }
 
+    static async getListTypeDestination(req, res) {
+        try {
+            const listType = desType.Type
+            if (listType) {
+                res.status(200).json({
+                    success: true,
+                    data: listType,
+                    message: "List type of destination"
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    data: listType,
+                    message: "List type of destination not found"
+                })
+            }
+        } catch (error) {
+            console.error("Error in getListTypeDestination:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
 
 
 }

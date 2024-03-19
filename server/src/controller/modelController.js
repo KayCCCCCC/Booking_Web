@@ -771,16 +771,142 @@ class ModelController {
     }
 
     static async GetNearbyModels(req, res) {
-        const { address, distance, rate } = req.body;
-        const modelFind = await Model.findOne({
-            where: { address: address },
-            attributes: ['latitude', 'longitude'] // Chỉ lấy các thuộc tính latitude và longitude
-        });
-
-        const { longitude, latitude } = modelFind.dataValues
-
-
         try {
+            const { address, distance, rate } = req.body;
+
+            const modelFind = await Model.findOne({
+                where: { address: address },
+                attributes: ['latitude', 'longitude']
+            });
+
+            if (!modelFind) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Model not found with the provided address."
+                });
+            }
+
+            const { longitude, latitude } = modelFind.dataValues;
+
+            // Check if longitude and latitude are available
+            if (longitude && latitude) {
+                // Find models within the specified distance and with a rate greater than or equal to the provided rate
+                const models = await Model.findAll({
+                    where: {
+                        [Op.and]: [
+                            literal(`
+                                ST_Distance(
+                                    ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
+                                    "model"."address_location"
+                                ) < ${distance}
+                            `),
+                            {
+                                rate: {
+                                    [Op.gte]: rate ? rate : 3
+                                }
+                            }
+                        ]
+                    },
+                });
+
+                return res.status(200).json({
+                    success: true,
+                    data: models
+                });
+            } else {
+                return res.status(404).json({
+                    success: false,
+                    message: "Latitude or longitude not found for the provided address."
+                });
+            }
+        } catch (error) {
+            console.error("Error in GetNearbyModels:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async GetNearbyDestination(req, res) {
+        try {
+            const { address, distance, rate } = req.body;
+
+            const destinationFind = await Destination.findOne({
+                where: { address: address },
+                attributes: ['latitude', 'longitude']
+            });
+
+            if (!destinationFind) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Destination not found with the provided address."
+                });
+            }
+
+            const { longitude, latitude } = destinationFind.dataValues;
+
+            // Check if longitude and latitude are available
+            if (longitude && latitude) {
+                // Find destinations within the specified distance and with a rate greater than or equal to the provided rate
+                const destinations = await Destination.findAll({
+                    where: {
+                        [Op.and]: [
+                            literal(`
+                                ST_Distance(
+                                    ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
+                                    "destination"."address_location"
+                                ) < ${distance}
+                            `),
+                            {
+                                rate: {
+                                    [Op.gte]: rate ? rate : 3
+                                }
+                            }
+                        ]
+                    },
+                });
+
+                return res.status(200).json({
+                    success: true,
+                    data: destinations
+                });
+            } else {
+                return res.status(404).json({
+                    success: false,
+                    message: "Latitude or longitude not found for the provided destination."
+                });
+            }
+        } catch (error) {
+            console.error("Error in GetNearbyDestination:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async GetModelsNearByDestination(req, res) {
+        try {
+            const { address, distance, rate } = req.body;
+
+            // Find the destination with the provided address to get its latitude and longitude
+            const destinationFind = await Destination.findOne({
+                where: { address: address },
+                attributes: ['latitude', 'longitude']
+            });
+
+            // Check if the destination with the provided address exists
+            if (!destinationFind) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Destination not found with the provided address."
+                });
+            }
+
+            const { longitude, latitude } = destinationFind.dataValues;
+
+            // Find models near the destination based on the provided distance and rate
             const models = await Model.findAll({
                 where: {
                     [Op.and]: [
@@ -792,59 +918,20 @@ class ModelController {
                         `),
                         {
                             rate: {
-                                [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
+                                [Op.gte]: rate ? rate : 3
                             }
                         }
                     ]
                 },
             });
+
             return res.status(200).json({
                 success: true,
                 data: models
             });
+
         } catch (error) {
-            console.error("Error in GetNearbyModels:", error);
-            return res.status(500).json({
-                success: false,
-                message: "Something went wrong!"
-            });
-        }
-    }
-
-    static async GetNearbyDestination(req, res) {
-        const { address, distance, rate } = req.body;
-        const modelFind = await Destination.findOne({
-            where: { address: address },
-            attributes: ['latitude', 'longitude'] // Chỉ lấy các thuộc tính latitude và longitude
-        });
-
-        const { longitude, latitude } = modelFind.dataValues
-
-
-        try {
-            const models = await Destination.findAll({
-                where: {
-                    [Op.and]: [
-                        literal(`
-                            ST_Distance(
-                                ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                                "destination"."address_location"
-                            ) < ${distance}
-                        `),
-                        {
-                            rate: {
-                                [Op.gte]: rate ? rate : 3 // Chỉ lấy các model có rate lớn hơn hoặc bằng giá trị rate được cung cấp
-                            }
-                        }
-                    ]
-                },
-            });
-            return res.status(200).json({
-                success: true,
-                data: models
-            });
-        } catch (error) {
-            console.error("Error in GetNearbyDestination:", error);
+            console.error("Error in GetModelsNearByDestination:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"

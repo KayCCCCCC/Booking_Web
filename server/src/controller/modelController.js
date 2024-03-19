@@ -285,8 +285,13 @@ class ModelController {
 
     static async GetAllModels(req, res) {
         try {
-
-            const models = await Model.findAll();
+            const models = await ModelImages.findAll({
+                attributes: ["url", "modelId"],
+                include: {
+                    model: Model,
+                    attributes: ["description", "address", "name", "rate", "numberRate", "id"],
+                }
+            });
 
             return res.status(200).json({
                 success: true,
@@ -294,7 +299,7 @@ class ModelController {
                 data: models
             });
         } catch (error) {
-            console.error("Error GetAllModels:", error);
+            console.error("Error in GetAllModels:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"
@@ -302,15 +307,22 @@ class ModelController {
         }
     }
 
+
     static async GetAllDestination(req, res) {
         try {
 
-            const models = await Destination.findAll();
+            const destinations = await DestinationImages.findAll({
+                attributes: ["url", "destinationId"],
+                include: {
+                    model: Destination,
+                    attributes: ["description", "address", "name", "rate", "numberRate", "id"],
+                }
+            });
 
             return res.status(200).json({
                 success: true,
                 message: "Destination retrieved successfully",
-                data: models
+                data: destinations
             });
         } catch (error) {
             console.error("Error GetAllDestination:", error);

@@ -302,6 +302,25 @@ class ModelController {
         }
     }
 
+    static async GetAllDestination(req, res) {
+        try {
+
+            const models = await Destination.findAll();
+
+            return res.status(200).json({
+                success: true,
+                message: "Destination retrieved successfully",
+                data: models
+            });
+        } catch (error) {
+            console.error("Error GetAllDestination:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
     static async AutoCreateDestination(req, res) {
         try {
             const creationPromises = provinces?.provinces?.map(async (model) => {

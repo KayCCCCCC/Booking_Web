@@ -285,15 +285,23 @@ class ModelController {
 
     static async GetAllModels(req, res) {
         try {
-            const models = await ModelImages.findAll({
+            const page = parseInt(req.query.page) || 1;
+            const limit = 12;
+            const offset = (page - 1) * limit;
+            const models = await ModelImages.findAndCountAll({
                 attributes: ["url", "modelId"],
                 include: {
                     model: Model,
                     attributes: ["description", "address", "name", "rate", "numberRate", "id"],
-                }
+                },
+                limit: limit,
+                offset: offset
             });
 
-            const groupedModels = models.reduce((acc, curr) => {
+            const totalCount = models.count;
+            const totalPages = Math.ceil(totalCount / limit);
+
+            const groupedModels = models.rows.reduce((acc, curr) => {
                 const modelId = curr.modelId;
                 if (!acc[modelId]) {
                     acc[modelId] = {
@@ -316,7 +324,9 @@ class ModelController {
             return res.status(200).json({
                 success: true,
                 message: "Models retrieved successfully",
-                data: result
+                data: result,
+                totalCount: totalCount,
+                totalPages: totalPages
             });
         } catch (error) {
             console.error("Error in GetAllModels:", error);
@@ -328,17 +338,26 @@ class ModelController {
     }
 
 
+
     static async GetAllDestination(req, res) {
         try {
-            const destinations = await DestinationImages.findAll({
+            const page = parseInt(req.query.page) || 1;
+            const limit = 12;
+            const offset = (page - 1) * limit;
+            const destinations = await DestinationImages.findAndCountAll({
                 attributes: ["url", "destinationId"],
                 include: {
                     model: Destination,
                     attributes: ["description", "address", "name", "rate", "numberRate", "id"],
-                }
+                },
+                limit: limit,
+                offset: offset
             });
 
-            const groupedDestinations = destinations.reduce((acc, curr) => {
+            const totalCount = destinations.count;
+            const totalPages = Math.ceil(totalCount / limit);
+
+            const groupedDestinations = destinations.rows.reduce((acc, curr) => {
                 const destinationId = curr.destinationId;
                 if (!acc[destinationId]) {
                     acc[destinationId] = {
@@ -361,7 +380,9 @@ class ModelController {
             return res.status(200).json({
                 success: true,
                 message: "Destinations retrieved successfully",
-                data: result
+                data: result,
+                totalCount: totalCount,
+                totalPages: totalPages
             });
         } catch (error) {
             console.error("Error in GetAllDestination:", error);
@@ -1136,7 +1157,7 @@ class ModelController {
 
     static async getListTypeDestination(req, res) {
         try {
-            const listType = desType.Type
+            const listType = await DestinationType.findAll()
             if (listType) {
                 res.status(200).json({
                     success: true,

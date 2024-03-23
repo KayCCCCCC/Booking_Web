@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: true,
         },
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: "Active",
+            allowNull: true,
+        },
         rate: {
             type: DataTypes.FLOAT,
             allowNull: true,
@@ -33,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         address_location: {
-            type: DataTypes.GEOMETRY('POINT'),
+            type: DataTypes.STRING,
             allowNull: true,
             defaultValue: null,
         },

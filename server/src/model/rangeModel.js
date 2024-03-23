@@ -2,19 +2,24 @@ module.exports = (sequelize, DataTypes) => {
     const Range = sequelize.define("range", {
         description: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         addressCity: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         addressCountry: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         phoneSupport: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'Active'
         },
     });
 

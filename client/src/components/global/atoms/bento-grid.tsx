@@ -19,7 +19,7 @@ export const GridItem = ({
     <div
       className={cn(
         className,
-        "group shadow-input flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
+        "shadow-input group flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
       )}
     >
       <img src={data.urls[0]} alt="img" className={cn("w-full object-cover", classUrl)} />

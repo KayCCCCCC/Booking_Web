@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         address_location: {
-            type: DataTypes.GEOMETRY('POINT'),
+            type: DataTypes.STRING,
             allowNull: true,
             defaultValue: null,
         },

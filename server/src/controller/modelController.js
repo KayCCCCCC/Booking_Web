@@ -1,10 +1,12 @@
-const { faker } = require('@faker-js/faker');
+const { faker, fa } = require('@faker-js/faker');
 const { Op, literal, col, fn, gte } = require("sequelize");
 const sequelize = require('../database/connectDbPg')
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
 const provinces = require('../database/dataProvincesJson')
 const desType = require("../database/dataDesTypeJson")
+const geolib = require('geolib');
+const turf = require('@turf/turf');
 const axios = require('axios')
 
 const Model = db.model
@@ -414,7 +416,7 @@ class ModelController {
                     destinationTypeId: faker.number.int({ min: 1, max: 15 }),
                     rate: Math.floor(faker.number.float({ min: 10, max: 50 }) / 10),
                     numberRate: faker.number.int({ min: 5, max: 10 }),
-                    address_location: { type: 'Point', coordinates: [longitude, latitude] }
+                    address_location: `${longitude},${latitude}`
                 });
 
                 const imageUrl = faker.image.url();
@@ -472,7 +474,7 @@ class ModelController {
                     modelTypeId: faker.number.int({ min: 1, max: 3 }),
                     rate: Math.floor(faker.number.float({ min: 10, max: 50 }) / 10),
                     numberRate: faker.number.int({ min: 5, max: 10 }),
-                    address_location: { type: 'Point', coordinates: [longitude, latitude] }
+                    address_location: `${longitude},${latitude}`
                 });
 
                 const responses = await axios.get('https://picsum.photos/400/500/?random');
@@ -880,37 +882,24 @@ class ModelController {
 
             const { longitude, latitude } = modelFind.dataValues;
 
-            // Check if longitude and latitude are available
-            if (longitude && latitude) {
-                // Find models within the specified distance and with a rate greater than or equal to the provided rate
-                const models = await Model.findAll({
-                    where: {
-                        [Op.and]: [
-                            literal(`
-                                ST_Distance(
-                                    ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                                    "model"."address_location"
-                                ) < ${distance}
-                            `),
-                            {
-                                rate: {
-                                    [Op.gte]: rate ? rate : 3
-                                }
-                            }
-                        ]
-                    },
-                });
+            const modelPoint = turf.point([longitude, latitude]);
 
-                return res.status(200).json({
-                    success: true,
-                    data: models
-                });
-            } else {
-                return res.status(404).json({
-                    success: false,
-                    message: "Latitude or longitude not found for the provided address."
-                });
-            }
+            const models = await Model.findAll({
+                raw: true
+            });
+
+            const nearbyModels = models.filter(model => {
+                if (model.longitude !== longitude || model.latitude !== latitude) {
+                    const distanceInKilometers = turf.distance(modelPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                    return distanceInKilometers <= distance;
+                }
+                return false;
+            });
+
+            return res.status(200).json({
+                success: true,
+                data: nearbyModels
+            });
         } catch (error) {
             console.error("Error in GetNearbyModels:", error);
             return res.status(500).json({
@@ -938,30 +927,26 @@ class ModelController {
 
             const { longitude, latitude } = destinationFind.dataValues;
 
-            // Check if longitude and latitude are available
             if (longitude && latitude) {
-                // Find destinations within the specified distance and with a rate greater than or equal to the provided rate
+
+                const destinationPoint = turf.point([longitude, latitude]);
+
                 const destinations = await Destination.findAll({
-                    where: {
-                        [Op.and]: [
-                            literal(`
-                                ST_Distance(
-                                    ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                                    "destination"."address_location"
-                                ) < ${distance}
-                            `),
-                            {
-                                rate: {
-                                    [Op.gte]: rate ? rate : 3
-                                }
-                            }
-                        ]
-                    },
+                    raw: true
+                });
+
+                const nearbyDestinations = destinations.filter(dest => {
+                    if (dest.longitude !== longitude || dest.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(destinationPoint, turf.point([dest.longitude, dest.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
+                    } else {
+                        return false
+                    }
                 });
 
                 return res.status(200).json({
                     success: true,
-                    data: destinations
+                    data: nearbyDestinations
                 });
             } else {
                 return res.status(404).json({
@@ -982,13 +967,11 @@ class ModelController {
         try {
             const { address, distance, rate } = req.body;
 
-            // Find the destination with the provided address to get its latitude and longitude
             const destinationFind = await Destination.findOne({
                 where: { address: address },
                 attributes: ['latitude', 'longitude']
             });
 
-            // Check if the destination with the provided address exists
             if (!destinationFind) {
                 return res.status(404).json({
                     success: false,
@@ -998,28 +981,22 @@ class ModelController {
 
             const { longitude, latitude } = destinationFind.dataValues;
 
-            // Find models near the destination based on the provided distance and rate
-            const models = await Model.findAll({
-                where: {
-                    [Op.and]: [
-                        literal(`
-                            ST_Distance(
-                                ST_GeomFromText('POINT(${longitude} ${latitude})', 4326), 
-                                "model"."address_location"
-                            ) < ${distance}
-                        `),
-                        {
-                            rate: {
-                                [Op.gte]: rate ? rate : 3
-                            }
-                        }
-                    ]
-                },
+            const destinationPoint = turf.point([longitude, latitude]);
+
+            const models = await Model.findAll();
+
+            const nearbyModels = models.filter(model => {
+                if (model.longitude !== longitude || model.latitude !== latitude) {
+                    const distanceInKilometers = turf.distance(destinationPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                    return distanceInKilometers < distance;
+                } else {
+                    return false
+                }
             });
 
             return res.status(200).json({
                 success: true,
-                data: models
+                data: nearbyModels
             });
 
         } catch (error) {
@@ -1065,24 +1042,18 @@ class ModelController {
 
             const { longitude: lon2, latitude: lat2 } = modelTo.dataValues;
 
-            const earthRadiusKilometers = 6371; // Bán kính trái đất trong kilômét
+            // Sử dụng geolib để tính toán khoảng cách giữa hai điểm
+            const distanceMeters = geolib.getDistance(
+                { latitude: lat1, longitude: lon1 },
+                { latitude: lat2, longitude: lon2 }
+            );
 
-            // Chuyển đổi độ từ dạng độ sang radian
-            const degreesToRadians = (degrees) => {
-                return degrees * Math.PI / 180;
-            };
-
-            const dLat = degreesToRadians(lat2 - lat1);
-            const dLon = degreesToRadians(lon2 - lon1);
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distanceKilometers = earthRadiusKilometers * c;
+            // Chuyển khoảng cách từ mét sang kilômét và làm tròn đến 2 chữ số thập phân
+            const distanceKilometers = (distanceMeters / 1000).toFixed(2);
 
             return res.status(200).json({
                 success: true,
-                distance: distanceKilometers.toFixed(2) + " km" // Làm tròn đến 2 chữ số thập phân
+                distance: distanceKilometers + " km"
             });
         } catch (error) {
             console.error("Error in CalculateDistanceKilometers:", error);
@@ -1098,56 +1069,50 @@ class ModelController {
             const { addressFrom, addressTo } = req.body;
 
             // Lấy thông tin về địa chỉ xuất phát
-            const modelFrom = await Destination.findOne({
+            const destinationFrom = await Destination.findOne({
                 where: { address: addressFrom },
                 attributes: ['latitude', 'longitude']
             });
 
-            if (!modelFrom) {
+            if (!destinationFrom) {
                 return res.status(404).json({
                     success: false,
                     message: "Address From Not Found"
                 });
             }
 
-            const { longitude: lon1, latitude: lat1 } = modelFrom.dataValues;
+            const { longitude: lon1, latitude: lat1 } = destinationFrom.dataValues;
 
             // Lấy thông tin về địa chỉ đích
-            const modelTo = await Destination.findOne({
+            const destinationTo = await Destination.findOne({
                 where: { address: addressTo },
                 attributes: ['latitude', 'longitude']
             });
 
-            if (!modelTo) {
+            if (!destinationTo) {
                 return res.status(404).json({
                     success: false,
                     message: "Address To Not Found"
                 });
             }
 
-            const { longitude: lon2, latitude: lat2 } = modelTo.dataValues;
+            const { longitude: lon2, latitude: lat2 } = destinationTo.dataValues;
 
-            const earthRadiusKilometers = 6371; // Bán kính trái đất trong kilômét
+            // Sử dụng geolib để tính toán khoảng cách giữa hai điểm
+            const distanceMeters = geolib.getDistance(
+                { latitude: lat1, longitude: lon1 },
+                { latitude: lat2, longitude: lon2 }
+            );
 
-            // Chuyển đổi độ từ dạng độ sang radian
-            const degreesToRadians = (degrees) => {
-                return degrees * Math.PI / 180;
-            };
-
-            const dLat = degreesToRadians(lat2 - lat1);
-            const dLon = degreesToRadians(lon2 - lon1);
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distanceKilometers = earthRadiusKilometers * c;
+            // Chuyển khoảng cách từ mét sang kilômét và làm tròn đến 2 chữ số thập phân
+            const distanceKilometers = (distanceMeters / 1000).toFixed(2);
 
             return res.status(200).json({
                 success: true,
-                distance: distanceKilometers.toFixed(2) + " km" // Làm tròn đến 2 chữ số thập phân
+                distance: distanceKilometers + " km"
             });
         } catch (error) {
-            console.error("Error in CalculateDistanceKilometers:", error);
+            console.error("Error in CalculateDistanceDesKilometers:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"

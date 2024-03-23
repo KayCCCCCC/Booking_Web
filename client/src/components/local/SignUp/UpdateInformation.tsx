@@ -62,7 +62,7 @@ const UpdateInformation = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className="bg-white text-main ">
+        <Card className="text-main bg-white ">
           <CardHeader className="flex flex-col items-center justify-center">
             <CardTitle className="text-center text-2xl font-bold">Complete your profile</CardTitle>
             <CardDescription>Please enter Your Name, Country and Address</CardDescription>

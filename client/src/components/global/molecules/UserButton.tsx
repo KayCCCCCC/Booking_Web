@@ -15,10 +15,10 @@ const UserButton: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src="/defaultavatar.png" alt="@defaultAvatar" className="h-[33px] w-[33px] object-contain " />
+          <AvatarImage src="/img1.jpg" alt="@defaultAvatar" className="h-12 w-12 object-cover " />
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-mainLight">
+      <DropdownMenuContent className="">
         <DropdownMenuLabel>My account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

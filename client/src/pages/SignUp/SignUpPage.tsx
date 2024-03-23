@@ -13,7 +13,7 @@ const SignUpPage = () => {
   }, [])
   return (
     <div className=" flex  ">
-      <div className="flex min-h-[100vh] w-1/2 items-center justify-center bg-secondary">
+      <div className="bg-slate flex min-h-[100vh] w-1/2 items-center justify-center">
         {status === 0 && <Register success={registerSuccess} />}
         {status === 1 && <ConfirmOTP success={confirmOTPSuccess} minuteLimit={3} />}
         {status === 2 && <UpdateInformation />}

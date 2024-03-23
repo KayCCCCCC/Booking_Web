@@ -55,11 +55,7 @@ const Map = () => {
     new maptilersdk.Marker({ color: "#1B3232" }).setLngLat([HCM.lng, HCM.lat]).addTo(map.current!)
   }, [HCM.lng, HCM.lat, zoom])
 
-  return (
-   
-      <div ref={mapContainer} className="md:w-1/2 h-[620px] right-1 fixed bottom-2 overflow-hidden" />
-    
-  )
+  return <div ref={mapContainer} className="fixed bottom-2 right-1 h-[620px] overflow-hidden md:w-1/2" />
 }
 
 export default Map

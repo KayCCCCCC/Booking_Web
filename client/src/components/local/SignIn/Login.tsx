@@ -62,7 +62,7 @@ const Login = () => {
     }
   }
   return (
-    <div className="flex h-fit w-[420px] flex-col items-center  justify-center rounded bg-white py-9 text-main">
+    <div className="text-main flex h-fit w-[420px] flex-col  items-center justify-center rounded bg-white py-9">
       <div className="text-center text-2xl font-bold">Sign in </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -103,7 +103,7 @@ const Login = () => {
                       </FormControl>
                       <FormControl
                         onClick={() => setIsShowPassword((pre) => !pre)}
-                        className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
+                        className="text-main absolute right-2 top-2 items-center justify-items-center hover:opacity-85"
                       >
                         {!isShowPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                       </FormControl>
@@ -123,7 +123,7 @@ const Login = () => {
                 )}
               /> */}
             </div>
-            <Button type="submit" className="rounded text-white bg-main" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="bg-blue rounded text-white" disabled={form.formState.isSubmitting}>
               Submit
             </Button>
           </div>
@@ -135,16 +135,16 @@ const Login = () => {
           Sign up
         </Link>
       </div>
-      <div className="font-semibold text-main">OR</div>
-      <div className="flex gap-x-4 py-2 text-main ">
-        <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded  bg-secondary hover:opacity-85">
-        <img src="/assets/facebook.webp" className="h-10 w-10"/>
+      <div className="text-main font-semibold">OR</div>
+      <div className="text-main flex gap-x-4 py-2 ">
+        <div className="bg-secondary flex h-12 w-12 cursor-pointer items-center justify-center  rounded hover:opacity-85">
+          <img src="/assets/facebook.webp" className="h-10 w-10" />
         </div>
         <div
-          className="flex h-12 w-12 cursor-pointer items-center  justify-center rounded  bg-secondary hover:opacity-85"
+          className="bg-secondary flex h-12 w-12 cursor-pointer  items-center justify-center  rounded hover:opacity-85"
           onClick={handleLoginWithGG}
         >
-          <img src="/assets/google.png" className="h-10 w-10"/>
+          <img src="/assets/google.png" className="h-10 w-10" />
         </div>
       </div>
     </div>

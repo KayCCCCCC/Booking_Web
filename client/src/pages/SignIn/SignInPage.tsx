@@ -2,7 +2,7 @@ import Login from "@/components/local/SignIn/Login"
 
 const SignInPage = () => {
   return (
-    <div className=" flex h-[100vh] items-center justify-center bg-secondary">
+    <div className=" bg-slate flex h-[100vh] items-center justify-center">
       <Login />
     </div>
   )

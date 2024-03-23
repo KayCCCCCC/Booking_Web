@@ -3,12 +3,11 @@ import { z } from "zod"
 export const RegisterUserSchema = z.object({
   email: z
     .string({
-      required_error: "Name is required",
+      required_error: "Name is required"
     })
     .email({
       message: "Must be a valid email with @gmail.com or @..."
-    })
-    ,
+    }),
   password: z
     .string({
       required_error: "Password is required"

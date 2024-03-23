@@ -16,23 +16,23 @@ interface firstStepSignUpProps {
   data: RegisterUser
 }
 export const firstStepSignUp = async ({ data }: firstStepSignUpProps): Promise<authResponseProps> => {
-  try {
-    const response = await post<authResponseProps>(`auth/first-step-registeration`, data)
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  // try {
+  const response = await post<authResponseProps>(`auth/first-step-registeration`, data)
+  return response.data
+  // } catch (error) {
+  //   throw error
+  // }
 }
 interface confirmOTPProps {
   data: z.infer<typeof OTPConfirmSchema>
 }
 export const confirmOtp = async ({ data }: confirmOTPProps): Promise<authResponseProps> => {
-  try {
-    const response = await post<authResponseProps>(`auth/submitOTP`, data)
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  // try {
+  const response = await post<authResponseProps>(`auth/submitOTP`, data)
+  return response.data
+  // } catch (error) {
+  //   throw error
+  // }
 }
 
 interface updateInforProps {
@@ -40,32 +40,32 @@ interface updateInforProps {
 }
 
 export const updateInforUser = async ({ data }: updateInforProps): Promise<authResponseProps> => {
-  try {
-    const response = await post<authResponseProps>(`auth/setInfo`, data)
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  // try {
+  const response = await post<authResponseProps>(`auth/setInfo`, data)
+  return response.data
+  // } catch (error) {
+  //   throw error
+  // }
 }
 interface LoginProps {
   data: LoginUserSchemaType
 }
 export const login = async ({ data }: LoginProps): Promise<authResponseProps> => {
-  try {
-    const response = await post<authResponseProps>(`auth/login`, data)
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  // try {
+  const response = await post<authResponseProps>(`auth/login`, data)
+  return response.data
+  // } catch (error) {
+  //   throw error
+  // }
 }
 interface LoginWithGGProps {
   data: GGAccountType
 }
 export const loginWithGG = async ({ data }: LoginWithGGProps): Promise<authResponseProps> => {
-  try {
-    const response = await post<authResponseProps>(`auth/login-google`, data)
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  // try {
+  const response = await post<authResponseProps>(`auth/login-google`, data)
+  return response.data
+  // } catch (error) {
+  //   throw error
+  // }
 }

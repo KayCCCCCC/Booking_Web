@@ -1,6 +1,5 @@
-
 const ContentHome = () => {
-  return <div>ContentHome</div>;
-};
+  return <div>ContentHome</div>
+}
 
-export default ContentHome;
+export default ContentHome

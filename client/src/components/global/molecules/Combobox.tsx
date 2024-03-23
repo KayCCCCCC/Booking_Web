@@ -19,13 +19,13 @@ const Combobox = ({ data, value, setValue }: ComboboxProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-[300px] justify-between text-main">
+        <Button variant="outline" role="combobox" aria-expanded={open} className="text-main w-[300px] justify-between">
           {value ? contriesName.find((country) => country.toLowerCase() === value) : "Select your country..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command className="max-h-[300px] bg-white  text-main">
+        <Command className="text-main max-h-[300px]  bg-white">
           <CommandInput placeholder="Search ..." className="h-9" />
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup className=" overflow-y-auto">

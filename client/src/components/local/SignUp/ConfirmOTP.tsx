@@ -77,14 +77,14 @@ const ConfirmOTP = ({ success, minuteLimit }: ConfirmOTPProps) => {
                 <input
                   ref={index === activeOTPIndex ? inputRef : null}
                   type="number"
-                  className="spin-button-none h-12 w-16 rounded border-[1px] border-main bg-transparent
-                        text-center text-xl font-semibold text-main outline-none transition 
-                        focus:border-gray-700 focus:text-main "
+                  className="spin-button-none border-main text-main focus:text-main h-12 w-16 rounded
+                        border-[1px] bg-transparent text-center text-xl font-semibold outline-none 
+                        transition focus:border-gray-700 "
                   onChange={handleOnChange}
                   onKeyDown={(e) => handleOnKeyDown(e, index)}
                   value={OTP[index]}
                 />
-                {index === OTP.length - 1 ? null : <span className="h-2 w-2 rounded bg-main py-0.5"></span>}
+                {index === OTP.length - 1 ? null : <span className="bg-blue h-2 w-2 rounded py-0.5"></span>}
               </React.Fragment>
             ))}
           </div>

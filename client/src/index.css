@@ -10,14 +10,18 @@
 /* scroll bar */
 ::-webkit-scrollbar {
   width: 10px;
-  height: 20px;
+  height: 10px;
+  display: none;
+}
+::-webkit-scrollbar-corner {
+  display: none;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #0000001a;
+  background-color: #fde8d0;
   border-radius: 15px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #2d3748;
+  background-color: #d6a266;
 }
 ::-webkit-scrollbar-track {
   background-color: transparent;
@@ -26,6 +30,9 @@
   display: none;
 }
 
+.scrollbar-custom::-webkit-scrollbar {
+  height: 0.4rem;
+}
 
 /* @layer base {
   :root {

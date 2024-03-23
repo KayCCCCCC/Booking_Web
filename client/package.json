@@ -55,7 +55,6 @@
     "eslint-config-prettier": "^9.1.0",
     "firebase": "^10.9.0",
     "framer-motion": "^11.0.14",
-    "graphql": "^16.8.1",
     "lucide-react": "^0.356.0",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",

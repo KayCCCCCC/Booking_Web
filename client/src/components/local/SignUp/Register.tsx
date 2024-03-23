@@ -31,18 +31,14 @@ const Register = ({ success }: RegisterProps) => {
   })
 
   const onSubmit = async (data: RegisterUserSchemaType) => {
-    try {
-      const response = await firstStepSignUp({ data })
-      if (response.success) {
-        dispatch(signUpFirstStep(response.data?.email))
-        success()
-      }
-    } catch (error) {
-      throw error
+    const response = await firstStepSignUp({ data })
+    if (response.success) {
+      dispatch(signUpFirstStep(response.data?.email))
+      success()
     }
   }
   return (
-    <Card className="flex h-fit w-[420px] flex-col items-center  justify-center rounded bg-white py-2 text-main">
+    <Card className="text-main flex h-fit w-[420px] flex-col  items-center justify-center rounded bg-white py-2">
       <CardHeader className="flex flex-col items-center justify-center">
         <CardTitle className="text-center text-2xl font-bold">Create an account</CardTitle>
         <CardDescription>Please type your email and password</CardDescription>
@@ -83,7 +79,7 @@ const Register = ({ success }: RegisterProps) => {
                       </FormControl>
                       <div
                         onClick={() => setIsShowPassword((prev) => !prev)}
-                        className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
+                        className="text-main absolute right-2 top-2 items-center justify-items-center hover:opacity-85"
                       >
                         {!isShowPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                       </div>
@@ -111,7 +107,7 @@ const Register = ({ success }: RegisterProps) => {
                       </FormControl>
                       <div
                         // onClick={() => setIsShowPasswordConfirm((pre) => !pre)}
-                        className="absolute right-2 top-2 items-center justify-items-center text-main hover:opacity-85"
+                        className="text-main absolute right-2 top-2 items-center justify-items-center hover:opacity-85"
                       >
                         {!isShowPasswordConfirm ? (
                           <Eye size={20} onClick={() => setIsShowPasswordConfirm(true)} />
@@ -137,7 +133,7 @@ const Register = ({ success }: RegisterProps) => {
                         onCheckedChange={(isChecked) => field.onChange(isChecked ? true : false)}
                       />
                     </FormControl>
-                    <FormLabel className="text-xs text-main  " htmlFor="policyAccepted">
+                    <FormLabel className="text-main text-xs  " htmlFor="policyAccepted">
                       <div>
                         <div className="inline">By creating an account, you agree to our</div>{" "}
                         <Link to={"/"} className="font-semibold text-indigo-700 underline">

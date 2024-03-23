@@ -1,6 +1,5 @@
-
 const Coupons = () => {
-  return <div>Coupons</div>;
-};
+  return <div>Coupons</div>
+}
 
-export default Coupons;
+export default Coupons

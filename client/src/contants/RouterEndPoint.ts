@@ -18,7 +18,7 @@ enum RouterEndPoint {
   Transports = "/transports",
 
   // COUPONS
-  Coupons = "/coupons",
+  Coupons = "/coupons"
 }
 
 export default RouterEndPoint

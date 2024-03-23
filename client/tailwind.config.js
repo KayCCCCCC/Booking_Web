@@ -19,14 +19,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        main: "#2d3748",
         primary: "#111c43",
-        secondary: "#f3f6f8",
-        mainLight: "#D6A266",
-        mainDark: "#1B3232",
-        bgLight: "#FDE8D0"
-
-
       },
       borderRadius: {
         lg: "1rem",
@@ -46,9 +39,13 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spotlight": "spotlight 2s ease .75s 1 forwards",
       },
-      animation: {
-        spotlight: "spotlight 2s ease .75s 1 forwards",
+      width: {
+
+      },
+      height: {
+        md: "600px"
       },
       keyframes: {
         spotlight: {

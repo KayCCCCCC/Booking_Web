@@ -1,6 +1,5 @@
-
 const StaysPage = () => {
-  return <div>StaysPage</div>;
-};
+  return <div>StaysPage</div>
+}
 
-export default StaysPage;
+export default StaysPage

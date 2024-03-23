@@ -1,54 +1,48 @@
-import { cn } from "@/lib/utils/cn";
+import { Destination } from "@/lib/interface/destination"
+import { cn } from "@/lib/utils/cn"
+import { Skeleton } from "./skeleton"
 
-export const BentoGrid = ({
+export const Grid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
+  return <div className={cn("mx-auto grid gap-2 md:auto-rows-[20rem] ", className)}>{children}</div>
+}
+
+export const GridItem = ({
   className,
-  children,
+  classUrl,
+  data
 }: {
-  className?: string;
-  children?: React.ReactNode;
+  className?: string
+  classUrl: string
+  data: Destination
 }) => {
   return (
     <div
       className={cn(
-        "grid md:auto-rows-[20rem] gap-2 mx-auto ",
-        className
+        className,
+        "group shadow-input flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
       )}
     >
-      {children}
-    </div>
-  );
-};
-
-export const BentoGridItem = ({
-  className,
-  title,
-  description,
-  header,
-  icon,
-}: {
-  className?: string;
-  title?: string | React.ReactNode;
-  description?: string | React.ReactNode;
-  header?: React.ReactNode;
-  icon?: React.ReactNode;
-}) => {
-  return (
-    <div
-      className={cn(
-        "rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-white border border-transparent justify-between flex flex-col space-y-4",
-        className
-      )}
-    >
-      {header}
-      <div className="group-hover/bento:translate-x-2 transition duration-200">
-        {icon}
-        <div className="font-sans font-bold text-neutral-600 dark:text-neutral-200 mb-2 mt-2">
-          {title}
-        </div>
-        <div className="font-sans font-normal text-neutral-600 text-xs dark:text-neutral-300">
-          {description}
-        </div>
+      <img src={data.urls[0]} alt="img" className={cn("w-full object-cover", classUrl)} />
+      <div className="transition duration-200 group-hover:translate-x-2">
+        <div className="my-1 font-bold text-neutral-600 dark:text-neutral-200">{data.name}</div>
+        <div className="truncate text-xs text-neutral-600 dark:text-neutral-200">{data.address}</div>
       </div>
     </div>
-  );
-};
+  )
+}
+export const SkeletonGrid = ({ className, classUrl }: { className: string; classUrl: string }) => {
+  console.log(1111111);
+   
+  return <div
+    className={cn(
+      className,
+      "group shadow-input flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
+    )}
+  >
+    <Skeleton className={cn("w-full object-cover", classUrl)}>hi</Skeleton>
+    <div className="transition duration-200 group-hover:translate-x-2">
+      <Skeleton className="my-1 font-bold text-neutral-600 dark:text-neutral-200"></Skeleton>
+      <Skeleton className="truncate text-xs text-neutral-600  dark:text-neutral-200"></Skeleton>
+    </div>
+  </div>
+}

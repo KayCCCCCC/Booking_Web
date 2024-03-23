@@ -1,6 +1,5 @@
-const { faker, fa } = require('@faker-js/faker');
-const { Op, literal, col, fn, gte } = require("sequelize");
-const sequelize = require('../database/connectDbPg')
+const { faker } = require('@faker-js/faker');
+const { Op } = require("sequelize");
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
 const provinces = require('../database/dataProvincesJson')
@@ -864,6 +863,41 @@ class ModelController {
         }
     }
 
+    static async FilterDestination(req, res) {
+        try {
+            const { address, rate, description, name, status, nameType } = req.query;
+
+            const destinationFilterOptions = {};
+            if (address) destinationFilterOptions.address = { [Op.like]: `%${address}%` };
+            if (rate) destinationFilterOptions.rate = { [Op.gte]: rate };
+            if (description) destinationFilterOptions.description = { [Op.like]: `%${description}%` };
+            if (name) destinationFilterOptions.name = { [Op.like]: `%${name}%` };
+            if (status) destinationFilterOptions.status = status;
+            if (nameType) {
+                const destinationType = await DestinationType.findOne({
+                    where: { typeName: { [Op.like]: `%${nameType}%` } }
+                })
+                destinationFilterOptions.destinationTypeId = destinationType.dataValues.id
+            }
+
+            const filteredDestinations = await Destination.findAll({
+                where: destinationFilterOptions
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Filtered destinations successfully",
+                data: filteredDestinations
+            });
+        } catch (error) {
+            console.error("Error FilterDestination:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
     static async GetNearbyModels(req, res) {
         try {
             const { address, distance, rate } = req.body;
@@ -1144,6 +1178,49 @@ class ModelController {
             });
         }
     }
+
+    static async getDestinationHighRate(req, res) {
+        try {
+            const highRatedDestinations = await Destination.findAll({
+                order: [['rate', 'DESC'], ['numberRate', 'DESC']],
+                limit: 5
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Top 5 high rated destinations found successfully.",
+                data: highRatedDestinations
+            });
+        } catch (error) {
+            console.error("Error in getDestinationHighRate:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async getModelHighRate(req, res) {
+        try {
+            const highRatedModels = await Model.findAll({
+                order: [['rate', 'DESC'], ['numberRate', 'DESC']],
+                limit: 5
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Top 5 high rated Models found successfully.",
+                data: highRatedModels
+            });
+        } catch (error) {
+            console.error("Error in getModelHighRate:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
 
 
 

@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: true,
         },
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: "Active",
+            allowNull: true,
+        },
         rate: {
             type: DataTypes.FLOAT,
             allowNull: true,

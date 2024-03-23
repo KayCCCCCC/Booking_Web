@@ -2,27 +2,23 @@ module.exports = (sequelize, DataTypes) => {
     const Booking = sequelize.define("booking", {
         startDate: {
             type: DataTypes.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         expireDate: {
             type: DataTypes.DATE,
-            allowNull: false,
-        },
-        costPerUnit: {
-            type: DataTypes.DOUBLE,
-            allowNull: false,
+            allowNull: true,
         },
         quantity: {
             type: DataTypes.DOUBLE,
-            allowNull: false,
+            allowNull: true,
         },
         total: {
             type: DataTypes.DOUBLE,
-            allowNull: false,
+            allowNull: true,
         },
         statusBooking: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
+            type: DataTypes.STRING,
+            allowNull: true,
         },
     });
 

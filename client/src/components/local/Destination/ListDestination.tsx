@@ -8,8 +8,8 @@ interface ListDestinationProps {
 }
 const ListDestinations = ({ isShowMap, data, loading }: ListDestinationProps) => {
   console.log(loading)
-  
-console.log(data);
+
+  console.log(data)
 
   return !loading ? (
     <Grid className={cn("mx-20", isShowMap ? "grid-cols-2" : "grid-cols-4")}>

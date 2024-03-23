@@ -7,24 +7,21 @@ interface destinationTypeResponseProps {
   data: DestinationType[] | null
 }
 export const getAllDestinationType = async (): Promise<destinationTypeResponseProps> => {
-  // try {
   const response = await get<destinationTypeResponseProps>(`model/list-type-destination`)
   return response.data
-  // } catch (error) {
-  //   throw error
-  // }
 }
 interface destinationResponseProps {
   success: boolean
   message: string
   data: Destination[] | null
-  totalPages: number
+  totalPages?: number
 }
 export const getAllDestination = async ({ page }: { page: number }): Promise<destinationResponseProps> => {
-  // try {
   const response = await get<destinationResponseProps>(`model/get-all-destination?page=${page}`)
   return response.data
-  // } catch (error) {
-  //   throw error
-  // }
+}
+
+export const getDestinationHighRatings = async (): Promise<destinationResponseProps> => {
+  const response = await get<destinationResponseProps>(`model/get-destination`)
+  return response.data
 }

@@ -1,13 +1,18 @@
 import { useRef, useEffect, useState } from "react"
 import * as maptilersdk from "@maptiler/sdk"
 import "@maptiler/sdk/dist/maptiler-sdk.css"
-// import "./map.css"
+import { cn } from "@/lib/utils/cn"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store/store"
 
 interface GeoProps {
   coordinates: maptilersdk.LngLatLike
   type: string
 }
-const Map = () => {
+interface MapProps {
+  isHideHeader: boolean
+}
+const Map = ({ isHideHeader }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maptilersdk.Map | null>(null)
   const HCM = { lng: 106.660172, lat: 10.762622 }
@@ -55,7 +60,15 @@ const Map = () => {
     new maptilersdk.Marker({ color: "#1B3232" }).setLngLat([HCM.lng, HCM.lat]).addTo(map.current!)
   }, [HCM.lng, HCM.lat, zoom])
 
-  return <div ref={mapContainer} className="fixed bottom-2 right-1 h-[620px] overflow-hidden md:w-1/2" />
+  return (
+    <div
+      ref={mapContainer}
+      className={cn(
+        `fixed bottom-4 h-[550px] overflow-hidden md:w-2/5 `,
+        isHideHeader && "duration-2000 -translate-y-8 transform "
+      )}
+    />
+  )
 }
 
 export default Map

@@ -4,9 +4,11 @@ import { persistReducer, persistStore } from "redux-persist"
 import { composeWithDevTools } from "@redux-devtools/extension"
 import storage from "redux-persist/lib/storage"
 import AuthSlice from "./slices/AuthSlice"
+import GlobalSlice from "./slices/GlobalSlice"
 
 const rootReducer = combineReducers({
-  auth: AuthSlice
+  auth: AuthSlice,
+  global: GlobalSlice
 })
 const persistConfig = {
   key: "root",

@@ -20,11 +20,11 @@ const ScrollbarType = ({ data }: ScrollbarTypeProps) => {
       containerRef.current.scrollLeft += 50
     }
   }
-  
+
   return (
-    <div className="relative flex items-center gap-2 overflow-hidden px-10 md:w-3/5">
+    <div className="relative flex items-center gap-2 overflow-hidden px-10 z-20 bg-white">
       <div
-        className="custom-button-scrollbar absolute left-0 cursor-pointer p-1 rounded-lg  shadow shadow-black/60 dark:shadow-white ml-1 border-slate-50 hover:-translate-y-1 "
+        className="custom-button-scrollbar absolute left-0 ml-1 cursor-pointer rounded-lg  border-slate-50 p-1 shadow shadow-black/60 hover:-translate-y-1 dark:shadow-white "
         onClick={handleScrollLeft}
       >
         <ChevronLeft />
@@ -33,7 +33,7 @@ const ScrollbarType = ({ data }: ScrollbarTypeProps) => {
         {data?.map((item, index) => <TagType key={index} content={item.typeName} />)}
       </div>
       <div
-        className="custom-button-scrollbar absolute right-0 cursor-pointer p-1 shadow shadow-black/60 dark:shadow-white rounded-lg mr-1 border-slate-50 hover:-translate-y-1"
+        className="custom-button-scrollbar absolute right-0 mr-1 cursor-pointer rounded-lg border-slate-50 p-1 shadow shadow-black/60 hover:-translate-y-1 dark:shadow-white"
         onClick={handleScrollRight}
       >
         <ChevronRight />

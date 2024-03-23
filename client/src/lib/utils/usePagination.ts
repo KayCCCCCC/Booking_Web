@@ -6,7 +6,7 @@ interface PaginationProps {
   siblingCount?: number
 }
 const range = (start: number, end: number) => {
-  let length = end - start + 1
+  const length = end - start + 1
 
   return Array.from({ length }, (_, idx) => idx + start)
 }
@@ -27,21 +27,21 @@ export const usePagination = ({ currentPage, totalPages, siblingCount = 1 }: Pag
     const lastPageIdx = totalPages
 
     if (shouldShowRightDots && !shouldShowLeftDots) {
-      let leftItemCount = 3 + 2 * siblingCount
-      let leftRange = range(1, leftItemCount)
+      const leftItemCount = 3 + 2 * siblingCount
+      const leftRange = range(1, leftItemCount)
 
       return [...leftRange, 0, totalPages]
     }
 
     if (!shouldShowRightDots && shouldShowLeftDots) {
-      let rightItemCount = 3 + 2 * siblingCount
-      let rightRange = range(totalPages - rightItemCount + 1, totalPages)
+      const rightItemCount = 3 + 2 * siblingCount
+      const rightRange = range(totalPages - rightItemCount + 1, totalPages)
 
       return [firstPageIdx, 0, ...rightRange]
     }
 
     if (shouldShowLeftDots && shouldShowRightDots) {
-      let middleRange = range(leftSiblingIdx, rightSiblingIdx)
+      const middleRange = range(leftSiblingIdx, rightSiblingIdx)
       return [firstPageIdx, 0, ...middleRange, 0, lastPageIdx]
     }
   }, [currentPage, totalPages, siblingCount])

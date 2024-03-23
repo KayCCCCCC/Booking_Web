@@ -41,6 +41,9 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "spotlight": "spotlight 2s ease .75s 1 forwards",
       },
+      transitionDuration: {
+        '2000': '2000ms',
+      },
       width: {
 
       },

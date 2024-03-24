@@ -145,7 +145,7 @@ class RangeController {
                     description: faker.lorem.words(),
                     addressCity: faker.location.city(),
                     addressCountry: faker.location.country(),
-                    phoneSupport: 123456789
+                    phoneSupport: faker.phone.number()
                 });
                 ranges.push(range);
             }

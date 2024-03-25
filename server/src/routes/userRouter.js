@@ -1,7 +1,7 @@
 const { UserController } = require("../controller/userController");
-const cloundinary = require('../utils/cloudinary')
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const multer = require('multer');
+// const cloundinary = require('../utils/cloudinary')
+// const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// const multer = require('multer');
 const { authMiddleWare, authUserMiddleWare } = require("../middlewares/AuthMiddleWare");
 const router = require("express").Router();
 const upload = require('../utils/storageImg')

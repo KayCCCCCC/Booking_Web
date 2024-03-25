@@ -6,8 +6,9 @@ module.exports = (sequelize, DataTypes) => {
             unique: true
         },
         status: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.STRING,
             allowNull: false,
+            defaultValues: 'Active'
         },
     });
 

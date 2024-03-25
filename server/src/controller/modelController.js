@@ -1237,14 +1237,35 @@ class ModelController {
                     }
                 ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 4,
+                limit: 10,
             });
 
+
+
+            const formattedDestinations = highRatedDestinations.map(destination => {
+                let urls = [];
+                if (destination.destination_images) {
+                    urls = destination.destination_images.map(image => image.url);
+                }
+                console.log(destination.destinationType.dataValues.typeName)
+                return {
+                    id: destination.id,
+                    description: destination.description,
+                    name: destination.name,
+                    latitude: destination.latitude,
+                    longitude: destination.longitude,
+                    status: destination.status,
+                    rate: destination.rate,
+                    numberRate: destination.numberRate,
+                    urls: urls,
+                    typeName: destination.destinationType.dataValues.typeName,
+                };
+            });
 
             return res.status(200).json({
                 success: true,
                 message: "Top 5 high rated destinations found successfully.",
-                data: highRatedDestinations
+                data: formattedDestinations
             });
         } catch (error) {
             console.error("Error in getDestinationHighRate:", error);
@@ -1254,6 +1275,7 @@ class ModelController {
             });
         }
     }
+
 
     static async getModelHighRate(req, res) {
         try {
@@ -1272,10 +1294,29 @@ class ModelController {
                 limit: 4
             });
 
+            const formattedModels = highRatedModels.map(model => {
+                const urls = model.dataValues.model_images.map(image => image.url);
+                return {
+                    id: model.dataValues.id,
+                    description: model.dataValues.description,
+                    address: model.dataValues.address,
+                    name: model.dataValues.name,
+                    latitude: model.dataValues.latitude,
+                    longitude: model.dataValues.longitude,
+                    status: model.dataValues.status,
+                    rate: model.dataValues.rate,
+                    numberRate: model.dataValues.numberRate,
+                    iso2: model.dataValues.iso2,
+                    address_location: model.dataValues.address_location,
+                    urls: urls,
+                    typeName: model.dataValues.modelType.typeName
+                };
+            });
+
             return res.status(200).json({
                 success: true,
                 message: "Top 5 high rated Models found successfully.",
-                data: highRatedModels
+                data: formattedModels
             });
         } catch (error) {
             console.error("Error in getModelHighRate:", error);

@@ -7,9 +7,7 @@ interface accommodationResponseProps {
   data: Accommodation[] | null
 }
 
-
 export const getAccommodationHighRatings = async (): Promise<accommodationResponseProps> => {
-    const response = await get<accommodationResponseProps>(`model/getModelHighest`)
-    return response.data
-  }
-  
+  const response = await get<accommodationResponseProps>(`model/getModelHighest`)
+  return response.data
+}

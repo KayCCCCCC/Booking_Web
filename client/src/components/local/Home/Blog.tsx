@@ -16,7 +16,10 @@ const Blog = () => {
       </div>
       <div className="grid grid-cols-2 gap-6 md:col-span-3 md:auto-cols-[30rem]">
         {[0, 1].map((blog, idx) => (
-          <div key={idx} className="rounded-lg border border-slate-300 md:col-span-1 dark:border-slate-900 hover:translate-x-1 duration-200">
+          <div
+            key={idx}
+            className="rounded-lg border border-slate-300 duration-200 hover:translate-x-1 dark:border-slate-900 md:col-span-1"
+          >
             <img src="/mainBG.jpg" className="h-[19rem] w-full rounded-t-lg object-cover" />
             <div className=" flex h-[11rem] flex-col gap-2 rounded-lg rounded-t-none  bg-slate-100 p-4 dark:bg-slate-800">
               <div className="truncate text-[0.8rem] text-slate-500/80 ">Nov 28 2022</div>

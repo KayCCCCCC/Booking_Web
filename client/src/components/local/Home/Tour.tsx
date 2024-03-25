@@ -1,6 +1,5 @@
-
 const Tour = () => {
-  return <div>Tour</div>;
-};
+  return <div>Tour</div>
+}
 
-export default Tour;
+export default Tour

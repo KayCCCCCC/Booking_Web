@@ -4,7 +4,6 @@ import { ToastContainer } from "react-toastify"
 import { Outlet } from "react-router-dom"
 import Footer from "../organisms/Footer"
 
-
 const MainLayout = () => {
   return (
     <ThemeProvider>

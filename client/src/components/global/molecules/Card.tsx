@@ -1,9 +1,9 @@
 import { Destination } from "@/lib/interface/destination"
 import { cn } from "@/lib/utils/cn"
-import { Heart } from "lucide-react";
+import { Heart } from "lucide-react"
 interface CardProps {
   classContent: string
-  item: Destination;
+  item: Destination
 }
 const Card = ({ classContent, item }: CardProps) => {
   return (
@@ -12,7 +12,9 @@ const Card = ({ classContent, item }: CardProps) => {
       <div className="absolute">
         <div>{item.name}</div>
         <div>{item.description}</div>
-        <div><Heart/></div>
+        <div>
+          <Heart />
+        </div>
       </div>
     </div>
   )

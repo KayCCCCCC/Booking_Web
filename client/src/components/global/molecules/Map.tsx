@@ -2,8 +2,6 @@ import { useRef, useEffect, useState } from "react"
 import * as maptilersdk from "@maptiler/sdk"
 import "@maptiler/sdk/dist/maptiler-sdk.css"
 import { cn } from "@/lib/utils/cn"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
 
 interface GeoProps {
   coordinates: maptilersdk.LngLatLike
@@ -65,7 +63,7 @@ const Map = ({ isHideHeader }: MapProps) => {
       ref={mapContainer}
       className={cn(
         `fixed bottom-4 h-[530px] overflow-hidden md:w-2/5 `,
-        isHideHeader && "duration-2000 -translate-y-8 transform "
+        isHideHeader && "-translate-y-8 transform duration-2000 "
       )}
     />
   )

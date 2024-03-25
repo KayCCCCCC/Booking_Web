@@ -41,8 +41,13 @@ const DestinationPage = () => {
           </div>
         )}
       </div>
-      <div className="gap-4 flex flex-col">
-        <div className={cn("flex items-center justify-center gap-10 px-20 dark:bg-slate-700", isOverlayScrollType && "fixed top-1 bg-white md:w-4/5 z-100 mx-auto left-0 right-0 rounded-full opacity-95"  )}>
+      <div className="flex flex-col gap-4">
+        <div
+          className={cn(
+            "flex items-center justify-center gap-10 px-20 dark:bg-slate-700",
+            isOverlayScrollType && "z-100 fixed left-0 right-0 top-1 mx-auto rounded-full bg-white opacity-95 md:w-4/5"
+          )}
+        >
           <div className=" flex py-4 md:w-[90%] ">
             <ScrollbarType data={destinationTypes.data?.data} />
           </div>
@@ -50,7 +55,7 @@ const DestinationPage = () => {
             <Filter />
           </div>
         </div>
-        <div className={cn("grid mx-20", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
+        <div className={cn("mx-20 grid", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
           <div className="">
             <ListDestinations
               isShowMap={isOpenMap}
@@ -61,7 +66,9 @@ const DestinationPage = () => {
               <PaginationCustom totalPages={destinationList.data?.totalPages} currentPage={page} setPage={setPage} />
             )}
           </div>
-          <div className="flex items-center justify-center">{isOpenMap && <Map isHideHeader={isOverlayScrollType} />}</div>
+          <div className="flex items-center justify-center">
+            {isOpenMap && <Map isHideHeader={isOverlayScrollType} />}
+          </div>
         </div>
       </div>
     </div>

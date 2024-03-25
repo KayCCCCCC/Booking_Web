@@ -1,7 +1,6 @@
-
 const AccommodationDetails = () => {
-    const data = history.state;
-  return <div>AccommodationDetails</div>;
-};
+  // const data = history.state
+  return <div>AccommodationDetails</div>
+}
 
-export default AccommodationDetails;
+export default AccommodationDetails

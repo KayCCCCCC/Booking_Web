@@ -22,7 +22,7 @@ const ScrollbarType = ({ data }: ScrollbarTypeProps) => {
   }
 
   return (
-    <div className="relative flex items-center gap-2 overflow-hidden px-10 z-20 bg-white dark:bg-slate-700">
+    <div className="relative z-20 flex items-center gap-2 overflow-hidden bg-white px-10 dark:bg-slate-700">
       <div
         className="custom-button-scrollbar absolute left-0 ml-1 cursor-pointer rounded-lg  border-slate-50 p-1 shadow shadow-black/60 hover:-translate-y-1 dark:shadow-white "
         onClick={handleScrollLeft}

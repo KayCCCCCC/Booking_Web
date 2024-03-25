@@ -75,7 +75,6 @@ class ModelController {
                     message: "ModelId is required"
                 });
             } else {
-                // Lấy danh sách hình ảnh từ bảng ModelImages
                 const images = await ModelImages.findAll({
                     where: {
                         modelId: modelId
@@ -83,21 +82,29 @@ class ModelController {
                     attributes: ["url", "publicId", "id"],
                 });
 
-                // Lấy thông tin của model từ bảng Model
                 const result = await Model.findByPk(modelId, {
                     attributes: ["description", "address", "nameOfModel", "rate", "numberRate"],
+                    include: {
+                        model: ModelType,
+                        attributes: ['typeName']
+                    }
                 });
 
                 if (result) {
-                    result.images = images;
+                    const data = {
+                        description: result.description,
+                        address: result.address,
+                        nameOfModel: result.nameOfModel,
+                        rate: result.rate,
+                        numberRate: result.numberRate,
+                        typeName: result.modelType.typeName,
+                        images: images
+                    };
 
                     return res.status(200).json({
                         success: true,
                         message: `Data of Model with Id ${modelId}`,
-                        data: {
-                            result,
-                            images
-                        }
+                        data: data
                     });
                 } else {
                     return res.status(400).json({
@@ -294,6 +301,10 @@ class ModelController {
                 include: {
                     model: Model,
                     attributes: ["description", "address", "name", "rate", "numberRate", "id"],
+                    include: {
+                        model: ModelType,
+                        attributes: ['typeName']
+                    }
                 },
                 limit: limit,
                 offset: offset
@@ -312,7 +323,8 @@ class ModelController {
                         name: curr.model.name,
                         rate: curr.model.rate,
                         numberRate: curr.model.numberRate,
-                        urls: [curr.url]
+                        urls: [curr.url],
+                        typeName: curr.model.modelType.typeName
                     };
                 } else {
                     acc[modelId].urls.push(curr.url);
@@ -338,8 +350,6 @@ class ModelController {
         }
     }
 
-
-
     static async GetAllDestination(req, res) {
         try {
             const page = parseInt(req.query.page) || 1;
@@ -350,6 +360,10 @@ class ModelController {
                 include: {
                     model: Destination,
                     attributes: ["description", "address", "name", "rate", "numberRate", "id"],
+                    include: {
+                        model: DestinationType,
+                        attributes: ['typeName']
+                    }
                 },
                 limit: limit,
                 offset: offset
@@ -368,7 +382,8 @@ class ModelController {
                         name: curr.destination.name,
                         rate: curr.destination.rate,
                         numberRate: curr.destination.numberRate,
-                        urls: [curr.url]
+                        urls: [curr.url],
+                        typeName: curr.destination.destinationType.typeName
                     };
                 } else {
                     acc[destinationId].urls.push(curr.url);
@@ -393,7 +408,6 @@ class ModelController {
             });
         }
     }
-
 
     static async AutoCreateDestination(req, res) {
         try {
@@ -507,7 +521,6 @@ class ModelController {
             });
         }
     }
-
 
     static async AutoCreateFlights(req, res) {
         try {
@@ -919,6 +932,16 @@ class ModelController {
             const modelPoint = turf.point([longitude, latitude]);
 
             const models = await Model.findAll({
+                include: [
+                    {
+                        model: ModelImages,
+                        attributes: ['url'],
+                    },
+                    {
+                        model: ModelType,
+                        attributes: ['typeName'],
+                    }
+                ],
                 raw: true
             });
 
@@ -966,6 +989,16 @@ class ModelController {
                 const destinationPoint = turf.point([longitude, latitude]);
 
                 const destinations = await Destination.findAll({
+                    include: [
+                        {
+                            model: DestinationImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: DestinationType,
+                            attributes: ['typeName'],
+                        }
+                    ],
                     raw: true
                 });
 
@@ -1017,7 +1050,18 @@ class ModelController {
 
             const destinationPoint = turf.point([longitude, latitude]);
 
-            const models = await Model.findAll();
+            const models = await Model.findAll({
+                include: [
+                    {
+                        model: ModelImages,
+                        attributes: ['url'],
+                    },
+                    {
+                        model: ModelType,
+                        attributes: ['typeName'],
+                    }
+                ],
+            });
 
             const nearbyModels = models.filter(model => {
                 if (model.longitude !== longitude || model.latitude !== latitude) {
@@ -1182,9 +1226,20 @@ class ModelController {
     static async getDestinationHighRate(req, res) {
         try {
             const highRatedDestinations = await Destination.findAll({
+                include: [
+                    {
+                        model: DestinationImages,
+                        attributes: ['url'],
+                    },
+                    {
+                        model: DestinationType,
+                        attributes: ['typeName'],
+                    }
+                ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 5
+                limit: 4,
             });
+
 
             return res.status(200).json({
                 success: true,
@@ -1203,8 +1258,18 @@ class ModelController {
     static async getModelHighRate(req, res) {
         try {
             const highRatedModels = await Model.findAll({
+                include: [
+                    {
+                        model: ModelImages,
+                        attributes: ['url'],
+                    },
+                    {
+                        model: ModelType,
+                        attributes: ['typeName'],
+                    }
+                ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 5
+                limit: 4
             });
 
             return res.status(200).json({
@@ -1220,9 +1285,5 @@ class ModelController {
             });
         }
     }
-
-
-
-
 }
 exports.ModelController = ModelController

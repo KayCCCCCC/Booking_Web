@@ -26,7 +26,7 @@ class AuthController {
                 where: { email: email }
             });
 
-            if (!user || !user.name)
+            if (!user)
                 return res
                     .status(500).send({
                         success: false,

@@ -1,6 +1,7 @@
 const { faker } = require('@faker-js/faker');
 const db = require('../model/index')
 const RangeModel = db.range_model
+const RangeModelDetail = db.range_model_detail
 
 class RangeModelController {
     static async AutoCreateRangeModel(req, res) {
@@ -15,7 +16,15 @@ class RangeModelController {
                     quantity: faker.number.int({ min: 1, max: 100 }),
                     modelId: faker.number.int({ min: 1, max: 10 }),
                     rangeId: faker.number.int({ min: 1, max: 10 }),
+                    status: 'Active'
                 });
+
+                const rangeModelDetail = await RangeModelDetail.create({
+                    code: faker.airline.flightNumber(),
+                    status: 'Active',
+                    rangeModelId: model.id
+                });
+
                 models.push(model);
             }
 

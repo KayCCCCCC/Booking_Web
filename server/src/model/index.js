@@ -29,7 +29,8 @@ db.blog = require("./blogModel")(sequelize, DataTypes);
 db.voteBlogComment = require("./voteBlogCommentModel")(sequelize, DataTypes);
 db.notification = require("./notificationModel")(sequelize, DataTypes);
 db.favorite = require('./favoriteModelUserModel')(sequelize, DataTypes);
-
+db.tag = require('./tagModel')(sequelize, DataTypes);
+db.tag_blog = require('./blog_tagModel')(sequelize, DataTypes);
 //relation
 
 db.role.hasMany(db.user);
@@ -140,6 +141,9 @@ db.user.hasMany(db.notification);
 db.notification.belongsTo(db.user, {
     foreignKey: "userId",
 });
+
+db.blog.belongsToMany(db.tag, { through: "blog_tag", foreignKey: 'blogId' });
+db.tag.belongsToMany(db.blog, { through: "blog_tag", foreignKey: 'tagId' });
 
 db.sequelize.sync({ logging: false, force: false }).then(() => {
     console.log("Re-sync success");

@@ -1237,7 +1237,7 @@ class ModelController {
                     }
                 ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 5,
+                limit: 4,
             });
 
 
@@ -1269,7 +1269,7 @@ class ModelController {
                     }
                 ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 5
+                limit: 4
             });
 
             return res.status(200).json({

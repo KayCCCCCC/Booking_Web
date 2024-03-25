@@ -15,7 +15,7 @@ const Blog = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6 md:col-span-3 md:auto-cols-[30rem]">
-        {[0, 1].map((blog, idx) => (
+        {[0, 1].map((_, idx) => (
           <div
             key={idx}
             className="rounded-lg border border-slate-300 duration-200 hover:translate-x-1 dark:border-slate-900 md:col-span-1"

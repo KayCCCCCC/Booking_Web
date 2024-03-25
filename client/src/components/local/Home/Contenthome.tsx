@@ -1,5 +1,5 @@
 const ContentHome = () => {
-  return <div>ContentHome</div>
+  return <div className="h-[2000px]">ContentHome</div>
 }
 
 export default ContentHome

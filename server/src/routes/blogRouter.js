@@ -7,7 +7,11 @@ router.patch("/update/:id", upload.single('thumbnail'), BlogController.updateBlo
 router.patch("/change-status/:id", BlogController.updateStatus);
 router.get("/get/:id", BlogController.getBlogById);
 router.get("/get-by-user/:id", BlogController.getBlogByUserId);
-router.get("/get-all", BlogController.getAllBlogs);
+router.get("/get-all", BlogController.getAllBlog);
 router.get("/search-tag", BlogController.searchBlogByTag);
+router.post("/rating-blog", BlogController.ratingBlog);
+router.post("/comment-blog", BlogController.createCommentBlog);
+router.get("/get-comment-blog/:id", BlogController.getCommentsBlog);
+router.post("/reply-comment-blog", BlogController.replyCommentBlog);
 
 module.exports = router;

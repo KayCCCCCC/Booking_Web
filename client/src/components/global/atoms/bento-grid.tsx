@@ -19,29 +19,30 @@ export const GridItem = ({
     <div
       className={cn(
         className,
-        "shadow-input group flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
+        "shadow-input group flex flex-col justify-between space-y-2 rounded-xl border border-gray-100  bg-white p-4  transition duration-200 hover:border-transparent hover:shadow-xl dark:border-slate-900   dark:bg-slate-800 dark:shadow-none"
       )}
     >
-      <img src={data.urls[0]} alt="img" className={cn("w-full object-cover", classUrl)} />
+      <img src={data.urls[0]} alt="img" className={cn("w-full object-cover rounded-md", classUrl)} />
       <div className="transition duration-200 group-hover:translate-x-2 ">
-        <div className="my-1 font-bold text-neutral-600 dark:text-neutral-200 z-0">{data.name}</div>
-        <div className="truncate text-xs text-neutral-600 dark:text-neutral-200 z-0">{data.address}</div>
+        <div className="z-0 my-1 font-bold text-neutral-600 dark:text-neutral-200">{data.name}</div>
+        <div className="z-0 truncate text-xs text-neutral-600 dark:text-neutral-200">{data.address}</div>
       </div>
     </div>
   )
 }
-export const SkeletonGrid = ({ className }: { className: string;}) => {
-   
-  return <div
-    className={cn(
-      className,
-      "group shadow-input flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
-    )}
-  >
-    <Skeleton className={cn("w-full object-cover h-4/5")}></Skeleton>
-    <div className="transition duration-200 group-hover:translate-x-2">
-      <Skeleton className="my-1 font-bold w-1/2 h-6"></Skeleton>
-      <Skeleton className=" w-full h-4 pt-2 mt-2"></Skeleton>
+export const SkeletonGrid = ({ className }: { className: string }) => {
+  return (
+    <div
+      className={cn(
+        className,
+        "shadow-input group flex flex-col justify-between space-y-2 rounded-xl border border-gray-100 bg-white p-4 transition duration-200 hover:border-transparent hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
+      )}
+    >
+      <Skeleton className={cn("h-4/5 w-full object-cover")}></Skeleton>
+      <div className="transition duration-200 group-hover:translate-x-2">
+        <Skeleton className="my-1 h-6 w-1/2 font-bold"></Skeleton>
+        <Skeleton className=" mt-2 h-4 w-full pt-2"></Skeleton>
+      </div>
     </div>
-  </div>
+  )
 }

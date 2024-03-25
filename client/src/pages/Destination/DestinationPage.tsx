@@ -29,7 +29,7 @@ const DestinationPage = () => {
     current >= 70 ? setIsOverlayScrollType(true) : setIsOverlayScrollType(false)
   })
   return (
-    <div className=" ">
+    <div className="">
       <div className="fixed bottom-6 right-8  z-10 mb-3 ml-4 rounded-full bg-white shadow-md">
         {isOpenMap ? (
           <div className="flex cursor-pointer gap-2  p-2 " onClick={() => setIsOpenMap(false)}>
@@ -41,12 +41,12 @@ const DestinationPage = () => {
           </div>
         )}
       </div>
-      <div className=" ">
-        <div className={cn("flex items-center gap-10 px-20", isOverlayScrollType && "fixed top-0 bg-white md:w-full z-100"  )}>
-          <div className=" flex py-4 md:w-4/5 ">
+      <div className="gap-4 flex flex-col">
+        <div className={cn("flex items-center justify-center gap-10 px-20 dark:bg-slate-700", isOverlayScrollType && "fixed top-1 bg-white md:w-4/5 z-100 mx-auto left-0 right-0 rounded-full opacity-95"  )}>
+          <div className=" flex py-4 md:w-[90%] ">
             <ScrollbarType data={destinationTypes.data?.data} />
           </div>
-          <div className="item-center">
+          <div className="">
             <Filter />
           </div>
         </div>
@@ -57,7 +57,7 @@ const DestinationPage = () => {
               data={destinationList.data?.data}
               loading={destinationList.isLoading}
             />
-            {destinationList.data && (
+            {destinationList.data?.totalPages && (
               <PaginationCustom totalPages={destinationList.data?.totalPages} currentPage={page} setPage={setPage} />
             )}
           </div>

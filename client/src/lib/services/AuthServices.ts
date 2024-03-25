@@ -16,23 +16,15 @@ interface firstStepSignUpProps {
   data: RegisterUser
 }
 export const firstStepSignUp = async ({ data }: firstStepSignUpProps): Promise<authResponseProps> => {
-  // try {
   const response = await post<authResponseProps>(`auth/first-step-registeration`, data)
   return response.data
-  // } catch (error) {
-  //   throw error
-  // }
 }
 interface confirmOTPProps {
   data: z.infer<typeof OTPConfirmSchema>
 }
 export const confirmOtp = async ({ data }: confirmOTPProps): Promise<authResponseProps> => {
-  // try {
   const response = await post<authResponseProps>(`auth/submitOTP`, data)
   return response.data
-  // } catch (error) {
-  //   throw error
-  // }
 }
 
 interface updateInforProps {

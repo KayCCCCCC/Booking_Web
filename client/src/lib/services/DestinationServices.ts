@@ -22,6 +22,6 @@ export const getAllDestination = async ({ page }: { page: number }): Promise<des
 }
 
 export const getDestinationHighRatings = async (): Promise<destinationResponseProps> => {
-  const response = await get<destinationResponseProps>(`model/get-destination`)
+  const response = await get<destinationResponseProps>(`model/getDestinationHighest`)
   return response.data
 }

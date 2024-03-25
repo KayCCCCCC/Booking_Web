@@ -1,22 +1,21 @@
 import Blog from "@/components/local/Home/Blog"
-import ContentHome from "@/components/local/Home/ContentHome"
 import Location from "@/components/local/Home/Location"
 import Modal from "@/components/local/Home/Modal"
-import Tour from "@/components/local/Home/Tour"
+// import Tour from "@/components/local/Home/Tour"
 
 const HomePage = () => {
   return (
-    <div className="mx-20">
-      <div>
+    <div className="mx-20 flex flex-col justify-center gap-y-10 px-10 *:px-10 *:py-10 *:bg-slate-50/80 *:rounded-md *:border-none *:w-full *:dark:bg-slate-800/60">
+      <div className="mt-10">
         <Location />
       </div>
       <div>
         <Modal />
       </div>
-      <div>
+      {/* <div>
         <Tour />
-      </div>
-      <div>
+      </div> */}
+      <div className="mb-10">
         <Blog />
       </div>
     </div>

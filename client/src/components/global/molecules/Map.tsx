@@ -64,7 +64,7 @@ const Map = ({ isHideHeader }: MapProps) => {
     <div
       ref={mapContainer}
       className={cn(
-        `fixed bottom-4 h-[550px] overflow-hidden md:w-2/5 `,
+        `fixed bottom-4 h-[530px] overflow-hidden md:w-2/5 `,
         isHideHeader && "duration-2000 -translate-y-8 transform "
       )}
     />

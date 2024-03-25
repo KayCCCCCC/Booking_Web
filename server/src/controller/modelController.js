@@ -1237,7 +1237,7 @@ class ModelController {
                     }
                 ],
                 order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 10,
+                limit: 4,
             });
 
 
@@ -1247,11 +1247,12 @@ class ModelController {
                 if (destination.destination_images) {
                     urls = destination.destination_images.map(image => image.url);
                 }
-                console.log(destination.destinationType.dataValues.typeName)
+                console.log(destination)
                 return {
                     id: destination.id,
                     description: destination.description,
                     name: destination.name,
+                    address: destination.address,
                     latitude: destination.latitude,
                     longitude: destination.longitude,
                     status: destination.status,

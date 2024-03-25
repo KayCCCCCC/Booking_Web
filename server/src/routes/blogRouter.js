@@ -13,5 +13,6 @@ router.post("/rating-blog", BlogController.ratingBlog);
 router.post("/comment-blog", BlogController.createCommentBlog);
 router.get("/get-comment-blog/:id", BlogController.getCommentsBlog);
 router.post("/reply-comment-blog", BlogController.replyCommentBlog);
+router.post("/auto-create", BlogController.autoCreateBlog)
 
 module.exports = router;

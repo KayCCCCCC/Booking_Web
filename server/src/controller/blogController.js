@@ -1,4 +1,5 @@
 const { Op } = require('sequelize')
+const { faker } = require('@faker-js/faker');
 const sequelize = require('../database/connectDbPg')
 const db = require('../model/index')
 const Blog = db.blog
@@ -354,6 +355,30 @@ class BlogController {
         } catch (error) {
             console.error("Error creating reply:", error);
             res.status(500).json({ message: "Something went wrong!" });
+        }
+    }
+
+    static async autoCreateBlog(req, res) {
+        try {
+            const listOfBlogs = [];
+            for (let index = 0; index < 10; index++) {
+                let fakeInfo = {
+                    title: faker.lorem.sentence(),
+                    content: faker.lorem.paragraphs(),
+                    description: faker.lorem.paragraphs(),
+                    thumbnail: `https://source.boringavatars.com/bauhaus/180/${index}?square`,
+                    status: "Accepted",
+                    createdAt: faker.date.past(),
+                    updatedAt: faker.date.past(),
+                    userId: faker.number.int({ min: 1, max: 10 })
+                };
+                const fakeBlog = await Blog.create(fakeInfo);
+                listOfBlogs.push(fakeBlog);
+            }
+            res.status(200).json({ listOfBlogs });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Something went wrong" });
         }
     }
 

@@ -687,20 +687,58 @@ class ModelController {
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
-                // Tìm các khách sạn phù hợp với điều kiện filter
                 const filteredHotels = await Hotel.findAll({
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                        attributes: ["address", "rate", "description", "numberRate"],
+                        include: [
+                            {
+                                model: ModelImages,
+                                attributes: ['url'],
+                            },
+                            {
+                                model: ModelType,
+                                attributes: ['typeName'],
+                            }
+                        ],
                     }
                 });
 
+                const formattedModels = filteredHotels.map(model => {
+                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                    return {
+                        checkInDate: model.dataValues.checkInDate,
+                        checkOutDate: model.dataValues.checkOutDate,
+                        amenities: model.dataValues.amenities,
+                        numberOfRooms: model.dataValues.numberOfRooms,
+                        numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                        pricePerNight: model.dataValues.pricePerNight,
+                        bookingStatus: model.dataValues.bookingStatus,
+                        contactPerson: model.dataValues.contactPerson,
+                        contactEmail: model.dataValues.contactEmail,
+                        model: {
+                            id: model.dataValues.model.dataValues.id,
+                            description: model.dataValues.model.dataValues.description,
+                            address: model.dataValues.model.dataValues.address,
+                            name: model.dataValues.model.dataValues.name,
+                            latitude: model.dataValues.model.dataValues.latitude,
+                            longitude: model.dataValues.model.dataValues.longitude,
+                            status: model.dataValues.model.dataValues.status,
+                            rate: model.dataValues.model.dataValues.rate,
+                            numberRate: model.dataValues.model.dataValues.numberRate,
+                            iso2: model.dataValues.model.dataValues.iso2,
+                            address_location: model.dataValues.model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.model.dataValues.modelType.typeName,
+                        }
+                    };
+                });
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
-                    data: filteredHotels
+                    data: formattedModels
                 });
             } else {
                 const hotelFilterOptions = {};
@@ -713,20 +751,59 @@ class ModelController {
                 if (bookingStatus) hotelFilterOptions.bookingStatus = { [Op.like]: `%${bookingStatus}%` };
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
-                // Tìm các khách sạn phù hợp với điều kiện filter
+
                 const filteredHotels = await Hotel.findAll({
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                        attributes: ["address", "rate", "description", "numberRate"],
+                        include: [
+                            {
+                                model: ModelImages,
+                                attributes: ['url'],
+                            },
+                            {
+                                model: ModelType,
+                                attributes: ['typeName'],
+                            }
+                        ],
                     }
                 });
 
+                const formattedModels = filteredHotels.map(model => {
+                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                    return {
+                        checkInDate: model.dataValues.checkInDate,
+                        checkOutDate: model.dataValues.checkOutDate,
+                        amenities: model.dataValues.amenities,
+                        numberOfRooms: model.dataValues.numberOfRooms,
+                        numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                        pricePerNight: model.dataValues.pricePerNight,
+                        bookingStatus: model.dataValues.bookingStatus,
+                        contactPerson: model.dataValues.contactPerson,
+                        contactEmail: model.dataValues.contactEmail,
+                        model: {
+                            id: model.dataValues.model.dataValues.id,
+                            description: model.dataValues.model.dataValues.description,
+                            address: model.dataValues.model.dataValues.address,
+                            name: model.dataValues.model.dataValues.name,
+                            latitude: model.dataValues.model.dataValues.latitude,
+                            longitude: model.dataValues.model.dataValues.longitude,
+                            status: model.dataValues.model.dataValues.status,
+                            rate: model.dataValues.model.dataValues.rate,
+                            numberRate: model.dataValues.model.dataValues.numberRate,
+                            iso2: model.dataValues.model.dataValues.iso2,
+                            address_location: model.dataValues.model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.model.dataValues.modelType.typeName,
+                        }
+                    };
+                });
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
-                    data: filteredHotels
+                    data: formattedModels
                 });
             }
 
@@ -767,14 +844,55 @@ class ModelController {
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                        attributes: ["address", "rate", "description", "numberRate"],
+                        include: [
+                            {
+                                model: ModelImages,
+                                attributes: ['url'],
+                            },
+                            {
+                                model: ModelType,
+                                attributes: ['typeName'],
+                            }
+                        ],
                     }
+                });
+
+                const formattedModels = filteredFlights.map(model => {
+
+                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                    return {
+                        departureTime: model.dataValues.departureTime,
+                        arrivalTime: model.dataValues.arrivalTime,
+                        origin: model.dataValues.origin,
+                        destination: model.dataValues.destination,
+                        flightNumber: model.dataValues.flightNumber,
+                        price: model.dataValues.price,
+                        seatCapacity: model.dataValues.seatCapacity,
+                        availableSeats: model.dataValues.availableSeats,
+                        airline: model.dataValues.airline,
+                        model: {
+                            id: model.dataValues.model.dataValues.id,
+                            description: model.dataValues.model.dataValues.description,
+                            address: model.dataValues.model.dataValues.address,
+                            name: model.dataValues.model.dataValues.name,
+                            latitude: model.dataValues.model.dataValues.latitude,
+                            longitude: model.dataValues.model.dataValues.longitude,
+                            status: model.dataValues.model.dataValues.status,
+                            rate: model.dataValues.model.dataValues.rate,
+                            numberRate: model.dataValues.model.dataValues.numberRate,
+                            iso2: model.dataValues.model.dataValues.iso2,
+                            address_location: model.dataValues.model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.model.dataValues.modelType.typeName,
+                        },
+                    };
                 });
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered flights successfully",
-                    data: filteredFlights
+                    data: formattedModels
                 });
             } else {
                 const flightFilterOptions = {};
@@ -791,14 +909,55 @@ class ModelController {
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                        attributes: ["address", "rate", "description", "numberRate"],
+                        include: [
+                            {
+                                model: ModelImages,
+                                attributes: ['url'],
+                            },
+                            {
+                                model: ModelType,
+                                attributes: ['typeName'],
+                            }
+                        ],
                     }
+                });
+
+                const formattedModels = filteredFlights.map(model => {
+
+                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                    return {
+                        departureTime: model.dataValues.departureTime,
+                        arrivalTime: model.dataValues.arrivalTime,
+                        origin: model.dataValues.origin,
+                        destination: model.dataValues.destination,
+                        flightNumber: model.dataValues.flightNumber,
+                        price: model.dataValues.price,
+                        seatCapacity: model.dataValues.seatCapacity,
+                        availableSeats: model.dataValues.availableSeats,
+                        airline: model.dataValues.airline,
+                        model: {
+                            id: model.dataValues.model.dataValues.id,
+                            description: model.dataValues.model.dataValues.description,
+                            address: model.dataValues.model.dataValues.address,
+                            name: model.dataValues.model.dataValues.name,
+                            latitude: model.dataValues.model.dataValues.latitude,
+                            longitude: model.dataValues.model.dataValues.longitude,
+                            status: model.dataValues.model.dataValues.status,
+                            rate: model.dataValues.model.dataValues.rate,
+                            numberRate: model.dataValues.model.dataValues.numberRate,
+                            iso2: model.dataValues.model.dataValues.iso2,
+                            address_location: model.dataValues.model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.model.dataValues.modelType.typeName,
+                        },
+                    };
                 });
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered flights successfully",
-                    data: filteredFlights
+                    data: formattedModels
                 });
             }
         } catch (error) {
@@ -835,14 +994,52 @@ class ModelController {
                     where: carFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                        attributes: ["address", "rate", "description", "numberRate"],
+                        include: [
+                            {
+                                model: ModelImages,
+                                attributes: ['url'],
+                            },
+                            {
+                                model: ModelType,
+                                attributes: ['typeName'],
+                            }
+                        ],
                     }
+                });
+
+                const formattedModels = filteredCars.map(model => {
+
+                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                    return {
+                        type: model.dataValues.type,
+                        color: model.dataValues.color,
+                        size: model.dataValues.size,
+                        pricePerHour: model.dataValues.pricePerHour,
+                        availability: model.dataValues.availability,
+                        location: model.dataValues.location,
+                        model: {
+                            id: model.dataValues.model.dataValues.id,
+                            description: model.dataValues.model.dataValues.description,
+                            address: model.dataValues.model.dataValues.address,
+                            name: model.dataValues.model.dataValues.name,
+                            latitude: model.dataValues.model.dataValues.latitude,
+                            longitude: model.dataValues.model.dataValues.longitude,
+                            status: model.dataValues.model.dataValues.status,
+                            rate: model.dataValues.model.dataValues.rate,
+                            numberRate: model.dataValues.model.dataValues.numberRate,
+                            iso2: model.dataValues.model.dataValues.iso2,
+                            address_location: model.dataValues.model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.model.dataValues.modelType.typeName,
+                        },
+                    };
                 });
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered cars successfully",
-                    data: filteredCars
+                    data: formattedModels
                 });
             }
 
@@ -858,14 +1055,52 @@ class ModelController {
                 where: carFilterOptions,
                 include: {
                     model: Model,
-                    attributes: ["address", "rate", "description", "nameOfModel", "numberRate"]
+                    attributes: ["address", "rate", "description", "numberRate"],
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        }
+                    ],
                 }
+            });
+
+            const formattedModels = filteredCars.map(model => {
+
+                const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                return {
+                    type: model.dataValues.type,
+                    color: model.dataValues.color,
+                    size: model.dataValues.size,
+                    pricePerHour: model.dataValues.pricePerHour,
+                    availability: model.dataValues.availability,
+                    location: model.dataValues.location,
+                    model: {
+                        id: model.dataValues.model.dataValues.id,
+                        description: model.dataValues.model.dataValues.description,
+                        address: model.dataValues.model.dataValues.address,
+                        name: model.dataValues.model.dataValues.name,
+                        latitude: model.dataValues.model.dataValues.latitude,
+                        longitude: model.dataValues.model.dataValues.longitude,
+                        status: model.dataValues.model.dataValues.status,
+                        rate: model.dataValues.model.dataValues.rate,
+                        numberRate: model.dataValues.model.dataValues.numberRate,
+                        iso2: model.dataValues.model.dataValues.iso2,
+                        address_location: model.dataValues.model.dataValues.address_location,
+                        urls: urls,
+                        typeName: model.dataValues.model.dataValues.modelType.typeName,
+                    },
+                };
             });
 
             return res.status(200).json({
                 success: true,
                 message: "Filtered cars successfully",
-                data: filteredCars
+                data: formattedModels
             });
         } catch (error) {
             console.error("Error FilterCar:", error);
@@ -894,13 +1129,43 @@ class ModelController {
             }
 
             const filteredDestinations = await Destination.findAll({
-                where: destinationFilterOptions
+                where: destinationFilterOptions,
+                include: [
+                    {
+                        model: DestinationImages,
+                        attributes: ['url'],
+                    },
+                    {
+                        model: DestinationType,
+                        attributes: ['typeName'],
+                    }
+                ],
+            });
+
+            const formattedDestinations = filteredDestinations.map(destination => {
+                let urls = [];
+                if (destination.destination_images) {
+                    urls = destination.destination_images.map(image => image.url);
+                }
+                return {
+                    id: destination.id,
+                    description: destination.description,
+                    name: destination.name,
+                    address: destination.address,
+                    latitude: destination.latitude,
+                    longitude: destination.longitude,
+                    status: destination.status,
+                    rate: destination.rate,
+                    numberRate: destination.numberRate,
+                    urls: urls,
+                    typeName: destination.destinationType.dataValues.typeName,
+                };
             });
 
             return res.status(200).json({
                 success: true,
                 message: "Filtered destinations successfully",
-                data: filteredDestinations
+                data: formattedDestinations
             });
         } catch (error) {
             console.error("Error FilterDestination:", error);

@@ -31,6 +31,8 @@ db.notification = require("./notificationModel")(sequelize, DataTypes);
 db.favorite = require('./favoriteModelUserModel')(sequelize, DataTypes);
 db.tag = require('./tagModel')(sequelize, DataTypes);
 db.tag_blog = require('./blog_tagModel')(sequelize, DataTypes);
+db.cookie = require('./cookieModel')(sequelize, DataTypes);
+db.cookie_model = require('./cookie_modelModel')(sequelize, DataTypes);
 //relation
 
 db.role.hasMany(db.user);
@@ -144,6 +146,14 @@ db.notification.belongsTo(db.user, {
 
 db.blog.belongsToMany(db.tag, { through: "blog_tag", foreignKey: 'blogId' });
 db.tag.belongsToMany(db.blog, { through: "blog_tag", foreignKey: 'tagId' });
+
+db.model.belongsToMany(db.cookie, { through: "cookie_model", foreignKey: 'modelId' });
+db.cookie.belongsToMany(db.model, { through: "cookie_model", foreignKey: 'cookieId' });
+
+db.user.hasMany(db.cookie_model);
+db.cookie_model.belongsTo(db.user, {
+    foreignKey: "userId",
+});
 
 db.sequelize.sync({ logging: false, force: false }).then(() => {
     console.log("Re-sync success");

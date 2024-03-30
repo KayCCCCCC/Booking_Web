@@ -17,6 +17,8 @@ const Car = db.car
 const Destination = db.destination
 const DestinationType = db.destinationType
 const DestinationImages = db.destinationImages
+const Cookie = db.cookie
+const CookieModel = db.cookie_model
 
 class ModelController {
     static async AutoCreateModalType(req, res) {
@@ -172,6 +174,72 @@ class ModelController {
         }
     }
 
+    static async CreateBookMark(req, res) {
+        try {
+            const { modelId, userId } = req.body;
+
+            const model = await Model.findByPk(modelId);
+
+            if (!model) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Model not found"
+                });
+            }
+
+            let cookie = await Cookie.findOne({
+                where: {
+                    name: model.name.trim()
+                }
+            });
+
+            if (!cookie) {
+                [cookie] = await Cookie.findOrCreate({
+                    where: {
+                        name: model.name.trim()
+                    }
+                });
+            }
+
+            const existingBookmark = await CookieModel.findOne({
+                where: {
+                    modelId: modelId,
+                    cookieId: cookie.id,
+                    userId: userId
+                }
+            });
+
+            if (!existingBookmark) {
+                await CookieModel.create({
+                    modelId: modelId,
+                    cookieId: cookie.id,
+                    userId: userId
+                });
+            } else {
+                await existingBookmark.update({
+                    updatedAt: new Date()
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Bookmark added successfully"
+            });
+
+        } catch (error) {
+            console.error("Error CreateBookMark:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+
+    static async GetListBookMarkOfUserId(req, res) {
+
+    }
+
     static async UpdateModel(req, res) {
         try {
             const modelId = req.params.id;
@@ -296,48 +364,45 @@ class ModelController {
             const page = parseInt(req.query.page) || 1;
             const limit = 12;
             const offset = (page - 1) * limit;
-            const models = await ModelImages.findAndCountAll({
-                attributes: ["url", "modelId"],
-                include: {
-                    model: Model,
-                    attributes: ["description", "address", "name", "rate", "numberRate", "id"],
-                    include: {
+
+            const models = await Model.findAndCountAll({
+                attributes: ["id", "description", "address", "name", "rate", "numberRate"],
+                include: [
+                    {
+                        model: ModelImages,
+                        attributes: ['url'],
+                    },
+                    {
                         model: ModelType,
                         attributes: ['typeName']
                     }
-                },
+                ],
                 limit: limit,
                 offset: offset
             });
 
+
             const totalCount = models.count;
             const totalPages = Math.ceil(totalCount / limit);
 
-            const groupedModels = models.rows.reduce((acc, curr) => {
-                const modelId = curr.modelId;
-                if (!acc[modelId]) {
-                    acc[modelId] = {
-                        modelId: modelId,
-                        description: curr.model.description,
-                        address: curr.model.address,
-                        name: curr.model.name,
-                        rate: curr.model.rate,
-                        numberRate: curr.model.numberRate,
-                        urls: [curr.url],
-                        typeName: curr.model.modelType.typeName
-                    };
-                } else {
-                    acc[modelId].urls.push(curr.url);
-                }
-                return acc;
-            }, {});
-
-            const result = Object.values(groupedModels);
+            const formattedModels = models.rows.map(model => {
+                const urls = model.model_images.map(image => image.url);
+                return {
+                    id: model.id,
+                    description: model.description,
+                    address: model.address,
+                    name: model.name,
+                    rate: model.rate,
+                    numberRate: model.numberRate,
+                    urls: urls,
+                    typeName: model.modelType.typeName
+                };
+            });
 
             return res.status(200).json({
                 success: true,
                 message: "Models retrieved successfully",
-                data: result,
+                data: formattedModels,
                 totalCount: totalCount,
                 totalPages: totalPages
             });
@@ -355,16 +420,19 @@ class ModelController {
             const page = parseInt(req.query.page) || 1;
             const limit = 12;
             const offset = (page - 1) * limit;
-            const destinations = await DestinationImages.findAndCountAll({
-                attributes: ["url", "destinationId"],
-                include: {
-                    model: Destination,
-                    attributes: ["description", "address", "name", "rate", "numberRate", "id"],
-                    include: {
+
+            const destinations = await Destination.findAndCountAll({
+                attributes: ["id", "description", "address", "name", "rate", "numberRate"],
+                include: [
+                    {
+                        model: DestinationImages,
+                        attributes: ['url'],
+                    },
+                    {
                         model: DestinationType,
                         attributes: ['typeName']
                     }
-                },
+                ],
                 limit: limit,
                 offset: offset
             });
@@ -372,31 +440,24 @@ class ModelController {
             const totalCount = destinations.count;
             const totalPages = Math.ceil(totalCount / limit);
 
-            const groupedDestinations = destinations.rows.reduce((acc, curr) => {
-                const destinationId = curr.destinationId;
-                if (!acc[destinationId]) {
-                    acc[destinationId] = {
-                        destinationId: destinationId,
-                        description: curr.destination.description,
-                        address: curr.destination.address,
-                        name: curr.destination.name,
-                        rate: curr.destination.rate,
-                        numberRate: curr.destination.numberRate,
-                        urls: [curr.url],
-                        typeName: curr.destination.destinationType.typeName
-                    };
-                } else {
-                    acc[destinationId].urls.push(curr.url);
-                }
-                return acc;
-            }, {});
-
-            const result = Object.values(groupedDestinations);
+            const formattedDestinations = destinations.rows.map(destination => {
+                const urls = destination.destination_images.map(image => image.url);
+                return {
+                    id: destination.id,
+                    description: destination.description,
+                    address: destination.address,
+                    name: destination.name,
+                    rate: destination.rate,
+                    numberRate: destination.numberRate,
+                    urls: urls,
+                    typeName: destination.destinationType.typeName
+                };
+            });
 
             return res.status(200).json({
                 success: true,
                 message: "Destinations retrieved successfully",
-                data: result,
+                data: formattedDestinations,
                 totalCount: totalCount,
                 totalPages: totalPages
             });
@@ -432,17 +493,19 @@ class ModelController {
                     address_location: `${longitude},${latitude}`
                 });
 
-                const imageUrl = faker.image.url();
-                const result = await cloundinary.uploader.upload(imageUrl, {
-                    upload_preset: 'vnldjdbe',
-                    public_id: `unique_id_${Date.now()}`
-                });
+                for (let i = 0; i < 3; i++) {
+                    const imageUrl = faker.image.url();
+                    const result = await cloundinary.uploader.upload(imageUrl, {
+                        upload_preset: 'vnldjdbe',
+                        public_id: `unique_id_${Date.now()}`
+                    });
 
-                const createdImage = await DestinationImages.create({
-                    url: result.secure_url,
-                    publicId: result.public_id,
-                    destinationId: newModel.id
-                });
+                    const createdImage = await DestinationImages.create({
+                        url: result.secure_url,
+                        publicId: result.public_id,
+                        destinationId: newModel.id
+                    });
+                }
 
                 return newModel;
             });
@@ -466,7 +529,7 @@ class ModelController {
     static async AutoCreateModel(req, res) {
         try {
             const response = await axios.get('https://countriesnow.space/api/v0.1/countries/positions');
-            const listModel = response.data.data;
+            const listModel = response.data.data.slice(0, 60);
             ;
 
             const creationPromises = listModel.map(async (model) => {
@@ -490,18 +553,20 @@ class ModelController {
                     address_location: `${longitude},${latitude}`
                 });
 
-                const responses = await axios.get('https://picsum.photos/400/500/?random');
-                const imageUrl = responses.request.res.responseUrl
-                const result = await cloundinary.uploader.upload(imageUrl, {
-                    upload_preset: 'vnldjdbe',
-                    public_id: `unique_id_${Date.now()}`
-                });
+                for (let i = 0; i < 3; i++) {
+                    const responses = await axios.get('https://picsum.photos/400/500/?random');
+                    const imageUrl = responses.request.res.responseUrl
+                    const result = await cloundinary.uploader.upload(imageUrl, {
+                        upload_preset: 'vnldjdbe',
+                        public_id: `unique_id_${Date.now()}`
+                    });
 
-                const createdImage = await ModelImages.create({
-                    url: result.secure_url,
-                    publicId: result.public_id,
-                    modelId: newModel.id
-                });
+                    const createdImage = await ModelImages.create({
+                        url: result.secure_url,
+                        publicId: result.public_id,
+                        modelId: newModel.id
+                    });
+                }
 
                 return newModel;
             });
@@ -1238,7 +1303,6 @@ class ModelController {
                         attributes: ['typeName'],
                     }
                 ],
-                raw: true
             });
 
             const nearbyModels = models.filter(model => {
@@ -1249,9 +1313,23 @@ class ModelController {
                 return false;
             });
 
+            const formattedNearbyModels = nearbyModels.map(model => {
+                const urls = model.model_images.map(image => image.url);
+                return {
+                    id: model.id,
+                    description: model.description,
+                    address: model.address,
+                    name: model.name,
+                    rate: model.rate,
+                    numberRate: model.numberRate,
+                    urls: urls,
+                    typeName: model.modelType.typeName
+                };
+            });
+
             return res.status(200).json({
                 success: true,
-                data: nearbyModels
+                data: formattedNearbyModels
             });
         } catch (error) {
             console.error("Error in GetNearbyModels:", error);
@@ -1295,7 +1373,6 @@ class ModelController {
                             attributes: ['typeName'],
                         }
                     ],
-                    raw: true
                 });
 
                 const nearbyDestinations = destinations.filter(dest => {
@@ -1307,9 +1384,23 @@ class ModelController {
                     }
                 });
 
+                const formattedNearbyDestinations = nearbyDestinations.map(model => {
+                    const urls = model.destination_images.map(image => image.url);
+                    return {
+                        id: model.id,
+                        description: model.description,
+                        address: model.address,
+                        name: model.name,
+                        rate: model.rate,
+                        numberRate: model.numberRate,
+                        urls: urls,
+                        typeName: model.destinationType.typeName
+                    };
+                });
+
                 return res.status(200).json({
                     success: true,
-                    data: nearbyDestinations
+                    data: formattedNearbyDestinations
                 });
             } else {
                 return res.status(404).json({
@@ -1368,9 +1459,23 @@ class ModelController {
                 }
             });
 
+            const formattedNearbyModels = nearbyModels.map(model => {
+                const urls = model.model_images.map(image => image.url);
+                return {
+                    id: model.id,
+                    description: model.description,
+                    address: model.address,
+                    name: model.name,
+                    rate: model.rate,
+                    numberRate: model.numberRate,
+                    urls: urls,
+                    typeName: model.modelType.typeName
+                };
+            });
+
             return res.status(200).json({
                 success: true,
-                data: nearbyModels
+                data: formattedNearbyModels
             });
 
         } catch (error) {

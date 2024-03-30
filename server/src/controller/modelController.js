@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker');
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const cloundinary = require('../utils/cloudinary')
 const db = require('../model/index')
 const provinces = require('../database/dataProvincesJson')
@@ -1734,45 +1734,177 @@ class ModelController {
 
     static async getModelHighRate(req, res) {
         try {
-            const highRatedModels = await Model.findAll({
-                include: [
-                    {
-                        model: ModelImages,
-                        attributes: ['url'],
+            const { typeName } = req.query
+
+            const type = await ModelType.findOne({
+                where: {
+                    typeName
+                }
+            })
+
+            if (type.typeName == "Hotel") {
+                const highRatedModels = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
                     },
-                    {
-                        model: ModelType,
-                        attributes: ['typeName'],
-                    }
-                ],
-                order: [['rate', 'DESC'], ['numberRate', 'DESC']],
-                limit: 4
-            });
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Hotel,
+                        },
+                    ],
+                    order: [['rate', 'DESC'], ['numberRate', 'DESC']],
+                    limit: 4
+                });
 
-            const formattedModels = highRatedModels.map(model => {
-                const urls = model.dataValues.model_images.map(image => image.url);
-                return {
-                    id: model.dataValues.id,
-                    description: model.dataValues.description,
-                    address: model.dataValues.address,
-                    name: model.dataValues.name,
-                    latitude: model.dataValues.latitude,
-                    longitude: model.dataValues.longitude,
-                    status: model.dataValues.status,
-                    rate: model.dataValues.rate,
-                    numberRate: model.dataValues.numberRate,
-                    iso2: model.dataValues.iso2,
-                    address_location: model.dataValues.address_location,
-                    urls: urls,
-                    typeName: model.dataValues.modelType.typeName
-                };
-            });
+                const formattedModels = highRatedModels.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    console.log(model.dataValues)
+                    return {
+                        checkInDate: model.hotel.dataValues.checkInDate,
+                        checkOutDate: model.hotel.dataValues.checkOutDate,
+                        amenities: model.hotel.dataValues.amenities,
+                        numberOfRooms: model.hotel.dataValues.numberOfRooms,
+                        numberOfGuestsPerRoom: model.hotel.dataValues.numberOfGuestsPerRoom,
+                        pricePerNight: model.hotel.dataValues.pricePerNight,
+                        bookingStatus: model.hotel.dataValues.bookingStatus,
+                        contactPerson: model.hotel.dataValues.contactPerson,
+                        contactEmail: model.hotel.dataValues.contactEmail,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
 
-            return res.status(200).json({
-                success: true,
-                message: "Top 5 high rated Models found successfully.",
-                data: formattedModels
-            });
+                return res.status(200).json({
+                    success: true,
+                    message: "Top 5 high rated Models found successfully.",
+                    data: formattedModels
+                });
+            } else if (type.typeName == "Flight") {
+                const highRatedModels = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Flight,
+                        },
+                    ],
+                    order: [['rate', 'DESC'], ['numberRate', 'DESC']],
+                    limit: 4
+                });
+
+                const formattedModels = highRatedModels.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    console.log(model.dataValues)
+                    return {
+                        departureTime: model.flight.dataValues.departureTime,
+                        arrivalTime: model.flight.dataValues.arrivalTime,
+                        origin: model.flight.dataValues.origin,
+                        destination: model.flight.dataValues.destination,
+                        flightNumber: model.flight.dataValues.flightNumber,
+                        price: model.flight.dataValues.price,
+                        seatCapacity: model.flight.dataValues.seatCapacity,
+                        availableSeats: model.flight.dataValues.availableSeats,
+                        airline: model.flight.dataValues.airline,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Top 5 high rated Models found successfully.",
+                    data: formattedModels
+                });
+            } else if (type.typeName == "Car") {
+                const highRatedModels = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Car,
+                        },
+                    ],
+                    order: [['rate', 'DESC'], ['numberRate', 'DESC']],
+                    limit: 4
+                });
+
+                const formattedModels = highRatedModels.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    console.log(model.dataValues)
+                    return {
+                        type: model.car.dataValues.type,
+                        color: model.car.dataValues.color,
+                        size: model.car.dataValues.size,
+                        pricePerHour: model.car.dataValues.pricePerHour,
+                        availability: model.car.dataValues.availability,
+                        location: model.car.dataValues.location,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Top 5 high rated Models found successfully.",
+                    data: formattedModels
+                });
+            }
         } catch (error) {
             console.error("Error in getModelHighRate:", error);
             return res.status(500).json({

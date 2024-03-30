@@ -193,6 +193,10 @@ class BlogController {
                             attributes: [],
                         },
                     },
+                    {
+                        model: User,
+                        attributes: ["id", "name", "email", "avatar"],
+                    }
                 ],
                 attributes: [
                     "id",
@@ -210,9 +214,10 @@ class BlogController {
                     "title",
                     "thumbnail",
                     "description",
-                    "status",
+                    "blog.status",
                     "blog.id",
                     "tags.id",
+                    "user.id"
                 ],
                 order: [["createdAt", sort]],
                 offset: offset,
@@ -220,12 +225,15 @@ class BlogController {
                 subQuery: false,
             });
 
+            console.log(blogs);
+
             res.status(200).json({ blogs: blogs });
         } catch (error) {
             console.error(error);
             res.status(500).send({ message: "Something went wrong." });
         }
     }
+
 
     static async updateStatus(req, res) {
         try {

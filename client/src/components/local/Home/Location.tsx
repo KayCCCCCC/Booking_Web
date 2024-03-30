@@ -18,7 +18,7 @@ const Location = () => {
         <div className=" text-4xl font-semibold uppercase tracking-wider">around the world</div>
       </div>
       <div className="mx-auto grid w-full grid-cols-3 gap-6 md:auto-rows-[18rem] ">
-        {highLocations.data.data.slice(0, 4).map((location, index) => (
+        {highLocations.data.data.map((location, index) => (
           <div
             className={cn(
               "relative rounded-md md:col-span-1 md:row-span-1  ",

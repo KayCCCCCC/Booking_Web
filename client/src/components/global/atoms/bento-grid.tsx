@@ -1,6 +1,7 @@
 import { Destination } from "@/lib/interface/destination"
 import { cn } from "@/lib/utils/cn"
 import { Skeleton } from "./skeleton"
+import { Accommodation } from "@/lib/interface/accommodation";
 
 export const Grid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
   return <div className={cn("mx-auto grid gap-2 md:auto-rows-[20rem] ", className)}>{children}</div>
@@ -13,7 +14,7 @@ export const GridItem = ({
 }: {
   className?: string
   classUrl: string
-  data: Destination
+  data: Destination | Accommodation
 }) => {
   return (
     <div

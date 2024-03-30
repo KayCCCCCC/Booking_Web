@@ -25,3 +25,8 @@ export const getDestinationHighRatings = async (): Promise<destinationResponsePr
   const response = await get<destinationResponseProps>(`model/getDestinationHighest`)
   return response.data
 }
+
+export const filterDestinationByType = async ({ typeName}: {typeName: string}) : Promise<destinationResponseProps> => {
+  const response = await get<destinationResponseProps>(`model/filter-destination?nameType=${typeName}`)
+  return response.data
+}

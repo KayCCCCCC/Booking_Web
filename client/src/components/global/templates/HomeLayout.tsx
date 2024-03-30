@@ -5,33 +5,37 @@ import Banner from "../organisms/Banner"
 import { ToastContainer } from "react-toastify"
 import { Spotlight } from "../molecules/Spotlight"
 import Footer from "../organisms/Footer"
-import { useDispatch, useSelector } from "react-redux"
-import { useMotionValueEvent, useScroll } from "framer-motion"
-import { shouldHideScrollBack, shouldVisibleScrollBack } from "@/store/slices/GlobalSlice"
-import { RootState } from "@/store/store"
+import { useMotionValueEvent, useScroll, motion, useAnimate } from "framer-motion"
 import { ChevronsUp } from "lucide-react"
+import { useState } from "react"
 
 const HomeLayout = () => {
-  const dispatch = useDispatch()
-  const { isVisibleScrollBack } = useSelector((state: RootState) => state.global)
+  const [scope, animate] = useAnimate()
+  const [isScrollBack, setIsScrollBack] = useState<boolean>(false)
   const { scrollYProgress } = useScroll()
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     if (typeof current === "number") {
       const direction = current! - scrollYProgress.getPrevious()!
       if (scrollYProgress.get() < 0.05) {
-        dispatch(shouldHideScrollBack())
+        setIsScrollBack(false)
       } else {
-        direction < 0 ? dispatch(shouldVisibleScrollBack()) : dispatch(shouldHideScrollBack())
+        direction < 0 ? setIsScrollBack(true) : setIsScrollBack(false)
       }
     }
   })
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    })
+  }
   return (
     <ThemeProvider>
       <div className="relative w-full">
         <img src="/mainBG.jpg" alt="@background" className="h-md w-full  object-cover" />
       </div>
       <div className="absolute top-0 min-w-full">
-        <div className="bg-grid-white/[0.02] relative flex h-md w-full bg-black/[0.3]  ">
+        <div className="bg-grid-white/[0.02] relative flex h-md w-full bg-black/[0.3]  " ref={scope}>
           <Header classContent="top-0 z-10 " />
           <Spotlight className="-top-40 left-0 md:-top-20 md:left-60 " fill="white" />
           <Banner classContent="z-10 absolute" />
@@ -41,10 +45,13 @@ const HomeLayout = () => {
         <Outlet />
         <ToastContainer />
       </main>
-      {isVisibleScrollBack && (
-        <div className="fixed bottom-20 right-8 flex items-center justify-center rounded-full border border-slate-50 bg-white p-2 shadow-md">
+      {isScrollBack && (
+        <motion.div
+          className="fixed bottom-20 right-8 flex animate-bounce cursor-pointer items-center justify-center rounded-full border border-slate-50 bg-white p-2 shadow-md"
+          onClick={scrollToTop}
+        >
           <ChevronsUp />
-        </div>
+        </motion.div>
       )}
       <Footer />
     </ThemeProvider>

@@ -11,7 +11,6 @@ const range = (start: number, end: number) => {
   return Array.from({ length }, (_, idx) => idx + start)
 }
 export const usePagination = ({ currentPage, totalPages, siblingCount = 1 }: PaginationProps) => {
-  console.log(currentPage, totalPages, siblingCount)
 
   const paginationRange = useMemo(() => {
     const totalPageNumbers = siblingCount + 5

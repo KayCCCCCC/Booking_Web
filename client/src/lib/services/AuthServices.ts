@@ -1,10 +1,10 @@
 import { z } from "zod"
 import { RegisterUser, User } from "../interface/user.interface"
 import { post } from "./RootServices"
-import { OTPConfirmSchema } from "../schema/SignUp/OTPConfirm"
-import { UpdateInforUserSchemaType } from "../schema/SignUp/UpdateInfoUser"
-import { LoginUserSchemaType } from "../schema/SignIn/LoginUser"
-import { GGAccountType } from "../schema/SignUp/GGAcount"
+import { OTPConfirmSchema } from "../schema/SignUp/OTPConfirm.schema"
+import { UpdateInforUserSchemaType } from "../schema/SignUp/UpdateInfoUser.schema"
+import { LoginUserSchemaType } from "../schema/SignIn/LoginUser.schema"
+import { GGAccountType } from "../schema/SignUp/GGAcount.schema"
 
 interface authResponseProps {
   success: boolean

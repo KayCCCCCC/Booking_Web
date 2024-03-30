@@ -7,6 +7,7 @@ import HomePage from "./pages/Home/HomePage"
 import MainLayout from "./components/global/templates/MainLayout"
 import DestinationPage from "./pages/Destination/DestinationPage"
 import HomeLayout from "./components/global/templates/HomeLayout"
+import StaysPage from "./pages/Stays/StaysPage"
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: RouterEndPoint.Destinations,
         element: <DestinationPage />
+      },
+      {
+        path: RouterEndPoint.Stays,
+        element: <StaysPage/>
       }
     ]
   },

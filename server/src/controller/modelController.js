@@ -378,9 +378,10 @@ class ModelController {
                     }
                 ],
                 limit: limit,
-                offset: offset
+                offset: offset,
+                order: [['id', 'ASC']],
+                distinct: true
             });
-
 
             const totalCount = models.count;
             const totalPages = Math.ceil(totalCount / limit);
@@ -434,7 +435,9 @@ class ModelController {
                     }
                 ],
                 limit: limit,
-                offset: offset
+                offset: offset,
+                order: [['id', 'ASC']],
+                distinct: true
             });
 
             const totalCount = destinations.count;
@@ -756,11 +759,11 @@ class ModelController {
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
-                const filteredHotels = await Hotel.findAll({
+                const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                         include: [
                             {
                                 model: ModelImages,
@@ -774,10 +777,14 @@ class ModelController {
                     },
                     limit: perPage,
                     offset: offset,
+                    order: [['id', 'ASC']],
+                    distinct: true
                 });
 
+                const totalCount = filteredHotels.count;
+                const totalPages = Math.ceil(totalCount / perPage);
 
-                const formattedModels = filteredHotels.map(model => {
+                const formattedModels = filteredHotels.rows.map(model => {
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                     return {
                         checkInDate: model.dataValues.checkInDate,
@@ -810,6 +817,8 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
+                    totalCount,
+                    totalPages,
                     data: formattedModels,
                 });
             } else {
@@ -824,11 +833,11 @@ class ModelController {
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
-                const filteredHotels = await Hotel.findAll({
+                const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                         include: [
                             {
                                 model: ModelImages,
@@ -842,9 +851,14 @@ class ModelController {
                     },
                     limit: perPage,
                     offset: offset,
+                    order: [['id', 'ASC']],
+                    distinct: true
                 });
 
-                const formattedModels = filteredHotels.map(model => {
+                const totalCount = filteredHotels.count;
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const formattedModels = filteredHotels.rows.map(model => {
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                     return {
                         checkInDate: model.dataValues.checkInDate,
@@ -877,6 +891,8 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
+                    totalCount,
+                    totalPages,
                     data: formattedModels,
                 });
             }
@@ -918,11 +934,11 @@ class ModelController {
                 if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
                 if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
 
-                const filteredFlights = await Flight.findAll({
+                const filteredFlights = await Flight.findAndCountAll({
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                         include: [
                             {
                                 model: ModelImages,
@@ -936,9 +952,14 @@ class ModelController {
                     },
                     limit: perPage,
                     offset: offset,
+                    order: [['id', 'ASC']],
+                    distinct: true
                 });
 
-                const formattedModels = filteredFlights.map(model => {
+                const totalCount = filteredFlights.length;
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const formattedModels = filteredFlights.rows.map(model => {
 
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                     return {
@@ -972,6 +993,8 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered flights successfully",
+                    totalCount,
+                    totalPages,
                     data: formattedModels
                 });
             } else {
@@ -985,11 +1008,11 @@ class ModelController {
                 if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
                 if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
 
-                const filteredFlights = await Flight.findAll({
+                const filteredFlights = await Flight.findAndCountAll({
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                         include: [
                             {
                                 model: ModelImages,
@@ -1003,9 +1026,14 @@ class ModelController {
                     },
                     limit: perPage,
                     offset: offset,
+                    order: [['id', 'ASC']],
+                    distinct: true
                 });
 
-                const formattedModels = filteredFlights.map(model => {
+                const totalCount = filteredFlights.count;
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const formattedModels = filteredFlights.rows.map(model => {
 
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                     return {
@@ -1039,6 +1067,8 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered flights successfully",
+                    totalCount,
+                    totalPages,
                     data: formattedModels
                 });
             }
@@ -1076,11 +1106,11 @@ class ModelController {
                 if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
                 if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
 
-                const filteredCars = await Car.findAll({
+                const filteredCars = await Car.findAndCountAll({
                     where: carFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                         include: [
                             {
                                 model: ModelImages,
@@ -1094,9 +1124,14 @@ class ModelController {
                     },
                     limit: perPage,
                     offset: offset,
+                    order: [['id', 'ASC']],
+                    distinct: true
                 });
 
-                const formattedModels = filteredCars.map(model => {
+                const totalCount = filteredCars.count;
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const formattedModels = filteredCars.rows.map(model => {
 
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                     return {
@@ -1127,6 +1162,8 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered cars successfully",
+                    totalCount,
+                    totalPages,
                     data: formattedModels
                 });
             }
@@ -1139,11 +1176,11 @@ class ModelController {
             if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
             if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
 
-            const filteredCars = await Car.findAll({
+            const filteredCars = await Car.findAndCountAll({
                 where: carFilterOptions,
                 include: {
                     model: Model,
-                    attributes: ["address", "rate", "description", "numberRate"],
+                    attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
                     include: [
                         {
                             model: ModelImages,
@@ -1157,9 +1194,14 @@ class ModelController {
                 },
                 limit: perPage,
                 offset: offset,
+                order: [['id', 'ASC']],
+                distinct: true
             });
 
-            const formattedModels = filteredCars.map(model => {
+            const totalCount = filteredCars.count;
+            const totalPages = Math.ceil(totalCount / perPage);
+
+            const formattedModels = filteredCars.rows.map(model => {
 
                 const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                 return {
@@ -1190,6 +1232,8 @@ class ModelController {
             return res.status(200).json({
                 success: true,
                 message: "Filtered cars successfully",
+                totalCount,
+                totalPages,
                 data: formattedModels
             });
         } catch (error) {
@@ -1222,7 +1266,7 @@ class ModelController {
                 destinationFilterOptions.destinationTypeId = destinationType.dataValues.id
             }
 
-            const filteredDestinations = await Destination.findAll({
+            const filteredDestinations = await Destination.findAndCountAll({
                 where: destinationFilterOptions,
                 include: [
                     {
@@ -1236,9 +1280,14 @@ class ModelController {
                 ],
                 limit: perPage,
                 offset: offset,
+                order: [['id', 'ASC']],
+                distinct: true
             });
 
-            const formattedDestinations = filteredDestinations.map(destination => {
+            const totalCount = filteredDestinations.count;
+            const totalPages = Math.ceil(totalCount / perPage);
+
+            const formattedDestinations = filteredDestinations.rows.map(destination => {
                 let urls = [];
                 if (destination.destination_images) {
                     urls = destination.destination_images.map(image => image.url);
@@ -1261,6 +1310,8 @@ class ModelController {
             return res.status(200).json({
                 success: true,
                 message: "Filtered destinations successfully",
+                totalCount,
+                totalPages,
                 data: formattedDestinations
             });
         } catch (error) {

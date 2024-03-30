@@ -366,7 +366,7 @@ class ModelController {
             const offset = (page - 1) * limit;
 
             const models = await Model.findAndCountAll({
-                attributes: ["id", "description", "address", "name", "rate", "numberRate"],
+                attributes: ["id", "description", "address", "name", "rate", "numberRate", "address_location"],
                 include: [
                     {
                         model: ModelImages,
@@ -395,6 +395,7 @@ class ModelController {
                     name: model.name,
                     rate: model.rate,
                     numberRate: model.numberRate,
+                    address_location: model.address_location,
                     urls: urls,
                     typeName: model.modelType.typeName
                 };
@@ -423,7 +424,7 @@ class ModelController {
             const offset = (page - 1) * limit;
 
             const destinations = await Destination.findAndCountAll({
-                attributes: ["id", "description", "address", "name", "rate", "numberRate"],
+                attributes: ["id", "description", "address", "name", "rate", "numberRate", "address_location"],
                 include: [
                     {
                         model: DestinationImages,
@@ -452,6 +453,7 @@ class ModelController {
                     name: destination.name,
                     rate: destination.rate,
                     numberRate: destination.numberRate,
+                    address_location: destination.address_location,
                     urls: urls,
                     typeName: destination.destinationType.typeName
                 };
@@ -763,7 +765,7 @@ class ModelController {
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                         include: [
                             {
                                 model: ModelImages,
@@ -837,7 +839,7 @@ class ModelController {
                     where: hotelFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                         include: [
                             {
                                 model: ModelImages,
@@ -938,7 +940,7 @@ class ModelController {
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                         include: [
                             {
                                 model: ModelImages,
@@ -1012,7 +1014,7 @@ class ModelController {
                     where: flightFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                         include: [
                             {
                                 model: ModelImages,
@@ -1110,7 +1112,7 @@ class ModelController {
                     where: carFilterOptions,
                     include: {
                         model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                         include: [
                             {
                                 model: ModelImages,
@@ -1180,7 +1182,7 @@ class ModelController {
                 where: carFilterOptions,
                 include: {
                     model: Model,
-                    attributes: ["address", "rate", "description", "numberRate", "id", "name", "status"],
+                    attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
                     include: [
                         {
                             model: ModelImages,

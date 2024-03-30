@@ -663,6 +663,10 @@ class ModelController {
     static async FilterHotel(req, res) {
         try {
 
+            const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
+            const perPage = 12; // Number of users to show per page
+            const offset = (page - 1) * perPage; // Calculate the offset based on the page
+
             const { address, rate, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail } = req.query;
 
             const modelFilterOptions = {};
@@ -702,8 +706,11 @@ class ModelController {
                                 attributes: ['typeName'],
                             }
                         ],
-                    }
+                    },
+                    limit: perPage,
+                    offset: offset,
                 });
+
 
                 const formattedModels = filteredHotels.map(model => {
                     const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
@@ -738,7 +745,7 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
-                    data: formattedModels
+                    data: formattedModels,
                 });
             } else {
                 const hotelFilterOptions = {};
@@ -767,7 +774,9 @@ class ModelController {
                                 attributes: ['typeName'],
                             }
                         ],
-                    }
+                    },
+                    limit: perPage,
+                    offset: offset,
                 });
 
                 const formattedModels = filteredHotels.map(model => {
@@ -803,7 +812,7 @@ class ModelController {
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
-                    data: formattedModels
+                    data: formattedModels,
                 });
             }
 
@@ -819,6 +828,10 @@ class ModelController {
 
     static async FilterFlight(req, res) {
         try {
+
+            const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
+            const perPage = 12; // Number of users to show per page
+            const offset = (page - 1) * perPage; // Calculate the offset based on the page
             const { address, rate, origin, destination, departureTime, arrivalTime, airline, price, seatCapacity, availableSeats } = req.query;
             const modelFilterOptions = {};
             if (address || rate) {
@@ -855,7 +868,9 @@ class ModelController {
                                 attributes: ['typeName'],
                             }
                         ],
-                    }
+                    },
+                    limit: perPage,
+                    offset: offset,
                 });
 
                 const formattedModels = filteredFlights.map(model => {
@@ -920,7 +935,9 @@ class ModelController {
                                 attributes: ['typeName'],
                             }
                         ],
-                    }
+                    },
+                    limit: perPage,
+                    offset: offset,
                 });
 
                 const formattedModels = filteredFlights.map(model => {
@@ -971,6 +988,10 @@ class ModelController {
 
     static async FilterCar(req, res) {
         try {
+
+            const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
+            const perPage = 12; // Number of users to show per page
+            const offset = (page - 1) * perPage; // Calculate the offset based on the page
             const { address, rate, type, color, size, pricePerHour, availability, location } = req.query;
             const modelFilterOptions = {}
             if (address || rate) {
@@ -1005,7 +1026,9 @@ class ModelController {
                                 attributes: ['typeName'],
                             }
                         ],
-                    }
+                    },
+                    limit: perPage,
+                    offset: offset,
                 });
 
                 const formattedModels = filteredCars.map(model => {
@@ -1066,7 +1089,9 @@ class ModelController {
                             attributes: ['typeName'],
                         }
                     ],
-                }
+                },
+                limit: perPage,
+                offset: offset,
             });
 
             const formattedModels = filteredCars.map(model => {
@@ -1113,6 +1138,10 @@ class ModelController {
 
     static async FilterDestination(req, res) {
         try {
+
+            const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
+            const perPage = 12; // Number of users to show per page
+            const offset = (page - 1) * perPage; // Calculate the offset based on the page
             const { address, rate, description, name, status, nameType } = req.query;
 
             const destinationFilterOptions = {};
@@ -1140,6 +1169,8 @@ class ModelController {
                         attributes: ['typeName'],
                     }
                 ],
+                limit: perPage,
+                offset: offset,
             });
 
             const formattedDestinations = filteredDestinations.map(destination => {

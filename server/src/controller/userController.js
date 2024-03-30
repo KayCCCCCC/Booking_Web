@@ -9,12 +9,11 @@ class UserController {
     static async GetAll(req, res) {
         try {
             const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
-            const perPage = 10; // Number of users to show per page
+            const perPage = 12; // Number of users to show per page
             const offset = (page - 1) * perPage; // Calculate the offset based on the page
 
             const userList = await User.findAndCountAll({
                 attributes: ["id", "name", "email", "avatar", "status", "phone", "address"],
-                where: { status: 'Active' },
                 limit: perPage,
                 offset: offset,
             });

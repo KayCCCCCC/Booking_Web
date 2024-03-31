@@ -763,8 +763,10 @@ class ModelController {
                     if (new Date(checkInDate) >= new Date(checkOutDate)) {
                         return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
                     }
-                    hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
-                    hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    // hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    // hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    hotelFilterOptions.checkInDate = { [Op.gte]: checkInDate };
+                    hotelFilterOptions.checkOutDate = { [Op.lte]: checkOutDate };
                 }
                 if (pricePerNight) {
                     if (orderByPrice === 'true') {
@@ -784,7 +786,6 @@ class ModelController {
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
 
-                console.log(11111111111111)
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
                     include: {
@@ -853,8 +854,10 @@ class ModelController {
                     if (new Date(checkInDate) >= new Date(checkOutDate)) {
                         return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
                     }
-                    hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
-                    hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    // hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    // hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    hotelFilterOptions.checkInDate = { [Op.gte]: checkInDate };
+                    hotelFilterOptions.checkOutDate = { [Op.lte]: checkOutDate };
                 }
                 if (pricePerNight) {
                     if (orderByPrice === 'true') {
@@ -872,8 +875,6 @@ class ModelController {
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
-
-                console.log(2222222222222222)
 
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,

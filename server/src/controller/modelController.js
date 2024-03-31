@@ -737,12 +737,20 @@ class ModelController {
             const perPage = 12; // Number of users to show per page
             const offset = (page - 1) * perPage; // Calculate the offset based on the page
 
-            const { address, rate, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail } = req.query;
-
+            const { address, rate, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail, orderByRate, orderByPrice } = req.query;
+            console.log('orderByPrice: ', orderByPrice)
             const modelFilterOptions = {};
             if (address || rate) {
                 if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
-                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                if (rate) {
+                    if (orderByRate === 'true') {
+                        modelFilterOptions.rate = { [Op.gte]: rate };
+                    } else if (orderByRate === 'false') {
+                        modelFilterOptions.rate = { [Op.lte]: rate };
+                    } else {
+                        modelFilterOptions.rate = rate;
+                    }
+                }
                 const filteredModels = await Model.findAll({ where: modelFilterOptions });
 
                 //check model is hotel
@@ -751,16 +759,32 @@ class ModelController {
                     .map(model => model.id);
 
                 const hotelFilterOptions = { modelId: modelHotelIds };
-                if (checkInDate) hotelFilterOptions.checkInDate = checkInDate;
-                if (checkOutDate) hotelFilterOptions.checkOutDate = checkOutDate;
+                if (checkInDate && checkOutDate) {
+                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
+                    }
+                    hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                }
+                if (pricePerNight) {
+                    if (orderByPrice === 'true') {
+                        hotelFilterOptions.pricePerNight = { [Op.gte]: pricePerNight };
+                    } else if (orderByPrice === 'false') {
+                        hotelFilterOptions.pricePerNight = { [Op.lte]: pricePerNight };
+                    } else {
+                        hotelFilterOptions.pricePerNight = pricePerNight;
+                    }
+                }
+
                 if (amenities) hotelFilterOptions.amenities = { [Op.like]: `%${amenities}%` };
                 if (numberOfRooms) hotelFilterOptions.numberOfRooms = numberOfRooms;
                 if (numberOfGuestsPerRoom) hotelFilterOptions.numberOfGuestsPerRoom = numberOfGuestsPerRoom;
-                if (pricePerNight) hotelFilterOptions.pricePerNight = pricePerNight;
                 if (bookingStatus) hotelFilterOptions.bookingStatus = { [Op.like]: `%${bookingStatus}%` };
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
+
+                console.log(11111111111111)
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
                     include: {
@@ -825,15 +849,31 @@ class ModelController {
                 });
             } else {
                 const hotelFilterOptions = {};
-                if (checkInDate) hotelFilterOptions.checkInDate = checkInDate;
-                if (checkOutDate) hotelFilterOptions.checkOutDate = checkOutDate;
+                if (checkInDate && checkOutDate) {
+                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
+                    }
+                    hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
+                    hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
+                }
+                if (pricePerNight) {
+                    if (orderByPrice === 'true') {
+                        hotelFilterOptions.pricePerNight = { [Op.gte]: pricePerNight };
+                    } else if (orderByPrice === 'false') {
+                        hotelFilterOptions.pricePerNight = { [Op.lte]: pricePerNight };
+                    } else {
+                        hotelFilterOptions.pricePerNight = pricePerNight;
+                    }
+                }
                 if (amenities) hotelFilterOptions.amenities = { [Op.like]: `%${amenities}%` };
                 if (numberOfRooms) hotelFilterOptions.numberOfRooms = numberOfRooms;
                 if (numberOfGuestsPerRoom) hotelFilterOptions.numberOfGuestsPerRoom = numberOfGuestsPerRoom;
-                if (pricePerNight) hotelFilterOptions.pricePerNight = pricePerNight;
                 if (bookingStatus) hotelFilterOptions.bookingStatus = { [Op.like]: `%${bookingStatus}%` };
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
+
+
+                console.log(2222222222222222)
 
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,

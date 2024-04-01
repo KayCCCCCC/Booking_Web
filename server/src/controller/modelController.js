@@ -19,6 +19,10 @@ const DestinationType = db.destinationType
 const DestinationImages = db.destinationImages
 const Cookie = db.cookie
 const CookieModel = db.cookie_model
+const RangeModel = db.range_model
+const RangeModelDetail = db.range_model_detail
+const Range = db.range
+const Bookings = db.booking
 
 class ModelController {
     static async AutoCreateModalType(req, res) {
@@ -559,8 +563,7 @@ class ModelController {
                 });
 
                 for (let i = 0; i < 3; i++) {
-                    const responses = await axios.get('https://picsum.photos/400/500/?random');
-                    const imageUrl = responses.request.res.responseUrl
+                    const imageUrl = faker.image.url()
                     const result = await cloundinary.uploader.upload(imageUrl, {
                         upload_preset: 'vnldjdbe',
                         public_id: `unique_id_${Date.now()}`
@@ -599,16 +602,16 @@ class ModelController {
             for (const model of listModel) {
                 const existModel = await Flight.findOne({ where: { modelId: model.id } })
                 if (existModel == null) {
-                    const departureTime = faker.date.future();
-                    const arrivalTime = faker.date.future();
+                    // const departureTime = faker.date.future();
+                    // const arrivalTime = faker.date.future();
                     const origin = faker.location.city();
                     const destination = faker.location.city();
                     const flightNumber = faker.airline.flightNumber();
 
                     // Create the flight
                     const newFlight = await Flight.create({
-                        departureTime: departureTime,
-                        arrivalTime: arrivalTime,
+                        // departureTime: departureTime,
+                        // arrivalTime: arrivalTime,
                         origin: origin,
                         destination: destination,
                         flightNumber: flightNumber,
@@ -646,14 +649,14 @@ class ModelController {
             for (const model of listModel) {
                 const existModel = await Hotel.findOne({ where: { modelId: model.id } })
                 if (!existModel) {
-                    const checkInDate = faker.date.future();
-                    const checkOutDate = faker.date.future();
+                    // const checkInDate = faker.date.future();
+                    // const checkOutDate = faker.date.future();
                     const amenities = faker.word.words();
 
                     // Create the hotel
                     const newHotel = await Hotel.create({
-                        checkInDate: checkInDate,
-                        checkOutDate: checkOutDate,
+                        // checkInDate: checkInDate,
+                        // checkOutDate: checkOutDate,
                         amenities: amenities,
                         pricePerNight: faker.number.int({ min: 50, max: 500 }),
                         bookingStatus: "available",
@@ -738,8 +741,9 @@ class ModelController {
             const offset = (page - 1) * perPage; // Calculate the offset based on the page
 
             const { address, rate, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail, orderByRate, orderByPrice } = req.query;
-            console.log('orderByPrice: ', orderByPrice)
+
             const modelFilterOptions = {};
+            const bookingFilterOptions = {}
             if (address || rate) {
                 if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
                 if (rate) {
@@ -765,8 +769,8 @@ class ModelController {
                     }
                     // hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
                     // hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
-                    hotelFilterOptions.checkInDate = { [Op.gte]: checkInDate };
-                    hotelFilterOptions.checkOutDate = { [Op.lte]: checkOutDate };
+                    // bookingFilterOptions.startDate = { [Op.gte]: checkInDate };
+                    // bookingFilterOptions.expireDate = { [Op.lte]: checkOutDate };
                 }
                 if (pricePerNight) {
                     if (orderByPrice === 'true') {
@@ -788,67 +792,98 @@ class ModelController {
 
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
-                    include: {
-                        model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                        include: [
-                            {
-                                model: ModelImages,
-                                attributes: ['url'],
-                            },
-                            {
-                                model: ModelType,
-                                attributes: ['typeName'],
-                            }
-                        ],
-                    },
-                    limit: perPage,
-                    offset: offset,
+                    include: [
+                        {
+                            model: Model,
+                            attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                            include: [
+                                {
+                                    model: ModelImages,
+                                    attributes: ['url'],
+                                },
+                                {
+                                    model: ModelType,
+                                    attributes: ['typeName'],
+                                },
+                                {
+                                    model: RangeModel,
+                                    include: {
+                                        model: RangeModelDetail,
+                                        include: [
+                                            {
+                                                model: Bookings,
+                                                where: {
+                                                    startDate: { [Op.gte]: checkInDate },
+                                                    expireDate: { [Op.lte]: checkOutDate }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    // limit: perPage,
+                    // offset: offset,
                     order: [['id', 'ASC']],
                     distinct: true
                 });
 
-                const totalCount = filteredHotels.count;
-                const totalPages = Math.ceil(totalCount / perPage);
 
                 const formattedModels = filteredHotels.rows.map(model => {
-                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                    return {
-                        checkInDate: model.dataValues.checkInDate,
-                        checkOutDate: model.dataValues.checkOutDate,
-                        amenities: model.dataValues.amenities,
-                        numberOfRooms: model.dataValues.numberOfRooms,
-                        numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
-                        pricePerNight: model.dataValues.pricePerNight,
-                        bookingStatus: model.dataValues.bookingStatus,
-                        contactPerson: model.dataValues.contactPerson,
-                        contactEmail: model.dataValues.contactEmail,
-                        model: {
-                            id: model.dataValues.model.dataValues.id,
-                            description: model.dataValues.model.dataValues.description,
-                            address: model.dataValues.model.dataValues.address,
-                            name: model.dataValues.model.dataValues.name,
-                            latitude: model.dataValues.model.dataValues.latitude,
-                            longitude: model.dataValues.model.dataValues.longitude,
-                            status: model.dataValues.model.dataValues.status,
-                            rate: model.dataValues.model.dataValues.rate,
-                            numberRate: model.dataValues.model.dataValues.numberRate,
-                            iso2: model.dataValues.model.dataValues.iso2,
-                            address_location: model.dataValues.model.dataValues.address_location,
-                            urls: urls,
-                            typeName: model.dataValues.model.dataValues.modelType.typeName,
-                        }
-                    };
+                    const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
+
+                    if (hasRangeModelDetails) {
+                        const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                        return {
+                            checkInDate: model.dataValues.checkInDate,
+                            checkOutDate: model.dataValues.checkOutDate,
+                            amenities: model.dataValues.amenities,
+                            numberOfRooms: model.dataValues.numberOfRooms,
+                            numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                            pricePerNight: model.dataValues.pricePerNight,
+                            bookingStatus: model.dataValues.bookingStatus,
+                            contactPerson: model.dataValues.contactPerson,
+                            contactEmail: model.dataValues.contactEmail,
+                            model: {
+                                id: model.dataValues.model.dataValues.id,
+                                description: model.dataValues.model.dataValues.description,
+                                address: model.dataValues.model.dataValues.address,
+                                name: model.dataValues.model.dataValues.name,
+                                latitude: model.dataValues.model.dataValues.latitude,
+                                longitude: model.dataValues.model.dataValues.longitude,
+                                status: model.dataValues.model.dataValues.status,
+                                rate: model.dataValues.model.dataValues.rate,
+                                numberRate: model.dataValues.model.dataValues.numberRate,
+                                iso2: model.dataValues.model.dataValues.iso2,
+                                address_location: model.dataValues.model.dataValues.address_location,
+                                urls: urls,
+                                typeName: model.dataValues.model.dataValues.modelType.typeName,
+                            }
+                        };
+                    } else {
+                        return null;
+                    }
                 });
+
+                const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                const totalCount = filteredFormattedModels.length;
+
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
+
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
                     totalCount,
                     totalPages,
-                    data: formattedModels,
+                    data: currentPageData,
                 });
             } else {
+                console.log(22222222222222)
                 const hotelFilterOptions = {};
                 if (checkInDate && checkOutDate) {
                     if (new Date(checkInDate) >= new Date(checkOutDate)) {
@@ -856,8 +891,8 @@ class ModelController {
                     }
                     // hotelFilterOptions.checkInDate = { [Op.between]: [checkInDate, checkOutDate] };
                     // hotelFilterOptions.checkOutDate = { [Op.between]: [checkInDate, checkOutDate] };
-                    hotelFilterOptions.checkInDate = { [Op.gte]: checkInDate };
-                    hotelFilterOptions.checkOutDate = { [Op.lte]: checkOutDate };
+                    // hotelFilterOptions.checkInDate = { [Op.gte]: checkInDate };
+                    // hotelFilterOptions.checkOutDate = { [Op.lte]: checkOutDate };
                 }
                 if (pricePerNight) {
                     if (orderByPrice === 'true') {
@@ -878,69 +913,98 @@ class ModelController {
 
                 const filteredHotels = await Hotel.findAndCountAll({
                     where: hotelFilterOptions,
-                    include: {
-                        model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                        include: [
-                            {
-                                model: ModelImages,
-                                attributes: ['url'],
-                            },
-                            {
-                                model: ModelType,
-                                attributes: ['typeName'],
-                            }
-                        ],
-                    },
-                    limit: perPage,
-                    offset: offset,
+                    include: [
+                        {
+                            model: Model,
+                            attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                            include: [
+                                {
+                                    model: ModelImages,
+                                    attributes: ['url'],
+                                },
+                                {
+                                    model: ModelType,
+                                    attributes: ['typeName'],
+                                },
+                                {
+                                    model: RangeModel,
+                                    include: {
+                                        model: RangeModelDetail,
+                                        include: [
+                                            {
+                                                model: Bookings,
+                                                where: {
+                                                    startDate: { [Op.gte]: checkInDate },
+                                                    expireDate: { [Op.lte]: checkOutDate }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    // limit: perPage,
+                    // offset: offset,
                     order: [['id', 'ASC']],
                     distinct: true
                 });
 
-                const totalCount = filteredHotels.count;
-                const totalPages = Math.ceil(totalCount / perPage);
 
                 const formattedModels = filteredHotels.rows.map(model => {
-                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                    return {
-                        checkInDate: model.dataValues.checkInDate,
-                        checkOutDate: model.dataValues.checkOutDate,
-                        amenities: model.dataValues.amenities,
-                        numberOfRooms: model.dataValues.numberOfRooms,
-                        numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
-                        pricePerNight: model.dataValues.pricePerNight,
-                        bookingStatus: model.dataValues.bookingStatus,
-                        contactPerson: model.dataValues.contactPerson,
-                        contactEmail: model.dataValues.contactEmail,
-                        model: {
-                            id: model.dataValues.model.dataValues.id,
-                            description: model.dataValues.model.dataValues.description,
-                            address: model.dataValues.model.dataValues.address,
-                            name: model.dataValues.model.dataValues.name,
-                            latitude: model.dataValues.model.dataValues.latitude,
-                            longitude: model.dataValues.model.dataValues.longitude,
-                            status: model.dataValues.model.dataValues.status,
-                            rate: model.dataValues.model.dataValues.rate,
-                            numberRate: model.dataValues.model.dataValues.numberRate,
-                            iso2: model.dataValues.model.dataValues.iso2,
-                            address_location: model.dataValues.model.dataValues.address_location,
-                            urls: urls,
-                            typeName: model.dataValues.model.dataValues.modelType.typeName,
-                        }
-                    };
+                    const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
+
+                    if (hasRangeModelDetails) {
+                        const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                        return {
+                            checkInDate: model.dataValues.checkInDate,
+                            checkOutDate: model.dataValues.checkOutDate,
+                            amenities: model.dataValues.amenities,
+                            numberOfRooms: model.dataValues.numberOfRooms,
+                            numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                            pricePerNight: model.dataValues.pricePerNight,
+                            bookingStatus: model.dataValues.bookingStatus,
+                            contactPerson: model.dataValues.contactPerson,
+                            contactEmail: model.dataValues.contactEmail,
+                            model: {
+                                id: model.dataValues.model.dataValues.id,
+                                description: model.dataValues.model.dataValues.description,
+                                address: model.dataValues.model.dataValues.address,
+                                name: model.dataValues.model.dataValues.name,
+                                latitude: model.dataValues.model.dataValues.latitude,
+                                longitude: model.dataValues.model.dataValues.longitude,
+                                status: model.dataValues.model.dataValues.status,
+                                rate: model.dataValues.model.dataValues.rate,
+                                numberRate: model.dataValues.model.dataValues.numberRate,
+                                iso2: model.dataValues.model.dataValues.iso2,
+                                address_location: model.dataValues.model.dataValues.address_location,
+                                urls: urls,
+                                typeName: model.dataValues.model.dataValues.modelType.typeName,
+                            }
+                        };
+                    } else {
+                        return null;
+                    }
                 });
+
+                const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                const totalCount = filteredFormattedModels.length;
+
+                const totalPages = Math.ceil(totalCount / perPage);
+
+                const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
+
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered hotels successfully",
                     totalCount,
                     totalPages,
-                    data: formattedModels,
+                    data: currentPageData,
                 });
+
             }
-
-
         } catch (error) {
             console.error("Error FilterHotel:", error);
             return res.status(500).json({

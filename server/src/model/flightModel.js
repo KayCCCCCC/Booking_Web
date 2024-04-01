@@ -1,13 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
     const Flight = sequelize.define("flight", {
-        departureTime: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
-        arrivalTime: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
+        // departureTime: {
+        //     type: DataTypes.DATE,
+        //     allowNull: true,
+        // },
+        // arrivalTime: {
+        //     type: DataTypes.DATE,
+        //     allowNull: true,
+        // },
         origin: {
             type: DataTypes.STRING,
             allowNull: true,

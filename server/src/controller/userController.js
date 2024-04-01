@@ -190,7 +190,7 @@ class UserController {
     static async AutoCreateUser(req, res) {
         try {
             const listFakeUser = [];
-            for (let i = 0; i < 10; i++) {
+            for (let i = 1; i <= 60; i++) {
                 const OTP = Math.floor(100000 + Math.random() * 900000);
                 const randompass = faker.number.int();
                 const hashedPassword = await bcrypt.hash(JSON.stringify(randompass), 10);

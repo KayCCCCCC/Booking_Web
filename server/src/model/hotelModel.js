@@ -1,13 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
     const Hotel = sequelize.define("hotel", {
-        checkInDate: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
-        checkOutDate: {
-            type: DataTypes.DATE,
-            allowNull: true,
-        },
+        // checkInDate: {
+        //     type: DataTypes.DATE,
+        //     allowNull: true,
+        // },
+        // checkOutDate: {
+        //     type: DataTypes.DATE,
+        //     allowNull: true,
+        // },
         amenities: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -23,8 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         pricePerNight: {
             type: DataTypes.FLOAT,
             allowNull: false,
-        },        // Thuộc tính khác cho việc đặt phòng
-        bookingStatus: {
+        },
+        status: {
             type: DataTypes.STRING,
             allowNull: true,
         },

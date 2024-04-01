@@ -6,23 +6,23 @@ const RangeModelDetail = db.range_model_detail
 class RangeModelController {
     static async AutoCreateRangeModel(req, res) {
         try {
-            const numModels = 10;
+            const numModels = 60;
 
             const models = [];
-            for (let i = 0; i < numModels; i++) {
+            for (let i = 1; i <= numModels; i++) {
                 const model = await RangeModel.create({
                     description: faker.lorem.words(),
                     cost: faker.number.float({ min: 1000, max: 100000 }),
                     quantity: faker.number.int({ min: 1, max: 100 }),
-                    modelId: faker.number.int({ min: 1, max: 10 }),
-                    rangeId: faker.number.int({ min: 1, max: 10 }),
+                    modelId: i,
+                    rangeId: i,
                     status: 'Active'
                 });
 
                 const rangeModelDetail = await RangeModelDetail.create({
                     code: faker.airline.flightNumber(),
                     status: 'Active',
-                    rangeModelId: model.id
+                    rangeModelId: i
                 });
 
                 models.push(model);

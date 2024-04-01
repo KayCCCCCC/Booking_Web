@@ -7,5 +7,6 @@ router.patch("/cancel/:id", BookingController.CancelBooking);
 router.get("/get-all", BookingController.GetAllBookings);
 router.get("/get-detail/:id", BookingController.GetBookingDetail);
 router.get("/get-detail-user/:id", BookingController.GetBookingDetailOfUser);
+router.post("/auto-create", BookingController.AutoCreateBooking)
 
 module.exports = router;

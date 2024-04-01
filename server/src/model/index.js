@@ -91,8 +91,15 @@ db.destinationImages.belongsTo(db.destination, {
     foreignKey: "destinationId",
 });
 
-db.model.belongsToMany(db.range, { through: 'range_model', foreignKey: 'modelId' });
-db.range.belongsToMany(db.model, { through: 'range_model', foreignKey: 'rangeId' });
+db.range.hasMany(db.range_model)
+db.range_model.belongsTo(db.range, {
+    foreignKey: "rangeId",
+});
+
+db.model.hasMany(db.range_model)
+db.range_model.belongsTo(db.model, {
+    foreignKey: "modelId",
+});
 
 db.model.belongsToMany(db.user, { through: 'favorite_model_user', foreignKey: 'modelId' });
 db.user.belongsToMany(db.model, { through: 'favorite_model_user', foreignKey: 'userId' });

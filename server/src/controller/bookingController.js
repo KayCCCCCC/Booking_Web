@@ -1,4 +1,5 @@
 const db = require('../model/index')
+const { faker } = require('@faker-js/faker');
 const Booking = db.booking
 const User = db.user
 const RangeModelDetail = db.range_model_detail
@@ -200,6 +201,43 @@ class BookingController {
             });
         } catch (error) {
             console.error("Error GetBookingDetail:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async AutoCreateBooking(req, res) {
+        try {
+            const bookings = [];
+            for (let i = 1; i <= 60; i++) {
+                const startDate = faker.date.future();
+                const expireDate = faker.date.future();
+                const quantity = faker.number.int({ min: 1, max: 10 });
+                const total = faker.number.float({ min: 100, max: 1000 });
+                const statusBooking = faker.helpers.arrayElement(['Confirmed', 'Pending', 'Cancelled']);
+                const userId = i;
+                const rangeModelDetailId = i;
+                const booking = await Booking.create({
+                    startDate,
+                    expireDate,
+                    quantity,
+                    total,
+                    statusBooking,
+                    userId,
+                    rangeModelDetailId
+                })
+
+                bookings.push(booking);
+            }
+            return res.status(200).json({
+                success: true,
+                message: "Bookings created successfully.",
+                bookings
+            });
+        } catch (error) {
+            console.error("Error AutoCreateBooking:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"

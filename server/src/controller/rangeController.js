@@ -137,7 +137,7 @@ class RangeController {
 
     static async AutoCreateRange(req, res) {
         try {
-            const numRanges = 10;
+            const numRanges = 60;
 
             const ranges = [];
             for (let i = 0; i < numRanges; i++) {

@@ -51,7 +51,11 @@ sequelize
 function scheduleBookingStatusUpdate() {
     setInterval(async () => {
         try {
-            const oneHourAgo = new Date(Date.now() - 7 * 60 * 60 * 1000);
+            const currentTime = new Date();
+            const oneHourAgo = new Date(currentTime.getTime() - 60 * 60 * 1000); // Lấy ra thời điểm 1 tiếng trước đó
+
+            oneHourAgo.setHours(oneHourAgo.getHours() + 7);
+
             const pendingBookings = await Booking.findAll({
                 where: {
                     statusBooking: 'Pending',

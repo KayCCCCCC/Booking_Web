@@ -825,7 +825,7 @@ class ModelController {
                 const formattedModels = filteredHotels.rows.map(model => {
                     const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
 
-                    if (hasRangeModelDetails && hotelFilterOptions && bookingFilterOptions) {
+                    if (hasRangeModelDetails && hotelFilterOptions) {
                         const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                         return {
                             checkInDate: model.dataValues.checkInDate,
@@ -888,11 +888,22 @@ class ModelController {
             const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
             const perPage = 12; // Number of users to show per page
             const offset = (page - 1) * perPage; // Calculate the offset based on the page
-            const { address, rate, origin, destination, departureTime, arrivalTime, airline, price, seatCapacity, availableSeats } = req.query;
+
+            const { address, rate = 1, origin, checkInDate, checkOutDate, destination, departureTime, arrivalTime, airline, price, seatCapacity, availableSeats, orderByRate = 'true', orderByPrice } = req.query;
+
             const modelFilterOptions = {};
+            const bookingFilterOptions = {};
             if (address || rate) {
-                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
-                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` };
+                if (rate) {
+                    if (orderByRate === 'true') {
+                        modelFilterOptions.rate = { [Op.gte]: rate };
+                    } else if (orderByRate === 'false') {
+                        modelFilterOptions.rate = { [Op.lte]: rate };
+                    } else {
+                        modelFilterOptions.rate = rate;
+                    }
+                }
                 const filteredModels = await Model.findAll({ where: modelFilterOptions });
 
                 //check model is hotel
@@ -900,151 +911,110 @@ class ModelController {
                     .filter(model => model.modelTypeId === 1)
                     .map(model => model.id);
                 const flightFilterOptions = { modelId: modelFlightIds };
+                if (checkInDate && checkOutDate) {
+                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
+                    }
+                    bookingFilterOptions.statusBooking = { [Op.notIn]: ["Pending", "Confirmed"] };
+                    bookingFilterOptions.startDate = { [Op.gte]: checkInDate };
+                    bookingFilterOptions.expireDate = { [Op.lte]: checkOutDate };
+                }
                 if (origin) flightFilterOptions.origin = { [Op.like]: `%${origin}%` };
                 if (destination) flightFilterOptions.destination = { [Op.like]: `%${destination}%` };
                 if (departureTime) flightFilterOptions.departureTime = departureTime;
                 if (arrivalTime) flightFilterOptions.arrivalTime = arrivalTime;
                 if (airline) flightFilterOptions.airline = { [Op.like]: `%${airline}%` };
-                if (price) flightFilterOptions.price = price;
+                if (price) {
+                    if (orderByPrice === 'true') {
+                        flightFilterOptions.price = { [Op.gte]: price };
+                    } else if (orderByPrice === 'false') {
+                        flightFilterOptions.price = { [Op.lte]: price };
+                    } else {
+                        flightFilterOptions.price = price;
+                    }
+                }
                 if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
                 if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
 
                 const filteredFlights = await Flight.findAndCountAll({
                     where: flightFilterOptions,
-                    include: {
-                        model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                        include: [
-                            {
-                                model: ModelImages,
-                                attributes: ['url'],
-                            },
-                            {
-                                model: ModelType,
-                                attributes: ['typeName'],
-                            }
-                        ],
-                    },
-                    limit: perPage,
-                    offset: offset,
+                    include: [
+                        {
+                            model: Model,
+                            attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                            include: [
+                                {
+                                    model: ModelImages,
+                                    attributes: ['url'],
+                                },
+                                {
+                                    model: ModelType,
+                                    attributes: ['typeName'],
+                                },
+                                {
+                                    model: RangeModel,
+                                    include: {
+                                        model: RangeModelDetail,
+                                        include: [
+                                            {
+                                                model: Bookings,
+                                                where: bookingFilterOptions
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
                     order: [['id', 'ASC']],
                     distinct: true
                 });
 
-                const totalCount = filteredFlights.length;
-                const totalPages = Math.ceil(totalCount / perPage);
-
                 const formattedModels = filteredFlights.rows.map(model => {
-
-                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                    return {
-                        departureTime: model.dataValues.departureTime,
-                        arrivalTime: model.dataValues.arrivalTime,
-                        origin: model.dataValues.origin,
-                        destination: model.dataValues.destination,
-                        flightNumber: model.dataValues.flightNumber,
-                        price: model.dataValues.price,
-                        seatCapacity: model.dataValues.seatCapacity,
-                        availableSeats: model.dataValues.availableSeats,
-                        airline: model.dataValues.airline,
-                        model: {
-                            id: model.dataValues.model.dataValues.id,
-                            description: model.dataValues.model.dataValues.description,
-                            address: model.dataValues.model.dataValues.address,
-                            name: model.dataValues.model.dataValues.name,
-                            latitude: model.dataValues.model.dataValues.latitude,
-                            longitude: model.dataValues.model.dataValues.longitude,
-                            status: model.dataValues.model.dataValues.status,
-                            rate: model.dataValues.model.dataValues.rate,
-                            numberRate: model.dataValues.model.dataValues.numberRate,
-                            iso2: model.dataValues.model.dataValues.iso2,
-                            address_location: model.dataValues.model.dataValues.address_location,
-                            urls: urls,
-                            typeName: model.dataValues.model.dataValues.modelType.typeName,
-                        },
-                    };
+                    const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
+                    if (hasRangeModelDetails && flightFilterOptions) {
+                        const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                        return {
+                            departureTime: model.dataValues.departureTime,
+                            arrivalTime: model.dataValues.arrivalTime,
+                            origin: model.dataValues.origin,
+                            destination: model.dataValues.destination,
+                            flightNumber: model.dataValues.flightNumber,
+                            price: model.dataValues.price,
+                            seatCapacity: model.dataValues.seatCapacity,
+                            availableSeats: model.dataValues.availableSeats,
+                            airline: model.dataValues.airline,
+                            model: {
+                                id: model.dataValues.model.dataValues.id,
+                                description: model.dataValues.model.dataValues.description,
+                                address: model.dataValues.model.dataValues.address,
+                                name: model.dataValues.model.dataValues.name,
+                                latitude: model.dataValues.model.dataValues.latitude,
+                                longitude: model.dataValues.model.dataValues.longitude,
+                                status: model.dataValues.model.dataValues.status,
+                                rate: model.dataValues.model.dataValues.rate,
+                                numberRate: model.dataValues.model.dataValues.numberRate,
+                                iso2: model.dataValues.model.dataValues.iso2,
+                                address_location: model.dataValues.model.dataValues.address_location,
+                                urls: urls,
+                                typeName: model.dataValues.model.dataValues.modelType.typeName,
+                            },
+                        };
+                    }
                 });
+
+                const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                const totalCount = filteredFormattedModels.length;
+                const totalPages = Math.ceil(totalCount / perPage);
+                const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered flights successfully",
                     totalCount,
                     totalPages,
-                    data: formattedModels
-                });
-            } else {
-                const flightFilterOptions = {};
-                if (origin) flightFilterOptions.origin = { [Op.like]: `%${origin}%` };
-                if (destination) flightFilterOptions.destination = { [Op.like]: `%${destination}%` };
-                if (departureTime) flightFilterOptions.departureTime = departureTime;
-                if (arrivalTime) flightFilterOptions.arrivalTime = arrivalTime;
-                if (airline) flightFilterOptions.airline = { [Op.like]: `%${airline}%` };
-                if (price) flightFilterOptions.price = price;
-                if (seatCapacity) flightFilterOptions.seatCapacity = seatCapacity;
-                if (availableSeats) flightFilterOptions.availableSeats = availableSeats;
-
-                const filteredFlights = await Flight.findAndCountAll({
-                    where: flightFilterOptions,
-                    include: {
-                        model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                        include: [
-                            {
-                                model: ModelImages,
-                                attributes: ['url'],
-                            },
-                            {
-                                model: ModelType,
-                                attributes: ['typeName'],
-                            }
-                        ],
-                    },
-                    limit: perPage,
-                    offset: offset,
-                    order: [['id', 'ASC']],
-                    distinct: true
-                });
-
-                const totalCount = filteredFlights.count;
-                const totalPages = Math.ceil(totalCount / perPage);
-
-                const formattedModels = filteredFlights.rows.map(model => {
-
-                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                    return {
-                        departureTime: model.dataValues.departureTime,
-                        arrivalTime: model.dataValues.arrivalTime,
-                        origin: model.dataValues.origin,
-                        destination: model.dataValues.destination,
-                        flightNumber: model.dataValues.flightNumber,
-                        price: model.dataValues.price,
-                        seatCapacity: model.dataValues.seatCapacity,
-                        availableSeats: model.dataValues.availableSeats,
-                        airline: model.dataValues.airline,
-                        model: {
-                            id: model.dataValues.model.dataValues.id,
-                            description: model.dataValues.model.dataValues.description,
-                            address: model.dataValues.model.dataValues.address,
-                            name: model.dataValues.model.dataValues.name,
-                            latitude: model.dataValues.model.dataValues.latitude,
-                            longitude: model.dataValues.model.dataValues.longitude,
-                            status: model.dataValues.model.dataValues.status,
-                            rate: model.dataValues.model.dataValues.rate,
-                            numberRate: model.dataValues.model.dataValues.numberRate,
-                            iso2: model.dataValues.model.dataValues.iso2,
-                            address_location: model.dataValues.model.dataValues.address_location,
-                            urls: urls,
-                            typeName: model.dataValues.model.dataValues.modelType.typeName,
-                        },
-                    };
-                });
-
-                return res.status(200).json({
-                    success: true,
-                    message: "Filtered flights successfully",
-                    totalCount,
-                    totalPages,
-                    data: formattedModels
+                    data: currentPageData
                 });
             }
         } catch (error) {
@@ -1062,11 +1032,20 @@ class ModelController {
             const page = parseInt(req.query.page) || 1; // Parse the page from the request query or default to page 1
             const perPage = 12; // Number of users to show per page
             const offset = (page - 1) * perPage; // Calculate the offset based on the page
-            const { address, rate, type, color, size, pricePerHour, availability, location } = req.query;
+            const { address, rate = 1, checkInDate, checkOutDate, type, color, size, pricePerHour, availability, location, orderByRate = 'true', orderByPrice } = req.query;
             const modelFilterOptions = {}
+            const bookingFilterOptions = {};
             if (address || rate) {
-                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` }
-                if (rate) modelFilterOptions.rate = { [Op.like]: `%${rate}` }
+                if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` };
+                if (rate) {
+                    if (orderByRate === 'true') {
+                        modelFilterOptions.rate = { [Op.gte]: rate };
+                    } else if (orderByRate === 'false') {
+                        modelFilterOptions.rate = { [Op.lte]: rate };
+                    } else {
+                        modelFilterOptions.rate = rate;
+                    }
+                }
                 const filteredModels = await Model.findAll({ where: modelFilterOptions });
 
                 //check model is hotel
@@ -1074,143 +1053,108 @@ class ModelController {
                     .filter(model => model.modelTypeId === 3)
                     .map(model => model.id);
                 const carFilterOptions = { modelId: modelCarIds };
+                if (checkInDate && checkOutDate) {
+                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
+                    }
+                    bookingFilterOptions.statusBooking = { [Op.notIn]: ["Pending", "Confirmed"] };
+                    bookingFilterOptions.startDate = { [Op.gte]: checkInDate };
+                    bookingFilterOptions.expireDate = { [Op.lte]: checkOutDate };
+                }
                 if (type) carFilterOptions.type = { [Op.like]: `%${type}%` };
                 if (color) carFilterOptions.color = { [Op.like]: `%${color}%` };
                 if (size) carFilterOptions.size = { [Op.like]: `%${size}%` };
-                if (pricePerHour) carFilterOptions.pricePerHour = pricePerHour;
+                if (pricePerHour) {
+                    if (orderByPrice === 'true') {
+                        carFilterOptions.pricePerHour = { [Op.gte]: pricePerHour };
+                    } else if (orderByPrice === 'false') {
+                        carFilterOptions.pricePerHour = { [Op.lte]: pricePerHour };
+                    } else {
+                        carFilterOptions.pricePerHour = pricePerHour;
+                    }
+                }
                 if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
                 if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
 
                 const filteredCars = await Car.findAndCountAll({
                     where: carFilterOptions,
-                    include: {
-                        model: Model,
-                        attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                        include: [
-                            {
-                                model: ModelImages,
-                                attributes: ['url'],
-                            },
-                            {
-                                model: ModelType,
-                                attributes: ['typeName'],
-                            }
-                        ],
-                    },
-                    limit: perPage,
-                    offset: offset,
+                    include: [
+                        {
+                            model: Model,
+                            attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                            include: [
+                                {
+                                    model: ModelImages,
+                                    attributes: ['url'],
+                                },
+                                {
+                                    model: ModelType,
+                                    attributes: ['typeName'],
+                                },
+                                {
+                                    model: RangeModel,
+                                    include: {
+                                        model: RangeModelDetail,
+                                        include: [
+                                            {
+                                                model: Bookings,
+                                                where: bookingFilterOptions
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
                     order: [['id', 'ASC']],
                     distinct: true
                 });
 
-                const totalCount = filteredCars.count;
-                const totalPages = Math.ceil(totalCount / perPage);
-
                 const formattedModels = filteredCars.rows.map(model => {
-
-                    const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                    return {
-                        type: model.dataValues.type,
-                        color: model.dataValues.color,
-                        size: model.dataValues.size,
-                        pricePerHour: model.dataValues.pricePerHour,
-                        availability: model.dataValues.availability,
-                        location: model.dataValues.location,
-                        model: {
-                            id: model.dataValues.model.dataValues.id,
-                            description: model.dataValues.model.dataValues.description,
-                            address: model.dataValues.model.dataValues.address,
-                            name: model.dataValues.model.dataValues.name,
-                            latitude: model.dataValues.model.dataValues.latitude,
-                            longitude: model.dataValues.model.dataValues.longitude,
-                            status: model.dataValues.model.dataValues.status,
-                            rate: model.dataValues.model.dataValues.rate,
-                            numberRate: model.dataValues.model.dataValues.numberRate,
-                            iso2: model.dataValues.model.dataValues.iso2,
-                            address_location: model.dataValues.model.dataValues.address_location,
-                            urls: urls,
-                            typeName: model.dataValues.model.dataValues.modelType.typeName,
-                        },
-                    };
+                    const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
+                    if (hasRangeModelDetails && carFilterOptions) {
+                        const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                        return {
+                            type: model.dataValues.type,
+                            color: model.dataValues.color,
+                            size: model.dataValues.size,
+                            pricePerHour: model.dataValues.pricePerHour,
+                            availability: model.dataValues.availability,
+                            location: model.dataValues.location,
+                            model: {
+                                id: model.dataValues.model.dataValues.id,
+                                description: model.dataValues.model.dataValues.description,
+                                address: model.dataValues.model.dataValues.address,
+                                name: model.dataValues.model.dataValues.name,
+                                latitude: model.dataValues.model.dataValues.latitude,
+                                longitude: model.dataValues.model.dataValues.longitude,
+                                status: model.dataValues.model.dataValues.status,
+                                rate: model.dataValues.model.dataValues.rate,
+                                numberRate: model.dataValues.model.dataValues.numberRate,
+                                iso2: model.dataValues.model.dataValues.iso2,
+                                address_location: model.dataValues.model.dataValues.address_location,
+                                urls: urls,
+                                typeName: model.dataValues.model.dataValues.modelType.typeName,
+                            },
+                        };
+                    }
                 });
+
+                const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                const totalCount = filteredFormattedModels.length;
+                const totalPages = Math.ceil(totalCount / perPage);
+                const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
 
                 return res.status(200).json({
                     success: true,
                     message: "Filtered cars successfully",
                     totalCount,
                     totalPages,
-                    data: formattedModels
+                    data: currentPageData
                 });
             }
 
-            const carFilterOptions = {};
-            if (type) carFilterOptions.type = { [Op.like]: `%${type}%` };
-            if (color) carFilterOptions.color = { [Op.like]: `%${color}%` };
-            if (size) carFilterOptions.size = { [Op.like]: `%${size}%` };
-            if (pricePerHour) carFilterOptions.pricePerHour = pricePerHour;
-            if (availability) carFilterOptions.availability = { [Op.like]: `%${availability}%` };
-            if (location) carFilterOptions.location = { [Op.like]: `%${location}%` };
-
-            const filteredCars = await Car.findAndCountAll({
-                where: carFilterOptions,
-                include: {
-                    model: Model,
-                    attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                    include: [
-                        {
-                            model: ModelImages,
-                            attributes: ['url'],
-                        },
-                        {
-                            model: ModelType,
-                            attributes: ['typeName'],
-                        }
-                    ],
-                },
-                limit: perPage,
-                offset: offset,
-                order: [['id', 'ASC']],
-                distinct: true
-            });
-
-            const totalCount = filteredCars.count;
-            const totalPages = Math.ceil(totalCount / perPage);
-
-            const formattedModels = filteredCars.rows.map(model => {
-
-                const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                return {
-                    type: model.dataValues.type,
-                    color: model.dataValues.color,
-                    size: model.dataValues.size,
-                    pricePerHour: model.dataValues.pricePerHour,
-                    availability: model.dataValues.availability,
-                    location: model.dataValues.location,
-                    model: {
-                        id: model.dataValues.model.dataValues.id,
-                        description: model.dataValues.model.dataValues.description,
-                        address: model.dataValues.model.dataValues.address,
-                        name: model.dataValues.model.dataValues.name,
-                        latitude: model.dataValues.model.dataValues.latitude,
-                        longitude: model.dataValues.model.dataValues.longitude,
-                        status: model.dataValues.model.dataValues.status,
-                        rate: model.dataValues.model.dataValues.rate,
-                        numberRate: model.dataValues.model.dataValues.numberRate,
-                        iso2: model.dataValues.model.dataValues.iso2,
-                        address_location: model.dataValues.model.dataValues.address_location,
-                        urls: urls,
-                        typeName: model.dataValues.model.dataValues.modelType.typeName,
-                    },
-                };
-            });
-
-            return res.status(200).json({
-                success: true,
-                message: "Filtered cars successfully",
-                totalCount,
-                totalPages,
-                data: formattedModels
-            });
         } catch (error) {
             console.error("Error FilterCar:", error);
             return res.status(500).json({

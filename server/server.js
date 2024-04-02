@@ -10,7 +10,10 @@ require('./firebaseConfig.js')
 const webRoutes = require('./src/routes/index');
 const sequelize = require("./src/database/connectDbPg");
 
+const { Op } = require('sequelize');
+
 const db = require('./src/model/index')
+const Booking = db.booking
 
 const app = express();
 const server = http.createServer(app);
@@ -43,6 +46,35 @@ sequelize
     .catch((err) => {
         console.log("Error" + err);
     });
+
+
+function scheduleBookingStatusUpdate() {
+    setInterval(async () => {
+        try {
+            const oneHourAgo = new Date(Date.now() - 7 * 60 * 60 * 1000);
+            const pendingBookings = await Booking.findAll({
+                where: {
+                    statusBooking: 'Pending',
+                    createdAt: {
+                        [Op.lte]: oneHourAgo
+                    }
+                }
+            });
+
+            for (const booking of pendingBookings) {
+                await booking.update({ statusBooking: 'Cancelled' });
+            }
+
+            console.log(`Updated ${pendingBookings.length} bookings.`);
+        } catch (error) {
+            console.error("Error updating booking statuses:", error);
+        }
+    }, 60 * 1000);
+}
+
+scheduleBookingStatusUpdate();
+
+
 
 server.listen(port, hostname, () => {
     console.log(`Example app listening on http://${hostname}:${port}`);

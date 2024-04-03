@@ -44,4 +44,116 @@ const sendEmail = async (email, OTPCode) => {
     }
 };
 
-module.exports = sendEmail
+
+const sendReminderEmail = async (email, cancellationCount) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.MAIL_ACCOUNT,
+                pass: process.env.MAIL_PASSWORD,
+            },
+        });
+
+        transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+
+        const result = await transporter.sendMail({
+            from: process.env.MAIL_ACCOUNT,
+            to: email,
+            subject: "Reminder from WebBooking",
+            html: `
+                <div style="max-width: 400px; margin: 50px auto; padding: 30px; text-align: center; font-size: 120%; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); position: relative;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRDn7YDq7gsgIdHOEP2_Mng6Ym3OzmvfUQvQ&usqp=CAU" alt="Noto Image" style="max-width: 100px; height: auto; display: block; margin: 0 auto; border-radius: 50%;">
+                    <h2 style="text-transform: uppercase; color: #3498db; margin-top: 20px; font-size: 28px; font-weight: bold;">Warning from WebBooking</h2>
+                    <div style="font-size: 18px; color: #555; margin-bottom: 30px;">Hey ${email}, You have cancelled ${cancellationCount} bookings.</div>
+                    <p style="color: #888; font-size: 14px;">Powered by WebBooking</p>
+                </div>
+            `,
+        });
+
+        return result;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
+};
+
+const sendBookingSuccessEmail = async (email) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.MAIL_ACCOUNT,
+                pass: process.env.MAIL_PASSWORD,
+            },
+        });
+
+        transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+
+        const result = await transporter.sendMail({
+            from: process.env.MAIL_ACCOUNT,
+            to: email,
+            subject: "Booking Confirmation from WebBooking",
+            html: `
+                <div style="max-width: 400px; margin: 50px auto; padding: 30px; text-align: center; font-size: 120%; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); position: relative;">
+                    <h2 style="text-transform: uppercase; color: #3498db; margin-top: 20px; font-size: 28px; font-weight: bold;">Booking Confirmation</h2>
+                    <div style="font-size: 18px; color: #555; margin-bottom: 30px;">Your booking has been confirmed.</div>
+                    <p style="color: #888; font-size: 14px;">Powered by WebBooking</p>
+                </div>
+            `,
+        });
+
+        return result;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
+};
+
+
+const sendBookingCancellationEmail = async (email) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.MAIL_ACCOUNT,
+                pass: process.env.MAIL_PASSWORD,
+            },
+        });
+
+        transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+
+        const result = await transporter.sendMail({
+            from: process.env.MAIL_ACCOUNT,
+            to: email,
+            subject: "Booking Cancellation from WebBooking",
+            html: `
+                <div style="max-width: 400px; margin: 50px auto; padding: 30px; text-align: center; font-size: 120%; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); position: relative;">
+                    <h2 style="text-transform: uppercase; color: #3498db; margin-top: 20px; font-size: 28px; font-weight: bold;">Booking Cancellation</h2>
+                    <div style="font-size: 18px; color: #555; margin-bottom: 30px;">Your booking has been cancelled.</div>
+                    <p style="color: #888; font-size: 14px;">Powered by WebBooking</p>
+                </div>
+            `,
+        });
+
+        return result;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+    }
+};
+
+
+
+module.exports = {
+    sendEmail,
+    sendReminderEmail,
+    sendBookingSuccessEmail,
+    sendBookingCancellationEmail
+}

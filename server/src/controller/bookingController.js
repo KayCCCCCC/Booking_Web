@@ -4,6 +4,7 @@ const Booking = db.booking
 const User = db.user
 const RangeModelDetail = db.range_model_detail
 const RangeModel = db.range_model
+const { sendBookingSuccessEmail, sendBookingCancellationEmail } = require('../utils/sendEmail')
 class BookingController {
     static async CreateBooking(req, res) {
         try {
@@ -35,6 +36,14 @@ class BookingController {
                 userId: userId,
                 rangeModelDetailId: itemId
             });
+
+            const user = await User.findOne({
+                where: {
+                    id: userId
+                }
+            })
+
+            sendBookingSuccessEmail(user.email)
 
             return res.status(201).json({
                 success: true,
@@ -83,16 +92,26 @@ class BookingController {
         try {
             const { id } = req.params;
 
-            const cancelBooking = await Booking.update({ statusBooking: 'Cancel' }, {
-                where: { id: id }
-            });
-
-            if (cancelBooking === 0) {
+            const booking = await Booking.findOne({
+                where: {
+                    id: id
+                }
+            })
+            if (booking == null) {
                 return res.status(404).json({
                     success: false,
                     message: "Booking not found"
                 });
             }
+            const cancelBooking = await booking.update({ statusBooking: 'Cancelled' });
+
+            const user = await User.findOne({
+                where: {
+                    id: cancelBooking.userId
+                }
+            })
+
+            sendBookingCancellationEmail(user.email)
 
             return res.status(200).json({
                 success: true,

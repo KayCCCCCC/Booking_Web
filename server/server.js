@@ -13,7 +13,7 @@ const sequelize = require("./src/database/connectDbPg");
 const { Op } = require('sequelize');
 
 const db = require('./src/model/index')
-const Booking = db.booking
+const { scheduleBookingStatusUpdate, scheduleCheckCancelledBookings } = require('./src/service/setInterval.js')
 
 const app = express();
 const server = http.createServer(app);
@@ -48,36 +48,8 @@ sequelize
     });
 
 
-function scheduleBookingStatusUpdate() {
-    setInterval(async () => {
-        try {
-            const currentTime = new Date();
-            const oneHourAgo = new Date(currentTime.getTime() - 60 * 60 * 1000); // Lấy ra thời điểm 1 tiếng trước đó
-
-            oneHourAgo.setHours(oneHourAgo.getHours() + 7);
-
-            const pendingBookings = await Booking.findAll({
-                where: {
-                    statusBooking: 'Pending',
-                    createdAt: {
-                        [Op.lte]: oneHourAgo
-                    }
-                }
-            });
-
-            for (const booking of pendingBookings) {
-                await booking.update({ statusBooking: 'Cancelled' });
-            }
-
-            console.log(`Updated ${pendingBookings.length} bookings.`);
-        } catch (error) {
-            console.error("Error updating booking statuses:", error);
-        }
-    }, 60 * 1000);
-}
-
 scheduleBookingStatusUpdate();
-
+scheduleCheckCancelledBookings();
 
 
 server.listen(port, hostname, () => {

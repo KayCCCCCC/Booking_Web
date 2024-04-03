@@ -23,6 +23,8 @@ router.post("/auto-create-destination", ModelController.AutoCreateDestination)
 router.post("/auto-create-hotel", ModelController.AutoCreateHotels)
 router.post("/auto-create-flight", ModelController.AutoCreateFlights)
 router.post("/auto-create-car", ModelController.AutoCreateCars)
+router.post("/auto-create-image-model/:id", ModelController.autoCreateImageOfModel)
+router.post("/auto-create-image-des/:id", ModelController.autoCreateImageOfDestination)
 
 
 router.post("/create", upload.array('images', 10), ModelController.CreateModel)

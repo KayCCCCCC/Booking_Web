@@ -739,10 +739,11 @@ class ModelController {
             const perPage = 12;
             const offset = (page - 1) * perPage;
 
-            const { address, rate = 1, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfGuestsPerRoom, pricePerNight, bookingStatus, contactPerson, contactEmail, orderByRate = 'true', orderByPrice } = req.query;
+            const { address, rate = 1, checkInDate, checkOutDate, amenities, numberOfRooms, numberOfAdult, numberOfChildren, pricePerNight, bookingStatus, contactPerson, contactEmail, orderByRate = 'true', orderByPrice } = req.query;
 
             const modelFilterOptions = {};
             const bookingFilterOptions = {};
+            const numberOfGuestsPerRoom = Math.ceil(parseInt(numberOfAdult) + parseInt(numberOfChildren) / 2);
 
             if (address || rate) {
                 if (address) modelFilterOptions.address = { [Op.like]: `%${address}%` };
@@ -1391,6 +1392,10 @@ class ModelController {
         try {
             const { address, distance, rate } = req.body;
 
+            const page = parseInt(req.query.page) || 1;
+            const perPage = 12;
+            const offset = (page - 1) * perPage;
+
             const destinationFind = await Destination.findOne({
                 where: { address: address },
                 attributes: ['latitude', 'longitude']
@@ -1443,9 +1448,15 @@ class ModelController {
                 };
             });
 
+            const totalCount = formattedNearbyModels.length;
+            const totalPages = Math.ceil(totalCount / perPage);
+            const currentPageData = formattedNearbyModels.slice(offset, offset + perPage);
+
             return res.status(200).json({
                 success: true,
-                data: formattedNearbyModels
+                totalCount,
+                totalPages,
+                data: currentPageData
             });
 
         } catch (error) {
@@ -1824,6 +1835,66 @@ class ModelController {
             }
         } catch (error) {
             console.error("Error in getModelHighRate:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async autoCreateImageOfModel(req, res) {
+        try {
+            const { id } = req.params
+            const listImage = []
+            for (let i = 0; i < 3; i++) {
+                const imageUrl = faker.image.url();
+                const result = await cloundinary.uploader.upload(imageUrl, {
+                    upload_preset: 'vnldjdbe',
+                    public_id: `unique_id_${Date.now()}`
+                });
+
+                const createdImage = await ModelImages.create({
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    modelId: id
+                });
+                listImage.push(createdImage)
+            }
+            return res.status(200).json({
+                data: listImage
+            })
+        } catch (error) {
+            console.error("Error in autoCreateImageOfModel:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async autoCreateImageOfDestination(req, res) {
+        try {
+            const { id } = req.params
+            const listImage = []
+            for (let i = 0; i < 3; i++) {
+                const imageUrl = faker.image.url()
+                const result = await cloundinary.uploader.upload(imageUrl, {
+                    upload_preset: 'vnldjdbe',
+                    public_id: `unique_id_${Date.now()}`
+                });
+
+                const createdImage = await DestinationImages.create({
+                    url: result.secure_url,
+                    publicId: result.public_id,
+                    destinationId: id
+                });
+                listImage.push(createdImage)
+            }
+            return res.status(200).json({
+                data: listImage
+            })
+        } catch (error) {
+            console.error("Error in autoCreateImageOfModel:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"

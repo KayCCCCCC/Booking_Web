@@ -8,6 +8,7 @@ const TagBlog = db.tag_blog
 const User = db.user
 const BlogRating = db.blogRating
 const BlogComment = db.blogComment
+const Notification = db.notification
 const cloudinary = require("../utils/cloudinary");
 class BlogController {
     static async createBlog(req, res) {
@@ -177,7 +178,7 @@ class BlogController {
         try {
             const page = parseInt(req.query.page) || 1;
             let sort = req.query.sort || "desc"; // Default sort order if not provided
-            const limit = 10;
+            const limit = 12;
             const offset = (page - 1) * limit;
 
             const blogs = await Blog.findAll({
@@ -320,7 +321,7 @@ class BlogController {
         try {
             const { id } = req.params;
             const comment = await BlogComment.findAll({
-                where: { id },
+                where: { blogId: id },
                 attributes: [
                     "id",
                     "content",
@@ -343,12 +344,9 @@ class BlogController {
     }
     static async replyCommentBlog(req, res) {
         try {
-            const { date, content, userId, blogId, replyCommentId } = req.body;
-
-            const dateObj = new Date(date)
+            const { content, userId, blogId, replyCommentId } = req.body;
 
             const newReply = await BlogComment.create({
-                date: dateObj,
                 content,
                 userId,
                 blogId,
@@ -356,8 +354,28 @@ class BlogController {
             });
 
             if (newReply) {
-                res.status(200).json({ message: "Reply comment successfully" });
-            } else {
+                const userReplyComment = await User.findOne({
+                    where: {
+                        id: newReply.replyCommentId
+                    }
+                })
+
+                const blogComment = await Blog.findOne({
+                    where: {
+                        id: newReply.blogId
+                    }
+                })
+
+                const notification = await Notification.create({
+                    content: `${userReplyComment.name} has reply comment in ${blogComment.title}`
+                })
+
+                res.status(200).json({
+                    message: "Reply comment successfully",
+                    notification
+                });
+            }
+            else {
                 res.status(500).json({ message: "Failed to create reply" });
             }
         } catch (error) {
@@ -369,7 +387,7 @@ class BlogController {
     static async autoCreateBlog(req, res) {
         try {
             const listOfBlogs = [];
-            for (let index = 0; index < 10; index++) {
+            for (let index = 1; index <= 40; index++) {
                 let fakeInfo = {
                     title: faker.lorem.sentence(),
                     content: faker.lorem.paragraphs(),
@@ -378,7 +396,7 @@ class BlogController {
                     status: "Accepted",
                     createdAt: faker.date.past(),
                     updatedAt: faker.date.past(),
-                    userId: faker.number.int({ min: 1, max: 10 })
+                    userId: index
                 };
                 const fakeBlog = await Blog.create(fakeInfo);
                 listOfBlogs.push(fakeBlog);

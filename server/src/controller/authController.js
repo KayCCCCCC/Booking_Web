@@ -1,5 +1,5 @@
 const db = require("../model/index");
-const sendEmail = require("../utils/sendEmail");
+const { sendEmail } = require("../utils/sendEmail");
 const { Token } = require("../utils/generateToken");
 const bcrypt = require("bcryptjs");
 const cloundinary = require('../utils/cloudinary');

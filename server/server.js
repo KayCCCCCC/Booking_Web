@@ -1,57 +1,61 @@
-require('dotenv').config();
 const express = require('express');
-const http = require("http");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const bodyParser = require('body-parser');
-const cloundinary = require('./src/utils/cloudinary')
-require('./firebaseConfig.js')
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const path = require('path');
 
 const webRoutes = require('./src/routes/index');
 const sequelize = require("./src/database/connectDbPg");
 
-const { Op } = require('sequelize');
-
-const db = require('./src/model/index')
-const { scheduleBookingStatusUpdate, scheduleCheckCancelledBookings } = require('./src/service/setInterval.js')
-
 const app = express();
-const server = http.createServer(app);
+const router = express.Router();
+const port = 8080;
 
-const port = process.env.PORT || 3000;
-const hostname = process.env.HOST_NAME || 'localhost';
+const { scheduleBookingStatusUpdate, scheduleCheckCancelledBookings } = require('./src/service/setInterval.js');
 
-app.use(
-    cors({
-        credentials: true,
-        allowedHeaders: "Content-Type,Authorization",
-        origin: process.env.CLIENT_URL ?? "http://localhost:5173",
-    })
-);
+// Middleware: log request method
+router.use(function (req, res, next) {
+    console.log('/' + req.method);
+    next();
+});
 
-// app.use(express.json({ limit: '50mb' }));
-// app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(cookieParser());
+// Middleware: parse incoming requests with JSON payloads
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+// Middleware: parse cookies
+app.use(cookieParser());
+
+// Middleware: enable CORS
+app.use(cors());
+
+// Middleware: serve static files from 'views' directory
+const viewsPath = path.join(__dirname, 'views');
+app.use(express.static(viewsPath));
+
+// Define routes
 app.use('/api/v3', webRoutes);
 
-// Connect to the database
-sequelize
-    .authenticate()
+// Route: handle root URL
+app.get('/', (req, res) => {
+    res.send("Hello");
+});
+
+// Connect to database
+sequelize.authenticate()
     .then(() => {
         console.log("DB connected");
     })
     .catch((err) => {
-        console.log("Error" + err);
+        console.error("Error connecting to database:", err);
     });
 
 
+// Schedule tasks
 scheduleBookingStatusUpdate();
 scheduleCheckCancelledBookings();
 
-
-server.listen(port, hostname, () => {
-    console.log(`Example app listening on http://${hostname}:${port}`);
+// Start server
+app.listen(port, function () {
+    console.log(`Example app listening on http://localhost:${port}`);
 });

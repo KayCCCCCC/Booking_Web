@@ -388,7 +388,7 @@ class BlogController {
         try {
             const listOfBlogs = [];
             for (let index = 1; index <= 40; index++) {
-                let fakeInfo = {
+                const fakeInfo = {
                     title: faker.lorem.sentence(),
                     content: faker.lorem.paragraphs(),
                     description: faker.lorem.paragraphs(),
@@ -400,6 +400,29 @@ class BlogController {
                 };
                 const fakeBlog = await Blog.create(fakeInfo);
                 listOfBlogs.push(fakeBlog);
+
+                // Create comments for the blog
+                const commentContent = faker.lorem.paragraphs();
+                const commentUserId = index;
+
+                // Create the comment
+                const newComment = await BlogComment.create({
+                    content: commentContent,
+                    userId: commentUserId,
+                    blogId: fakeBlog.id,
+                });
+
+                // Create a reply for the comment
+                const replyContent = faker.lorem.paragraphs();
+                const replyUserId = index + 1;
+
+                // Create the reply comment
+                const newReply = await BlogComment.create({
+                    content: replyContent,
+                    userId: replyUserId,
+                    blogId: fakeBlog.id,
+                    replyCommentId: newComment.id,
+                });
             }
             res.status(200).json({ listOfBlogs });
         } catch (error) {
@@ -407,6 +430,7 @@ class BlogController {
             return res.status(500).json({ message: "Something went wrong" });
         }
     }
+
 
 }
 exports.BlogController = BlogController

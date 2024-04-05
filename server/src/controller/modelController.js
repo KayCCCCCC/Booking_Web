@@ -824,7 +824,9 @@ class ModelController {
                 });
 
                 const formattedModels = filteredHotels.rows.map(model => {
-                    const hasRangeModelDetails = model.dataValues.model.dataValues.range_models.some(range => range.dataValues.range_model_details.length > 0);
+                    const hasRangeModelDetails = model.model && model.model.range_models && model.model.range_models.some(
+                        range => range.range_model_details && range.range_model_details.length > 0
+                    );
 
                     if (hasRangeModelDetails && hotelFilterOptions) {
                         const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);

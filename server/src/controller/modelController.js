@@ -376,8 +376,16 @@ class ModelController {
             if (description) model.description = description;
             if (address) model.address = address;
             if (rate) {
-                model.rate = rate;
-                model.numberRate = (model.numberRate || 0) + 1; // Increment numberRate
+                const currentTotalRate = (model.rate || 0) * (model.numberRate || 0);
+                const newTotalRate = currentTotalRate + rate;
+                const newNumberRate = (model.numberRate || 0) + 1;
+                const newAverageRate = newTotalRate / newNumberRate;
+
+                // Làm tròn trung bình rate đến một số chữ số thập phân cụ thể
+                const roundedRate = Number(newAverageRate.toFixed(1));
+
+                model.rate = roundedRate;
+                model.numberRate = newNumberRate;
             }
 
             // Save the updated model

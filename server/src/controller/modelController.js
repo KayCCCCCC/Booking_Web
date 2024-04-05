@@ -657,9 +657,11 @@ class ModelController {
                     const newHotel = await Hotel.create({
                         // checkInDate: checkInDate,
                         // checkOutDate: checkOutDate,
+                        numberOfRooms: faker.number.int({ min: 1, max: 20 }),
+                        numberOfGuestsPerRoom: faker.number.int({ min: 1, max: 20 }),
                         amenities: amenities,
                         pricePerNight: faker.number.int({ min: 50, max: 500 }),
-                        bookingStatus: "available",
+                        status: "Active",
                         contactPerson: faker.person.fullName(),
                         contactEmail: faker.internet.email(),
                         modelId: model.id

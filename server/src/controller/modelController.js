@@ -764,14 +764,6 @@ class ModelController {
 
                 const hotelFilterOptions = { modelId: modelHotelIds };
 
-                if (checkInDate && checkOutDate) {
-                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
-                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
-                    }
-                    bookingFilterOptions.statusBooking = { [Op.notIn]: ["Pending", "Confirmed"] };
-                    bookingFilterOptions.startDate = { [Op.gte]: checkInDate };
-                    bookingFilterOptions.expireDate = { [Op.lte]: checkOutDate };
-                }
                 if (pricePerNight) {
                     if (orderByPrice === 'true') {
                         hotelFilterOptions.pricePerNight = { [Op.gte]: pricePerNight };
@@ -789,91 +781,179 @@ class ModelController {
                 if (contactPerson) hotelFilterOptions.contactPerson = { [Op.like]: `%${contactPerson}%` };
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
-                const filteredHotels = await Hotel.findAndCountAll({
-                    where: hotelFilterOptions,
-                    include: [
-                        {
-                            model: Model,
-                            attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
-                            include: [
-                                {
-                                    model: ModelImages,
-                                    attributes: ['url'],
-                                },
-                                {
-                                    model: ModelType,
-                                    attributes: ['typeName'],
-                                },
-                                {
-                                    model: RangeModel,
-                                    include: {
-                                        model: RangeModelDetail,
-                                        include: [
-                                            {
-                                                model: Bookings,
-                                                where: bookingFilterOptions
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                    order: [['id', 'ASC']],
-                    distinct: true
-                });
-
-                const formattedModels = filteredHotels.rows.map(model => {
-                    const hasRangeModelDetails = model.model && model.model.range_models && model.model.range_models.some(
-                        range => range.range_model_details && range.range_model_details.length > 0
-                    );
-
-                    if (hasRangeModelDetails && hotelFilterOptions) {
-                        const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
-                        return {
-                            checkInDate: model.dataValues.checkInDate,
-                            checkOutDate: model.dataValues.checkOutDate,
-                            amenities: model.dataValues.amenities,
-                            numberOfRooms: model.dataValues.numberOfRooms,
-                            numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
-                            pricePerNight: model.dataValues.pricePerNight,
-                            bookingStatus: model.dataValues.bookingStatus,
-                            contactPerson: model.dataValues.contactPerson,
-                            contactEmail: model.dataValues.contactEmail,
-                            model: {
-                                id: model.dataValues.model.dataValues.id,
-                                description: model.dataValues.model.dataValues.description,
-                                address: model.dataValues.model.dataValues.address,
-                                name: model.dataValues.model.dataValues.name,
-                                latitude: model.dataValues.model.dataValues.latitude,
-                                longitude: model.dataValues.model.dataValues.longitude,
-                                status: model.dataValues.model.dataValues.status,
-                                rate: model.dataValues.model.dataValues.rate,
-                                numberRate: model.dataValues.model.dataValues.numberRate,
-                                iso2: model.dataValues.model.dataValues.iso2,
-                                address_location: model.dataValues.model.dataValues.address_location,
-                                urls: urls,
-                                typeName: model.dataValues.model.dataValues.modelType.typeName,
-                            }
-                        };
-                    } else {
-                        return null;
+                if (checkInDate && checkOutDate) {
+                    console.log(11111111111111111111)
+                    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                        return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
                     }
-                });
+                    bookingFilterOptions.statusBooking = { [Op.notIn]: ["Pending", "Confirmed"] };
+                    bookingFilterOptions.startDate = { [Op.gte]: checkInDate };
+                    bookingFilterOptions.expireDate = { [Op.lte]: checkOutDate };
 
-                const filteredFormattedModels = formattedModels.filter(model => model !== null);
+                    const filteredHotels = await Hotel.findAndCountAll({
+                        where: hotelFilterOptions,
+                        include: [
+                            {
+                                model: Model,
+                                attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                                include: [
+                                    {
+                                        model: ModelImages,
+                                        attributes: ['url'],
+                                    },
+                                    {
+                                        model: ModelType,
+                                        attributes: ['typeName'],
+                                    },
+                                    {
+                                        model: RangeModel,
+                                        include: {
+                                            model: RangeModelDetail,
+                                            include: [
+                                                {
+                                                    model: Bookings,
+                                                    where: bookingFilterOptions
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        order: [['id', 'ASC']],
+                        distinct: true
+                    });
 
-                const totalCount = filteredFormattedModels.length;
-                const totalPages = Math.ceil(totalCount / perPage);
-                const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
+                    const formattedModels = filteredHotels.rows.map(model => {
+                        const hasRangeModelDetails = model.model && model.model.range_models && model.model.range_models.some(
+                            range => range.range_model_details && range.range_model_details.length > 0
+                        );
 
-                return res.status(200).json({
-                    success: true,
-                    message: "Filtered hotels successfully",
-                    totalCount,
-                    totalPages,
-                    data: currentPageData,
-                });
+                        if (hasRangeModelDetails && hotelFilterOptions) {
+                            const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                            return {
+                                checkInDate: model.dataValues.checkInDate,
+                                checkOutDate: model.dataValues.checkOutDate,
+                                amenities: model.dataValues.amenities,
+                                numberOfRooms: model.dataValues.numberOfRooms,
+                                numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                                pricePerNight: model.dataValues.pricePerNight,
+                                bookingStatus: model.dataValues.bookingStatus,
+                                contactPerson: model.dataValues.contactPerson,
+                                contactEmail: model.dataValues.contactEmail,
+                                model: {
+                                    id: model.dataValues.model.dataValues.id,
+                                    description: model.dataValues.model.dataValues.description,
+                                    address: model.dataValues.model.dataValues.address,
+                                    name: model.dataValues.model.dataValues.name,
+                                    latitude: model.dataValues.model.dataValues.latitude,
+                                    longitude: model.dataValues.model.dataValues.longitude,
+                                    status: model.dataValues.model.dataValues.status,
+                                    rate: model.dataValues.model.dataValues.rate,
+                                    numberRate: model.dataValues.model.dataValues.numberRate,
+                                    iso2: model.dataValues.model.dataValues.iso2,
+                                    address_location: model.dataValues.model.dataValues.address_location,
+                                    urls: urls,
+                                    typeName: model.dataValues.model.dataValues.modelType.typeName,
+                                }
+                            };
+                        } else {
+                            return null;
+                        }
+                    });
+
+                    const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                    const totalCount = filteredFormattedModels.length;
+                    const totalPages = Math.ceil(totalCount / perPage);
+                    const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Filtered hotels successfully",
+                        totalCount,
+                        totalPages,
+                        data: currentPageData,
+                    });
+                } else {
+                    console.log(2222222222222222)
+                    const filteredHotels = await Hotel.findAndCountAll({
+                        where: hotelFilterOptions,
+                        include: [
+                            {
+                                model: Model,
+                                attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                                include: [
+                                    {
+                                        model: ModelImages,
+                                        attributes: ['url'],
+                                    },
+                                    {
+                                        model: ModelType,
+                                        attributes: ['typeName'],
+                                    },
+                                    {
+                                        model: RangeModel,
+                                        include: {
+                                            model: RangeModelDetail,
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        order: [['id', 'ASC']],
+                        distinct: true
+                    });
+
+                    const formattedModels = filteredHotels.rows.map(model => {
+                        if (hotelFilterOptions) {
+                            const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
+                            return {
+                                checkInDate: model.dataValues.checkInDate,
+                                checkOutDate: model.dataValues.checkOutDate,
+                                amenities: model.dataValues.amenities,
+                                numberOfRooms: model.dataValues.numberOfRooms,
+                                numberOfGuestsPerRoom: model.dataValues.numberOfGuestsPerRoom,
+                                pricePerNight: model.dataValues.pricePerNight,
+                                bookingStatus: model.dataValues.bookingStatus,
+                                contactPerson: model.dataValues.contactPerson,
+                                contactEmail: model.dataValues.contactEmail,
+                                model: {
+                                    id: model.dataValues.model.dataValues.id,
+                                    description: model.dataValues.model.dataValues.description,
+                                    address: model.dataValues.model.dataValues.address,
+                                    name: model.dataValues.model.dataValues.name,
+                                    latitude: model.dataValues.model.dataValues.latitude,
+                                    longitude: model.dataValues.model.dataValues.longitude,
+                                    status: model.dataValues.model.dataValues.status,
+                                    rate: model.dataValues.model.dataValues.rate,
+                                    numberRate: model.dataValues.model.dataValues.numberRate,
+                                    iso2: model.dataValues.model.dataValues.iso2,
+                                    address_location: model.dataValues.model.dataValues.address_location,
+                                    urls: urls,
+                                    typeName: model.dataValues.model.dataValues.modelType.typeName,
+                                }
+                            };
+                        } else {
+                            return null;
+                        }
+                    });
+
+                    const filteredFormattedModels = formattedModels.filter(model => model !== null);
+
+                    const totalCount = filteredFormattedModels.length;
+                    const totalPages = Math.ceil(totalCount / perPage);
+                    const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Filtered hotels successfully",
+                        totalCount,
+                        totalPages,
+                        data: currentPageData,
+                    });
+                }
+
             }
         } catch (error) {
             console.error("Error FilterHotel:", error);

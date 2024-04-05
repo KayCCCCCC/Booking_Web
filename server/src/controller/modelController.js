@@ -15,6 +15,8 @@ const Hotel = db.hotel
 const Flight = db.flight
 const Car = db.car
 const Destination = db.destination
+const CookieDes = db.des_cookie
+const CookieDestination = db.cookie_destination
 const DestinationType = db.destinationType
 const DestinationImages = db.destinationImages
 const Cookie = db.cookie
@@ -232,6 +234,67 @@ class ModelController {
 
         } catch (error) {
             console.error("Error CreateBookMark:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong!"
+            });
+        }
+    }
+
+    static async CreateBookMarkDestination(req, res) {
+        try {
+            const { destinationId, userId } = req.body;
+
+            const destination = await Destination.findByPk(destinationId);
+
+            if (!destination) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Destination not found"
+                });
+            }
+
+            let cookie = await CookieDes.findOne({
+                where: {
+                    name: destination.name.trim()
+                }
+            });
+
+            if (!cookie) {
+                [cookie] = await CookieDes.findOrCreate({
+                    where: {
+                        name: destination.name.trim()
+                    }
+                });
+            }
+
+            const existingBookmark = await CookieDestination.findOne({
+                where: {
+                    destinationId: destinationId,
+                    desCookieId: cookie.id,
+                    userId: userId
+                }
+            });
+
+            if (!existingBookmark) {
+                await CookieDestination.create({
+                    destinationId: destinationId,
+                    desCookieId: cookie.id,
+                    userId: userId
+                });
+            } else {
+                await existingBookmark.update({
+                    updatedAt: new Date()
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Bookmark added successfully"
+            });
+
+        } catch (error) {
+            console.error("Error CreateBookMarkDestination:", error);
             return res.status(500).json({
                 success: false,
                 message: "Something went wrong!"

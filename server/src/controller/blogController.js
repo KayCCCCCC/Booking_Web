@@ -226,7 +226,6 @@ class BlogController {
                 subQuery: false,
             });
 
-            console.log(blogs);
 
             res.status(200).json({ blogs: blogs });
         } catch (error) {
@@ -423,6 +422,19 @@ class BlogController {
                     blogId: fakeBlog.id,
                     replyCommentId: newComment.id,
                 });
+
+                //Create rating for Blog
+                const ratingId = index;
+                await BlogRating.create({
+                    userId: ratingId,
+                    blogId: fakeBlog.id,
+                    rating: faker.number.int({ min: 1, max: 5 }),
+                });
+                await BlogRating.create({
+                    userId: ratingId + 1,
+                    blogId: fakeBlog.id,
+                    rating: faker.number.int({ min: 1, max: 5 }),
+                });
             }
             res.status(200).json({ listOfBlogs });
         } catch (error) {
@@ -430,6 +442,70 @@ class BlogController {
             return res.status(500).json({ message: "Something went wrong" });
         }
     }
+
+
+    static async GetBlogHighRate(req, res) {
+        try {
+            let sort = req.query.sort || "asc"; // Default sort order if not provided
+
+            const blogs = await Blog.findAll({
+                include: [
+                    {
+                        model: BlogRating,
+                        attributes: [],
+                    },
+                    {
+                        model: Tag,
+                        attributes: ["name"],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: User,
+                        attributes: ["id", "name", "email", "avatar"],
+                    }
+                ],
+                attributes: [
+                    "id",
+                    "title",
+                    "thumbnail",
+                    "description",
+                    "content",
+                    "createdAt",
+                    [
+                        sequelize.fn("AVG", sequelize.col("blog_ratings.rating")),
+                        "avgRating"
+                    ],
+                ],
+                group: [
+                    "title",
+                    "thumbnail",
+                    "description",
+                    "blog.status",
+                    "blog.id",
+                    "tags.id",
+                    "user.id"
+                ],
+                order: [["id", sort]],
+                subQuery: false,
+            });
+
+            const sortBlog = blogs.sort((a, b) => {
+                return b.dataValues.avgRating - a.dataValues.avgRating;
+            });
+            const result = sortBlog.slice(0, 2)
+            res.status(200).json({
+                success: true,
+                data: result
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: "Something went wrong." });
+        }
+    }
+
+
 
 
 }

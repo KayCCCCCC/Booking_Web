@@ -26,13 +26,13 @@ db.destinationImages = require('./destinationImagesModel')(sequelize, DataTypes)
 db.blogComment = require("./blogCommentModel")(sequelize, DataTypes);
 db.blogRating = require("./blogRatingModel")(sequelize, DataTypes);
 db.blog = require("./blogModel")(sequelize, DataTypes);
-db.voteBlogComment = require("./voteBlogCommentModel")(sequelize, DataTypes);
 db.notification = require("./notificationModel")(sequelize, DataTypes);
-db.favorite = require('./favoriteModelUserModel')(sequelize, DataTypes);
 db.tag = require('./tagModel')(sequelize, DataTypes);
 db.tag_blog = require('./blog_tagModel')(sequelize, DataTypes);
 db.cookie = require('./cookieModel')(sequelize, DataTypes);
 db.cookie_model = require('./cookie_modelModel')(sequelize, DataTypes);
+db.des_cookie = require('./cookieDesModel')(sequelize, DataTypes);
+db.cookie_destination = require('./cookie_destinationModel')(sequelize, DataTypes);
 //relation
 
 db.role.hasMany(db.user);
@@ -101,9 +101,6 @@ db.range_model.belongsTo(db.model, {
     foreignKey: "modelId",
 });
 
-db.model.belongsToMany(db.user, { through: 'favorite_model_user', foreignKey: 'modelId' });
-db.user.belongsToMany(db.model, { through: 'favorite_model_user', foreignKey: 'userId' });
-
 db.range_model.hasMany(db.range_model_detail)
 db.range_model_detail.belongsTo(db.range_model, {
     foreignKey: "rangeModelId",
@@ -131,13 +128,6 @@ db.blogComment.hasMany(db.blogComment, {
     foreignKey: "replyCommentId",
 });
 
-db.blogComment.belongsToMany(db.user, {
-    through: db.voteBlogComment,
-});
-db.user.belongsToMany(db.blogComment, {
-    through: db.voteBlogComment,
-});
-
 db.user.hasMany(db.blogRating);
 db.blogRating.belongsTo(db.user, {
     foreignKey: "userId",
@@ -154,13 +144,38 @@ db.notification.belongsTo(db.user, {
 db.blog.belongsToMany(db.tag, { through: "blog_tag", foreignKey: 'blogId' });
 db.tag.belongsToMany(db.blog, { through: "blog_tag", foreignKey: 'tagId' });
 
-db.model.belongsToMany(db.cookie, { through: "cookie_model", foreignKey: 'modelId' });
-db.cookie.belongsToMany(db.model, { through: "cookie_model", foreignKey: 'cookieId' });
 
+// cookie-model
 db.user.hasMany(db.cookie_model);
 db.cookie_model.belongsTo(db.user, {
     foreignKey: "userId",
 });
+
+db.cookie.hasMany(db.cookie_model);
+db.cookie_model.belongsTo(db.cookie, {
+    foreignKey: "cookieId",
+});
+
+db.model.hasMany(db.cookie_model);
+db.cookie_model.belongsTo(db.model, {
+    foreignKey: "modelId",
+});
+
+
+//cookie-destination
+db.user.hasMany(db.cookie_destination);
+db.cookie_destination.belongsTo(db.user, {
+    foreignKey: "userId",
+});
+
+db.des_cookie.hasMany(db.cookie_destination);
+db.cookie_destination.belongsTo(db.des_cookie);
+
+db.destination.hasMany(db.cookie_destination);
+db.cookie_destination.belongsTo(db.destination, {
+    foreignKey: "destinationId",
+});
+
 
 db.sequelize.sync({ logging: false, force: false }).then(() => {
     console.log("Re-sync success");

@@ -9,6 +9,7 @@ router.get("/get/:id", BlogController.getBlogById);
 router.get("/get-by-user/:id", BlogController.getBlogByUserId);
 router.get("/get-all", BlogController.getAllBlog);
 router.get("/search-tag", BlogController.searchBlogByTag);
+router.get("/get-blogs-highest", BlogController.GetBlogHighRate)
 router.post("/rating-blog", BlogController.ratingBlog);
 router.post("/comment-blog", BlogController.createCommentBlog);
 router.get("/get-comment-blog/:id", BlogController.getCommentsBlog);

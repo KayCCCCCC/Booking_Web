@@ -206,7 +206,6 @@ class UserController {
                     roleId: faker.number.int({ min: 1, max: 2 }),
                     typeRegister: faker.helpers.arrayElement(["Normal", "Google"]),
                 }
-                console.log(fakeInfo)
                 const fakeUser = await User.create({
                     name: fakeInfo.name,
                     email: fakeInfo.email,

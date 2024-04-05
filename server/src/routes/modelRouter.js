@@ -44,6 +44,7 @@ router.get("/list-type-destination", ModelController.getListTypeDestination)
 
 
 router.post("/create-bookmark-model", ModelController.CreateBookMark)
+router.post("/create-bookmark-destination", ModelController.CreateBookMarkDestination)
 
 
 

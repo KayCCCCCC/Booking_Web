@@ -1545,7 +1545,7 @@ class ModelController {
 
     static async GetModelsNearByDestination(req, res) {
         try {
-            const { address, distance = 50, rate } = req.query;
+            const { address, distance = 50, rate, typeName } = req.query;
 
             const page = parseInt(req.query.page) || 1;
             const perPage = 12;
@@ -1576,6 +1576,9 @@ class ModelController {
                     {
                         model: ModelType,
                         attributes: ['typeName'],
+                        where: {
+                            typeName: typeName
+                        }
                     }
                 ],
             });

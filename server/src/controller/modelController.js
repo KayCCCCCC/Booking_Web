@@ -1400,7 +1400,7 @@ class ModelController {
 
     static async GetNearbyModels(req, res) {
         try {
-            const { address, distance, rate } = req.body;
+            const { address, distance = 50, rate } = req.query;
 
             const modelFind = await Model.findOne({
                 where: { address: address },
@@ -1468,7 +1468,7 @@ class ModelController {
 
     static async GetNearbyDestination(req, res) {
         try {
-            const { address, distance, rate } = req.body;
+            const { address, distance = 50, rate } = req.query;
 
             const destinationFind = await Destination.findOne({
                 where: { address: address },
@@ -1545,7 +1545,7 @@ class ModelController {
 
     static async GetModelsNearByDestination(req, res) {
         try {
-            const { address, distance, rate } = req.body;
+            const { address, distance = 50, rate } = req.query;
 
             const page = parseInt(req.query.page) || 1;
             const perPage = 12;

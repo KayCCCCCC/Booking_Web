@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils/cn"
 import { Button } from "@/components/global/atoms/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/global/atoms/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/global/atoms/popover"
-import { Country } from "@/lib/interface/country"
+import { Country } from "@/lib/interface/country.interface"
 
 type ComboboxProps = {
   data: Country[]

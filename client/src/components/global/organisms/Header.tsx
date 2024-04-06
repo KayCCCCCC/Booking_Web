@@ -12,7 +12,7 @@ interface HeaderProps {
 export default function Header({ classContent }: HeaderProps) {
   return (
     <header
-      className={cn(" flex h-[70px] w-full items-center justify-between bg-transparent p-4 px-20 ", classContent)}
+      className={cn(" flex h-[70px] w-full items-center justify-between bg-transparent p-4 px-20   ", classContent)}
     >
       <Logo />
       <NavBar />

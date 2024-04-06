@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const SearchSchema = z.object({
-  location: z.string(),
+  address: z.string(),
   date: z.object({
     from: z.date(),
     to: z.date()

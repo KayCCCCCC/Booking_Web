@@ -34,7 +34,7 @@ const PaginationCustom = ({ totalPages, currentPage, setPage }: PaginationCustom
         </button>
         {paginationRange &&
           paginationRange.map((key, idx) =>
-            key === 0 ? (
+            key === -1 ? (
               <PaginationItem key={idx}>
                 <PaginationEllipsis />
               </PaginationItem>

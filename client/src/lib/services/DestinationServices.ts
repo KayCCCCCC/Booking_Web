@@ -1,4 +1,4 @@
-import { Destination, DestinationType } from "../interface/destination"
+import { Destination, DestinationType } from "../interface/destination.interface"
 import { get } from "./RootServices"
 
 interface destinationTypeResponseProps {
@@ -16,17 +16,23 @@ interface destinationResponseProps {
   data: Destination[] | null
   totalPages?: number
 }
-export const getAllDestination = async ({ page }: { page: number }): Promise<destinationResponseProps> => {
-  const response = await get<destinationResponseProps>(`model/get-all-destination?page=${page}`)
-  return response.data
-}
+// export const getAllDestination = async ({ page }: { page: number }): Promise<destinationResponseProps> => {
+//   const response = await get<destinationResponseProps>(`model/get-all-destination?page=${page}`)
+//   return response.data
+// }
 
 export const getDestinationHighRatings = async (): Promise<destinationResponseProps> => {
   const response = await get<destinationResponseProps>(`model/getDestinationHighest`)
   return response.data
 }
 
-export const filterDestinationByType = async ({ typeName}: {typeName: string}) : Promise<destinationResponseProps> => {
-  const response = await get<destinationResponseProps>(`model/filter-destination?nameType=${typeName}`)
+export const filterDestinationByType = async ({
+  typeName,
+  page
+}: {
+  typeName: string
+  page: number
+}): Promise<destinationResponseProps> => {
+  const response = await get<destinationResponseProps>(`model/filter-destination?nameType=${typeName}&page=${page}`)
   return response.data
 }

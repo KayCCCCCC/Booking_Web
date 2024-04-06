@@ -1,7 +1,8 @@
-import { Destination } from "@/lib/interface/destination"
+import { Destination } from "@/lib/interface/destination.interface"
 import { cn } from "@/lib/utils/cn"
 import { Skeleton } from "./skeleton"
-import { Accommodation } from "@/lib/interface/accommodation";
+import { useNavigate } from "react-router-dom"
+import RouterEndPoint from "@/constants/RouterEndPoint"
 
 export const Grid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
   return <div className={cn("mx-auto grid gap-2 md:auto-rows-[20rem] ", className)}>{children}</div>
@@ -14,8 +15,13 @@ export const GridItem = ({
 }: {
   className?: string
   classUrl: string
-  data: Destination | Accommodation
+  data: Destination
 }) => {
+  const navigate = useNavigate()
+  
+  const handleClick = () => {
+    navigate(`${RouterEndPoint.Destinations}/${data.name}`, { state: data })
+  }
   return (
     <div
       className={cn(
@@ -23,8 +29,8 @@ export const GridItem = ({
         "shadow-input group flex flex-col justify-between space-y-2 rounded-xl border border-gray-100  bg-white p-4  transition duration-200 hover:border-transparent hover:shadow-xl dark:border-slate-900   dark:bg-slate-800 dark:shadow-none"
       )}
     >
-      <img src={data.urls[0]} alt="img" className={cn("w-full object-cover rounded-md", classUrl)} />
-      <div className="transition duration-200 group-hover:translate-x-2 ">
+      <img src={data.urls[0]} alt="img" className={cn("w-full rounded-md object-cover", classUrl)} />
+      <div className="transition duration-200 group-hover:translate-x-2 cursor-pointer" onClick={handleClick}>
         <div className="z-0 my-1 font-bold text-neutral-600 dark:text-neutral-200">{data.name}</div>
         <div className="z-0 truncate text-xs text-neutral-600 dark:text-neutral-200">{data.address}</div>
       </div>

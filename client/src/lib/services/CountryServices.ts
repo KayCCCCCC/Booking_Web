@@ -1,5 +1,5 @@
-import { APINations } from "@/contants/API"
-import { Country } from "@/lib/interface/country"
+import { APINations } from "@/constants/API"
+import { Country } from "@/lib/interface/country.interface"
 import axios from "axios"
 
 export const getNationsInTheWorld = async (): Promise<Country[]> => {

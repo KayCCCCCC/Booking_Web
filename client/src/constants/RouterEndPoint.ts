@@ -10,15 +10,21 @@ enum RouterEndPoint {
 
   //DESTINATION
   Destinations = "/destinations",
+  DestinationDetail = "/destinations/:name",
 
   // STAYS
   Stays = "/stays",
+  StayDetail = "/stays/:name",
 
   // TRANSPORTS
   Transports = "/transports",
 
   // COUPONS
-  Coupons = "/coupons"
+  Coupons = "/coupons",
+
+  // BLOGS
+  Blogs = "/blogs",
+  BlogDetail = "/blogs/:title",
 }
 
 export default RouterEndPoint

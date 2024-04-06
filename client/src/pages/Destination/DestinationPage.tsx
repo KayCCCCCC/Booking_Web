@@ -1,13 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import Map from "@/components/global/molecules/Map"
 import ListDestinations from "@/components/local/Destination/ListDestination"
-import { filterDestinationByType, getAllDestination, getAllDestinationType } from "@/lib/services/DestinationServices"
+import { filterDestinationByType, getAllDestinationType } from "@/lib/services/DestinationServices"
 import { cn } from "@/lib/utils/cn"
 import ScrollbarType from "@/components/global/molecules/ScrollbarType"
 import PaginationCustom from "@/components/global/molecules/PaginationCustom"
-import Filter from "@/components/global/molecules/Filter"
 import { MapIcon, PanelRightClose } from "lucide-react"
 
 const DestinationPage = () => {
@@ -16,30 +15,28 @@ const DestinationPage = () => {
   const [isOverlayScrollType, setIsOverlayScrollType] = useState<boolean>(false)
   const [typeName, setTypeName] = useState<string>("")
   const { scrollY } = useScroll()
-  const destinationList = useQuery({
-    queryKey: ["destinations", page],
-    queryFn: () => getAllDestination({ page }),
-    placeholderData: keepPreviousData,
-    staleTime: 5000
-  })
   const destinationTypes = useQuery({
     queryKey: ["destinationType"],
     queryFn: getAllDestinationType
   })
 
   const destinationFilterList = useQuery({
-    queryKey: ["destinationFilter", typeName],
-    queryFn: () => filterDestinationByType({ typeName })
+    queryKey: ["destinationFilter", typeName, page],
+    queryFn: () => filterDestinationByType({ typeName, page }),
+    placeholderData: keepPreviousData
   })
+
   useMotionValueEvent(scrollY, "change", (current) => {
-    if (current > 140 && isOverlayScrollType === false) {
+    if (current > 178 && isOverlayScrollType === false) {
       setIsOverlayScrollType(true)
     }
-    if (current < 140 && isOverlayScrollType) {
+    if (current < 178 && isOverlayScrollType) {
       setIsOverlayScrollType(false)
     }
   })
-
+  useEffect(() => {
+    setPage(1)
+  }, [typeName])
   return (
     <div className="">
       <div className="fixed bottom-6 right-8  z-10 mb-3 ml-4 rounded-full bg-white shadow-md">
@@ -53,34 +50,16 @@ const DestinationPage = () => {
           </div>
         )}
       </div>
-      <div className="gap- flex flex-col">
-        <div className="flex items-center justify-center gap-4 px-20 dark:bg-slate-700">
-          <div className=" flex py-4 md:w-[90%] ">
+      <div className="flex flex-col items-center justify-center gap-2 py-2">
+        <div className="flex items-center justify-center gap-4 rounded-full border border-slate-200 px-20 dark:bg-slate-700 md:w-4/5">
+          <div className=" flex py-2 md:w-full ">
             <ScrollbarType data={destinationTypes.data?.data} setTypeName={setTypeName} typeName={typeName} />
-          </div>
-          <div className="">
-            <Filter />
-          </div>
-          <div
-            onClick={() => setTypeName("")}
-            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-50 p-4 shadow-sm "
-          >
-            Reset
           </div>
         </div>
         {isOverlayScrollType && (
-          <div className=" z-100 fixed left-0 right-0 top-1 mx-auto flex items-center justify-center gap-4 rounded-full border border-slate-100 bg-white px-20 opacity-95 dark:bg-slate-700 md:w-4/5">
+          <div className=" h-70 fixed left-0 right-0 top-1 z-10 mx-auto flex items-center justify-center gap-4 rounded-full border border-slate-100 bg-white px-20 opacity-95 dark:bg-slate-700 md:w-4/5">
             <div className=" flex py-4 md:w-[90%] ">
               <ScrollbarType data={destinationTypes.data?.data} setTypeName={setTypeName} typeName={typeName} />
-            </div>
-            <div className="">
-              <Filter />
-            </div>
-            <div
-              onClick={() => setTypeName("")}
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-50 p-4 shadow-sm "
-            >
-              Reset
             </div>
           </div>
         )}
@@ -88,12 +67,16 @@ const DestinationPage = () => {
           <div className="">
             <ListDestinations
               isShowMap={isOpenMap}
-              data={typeName === "" ? destinationList.data?.data : destinationFilterList.data?.data}
-              loading={destinationList.isLoading}
+              data={destinationFilterList.data?.data}
+              loading={destinationFilterList.isLoading}
             />
 
-            {destinationList.data?.totalPages && (
-              <PaginationCustom totalPages={destinationList.data?.totalPages} currentPage={page} setPage={setPage} />
+            {destinationFilterList.data?.totalPages && (
+              <PaginationCustom
+                totalPages={destinationFilterList.data?.totalPages}
+                currentPage={page}
+                setPage={setPage}
+              />
             )}
           </div>
           <div className="flex items-center justify-center">

@@ -405,7 +405,8 @@ class BlogController {
                 })
 
                 const notification = await Notification.create({
-                    content: `${userReplyComment.name} has reply comment in ${blogComment.title}`
+                    content: `${userReplyComment.name} has reply comment in ${blogComment.title}`,
+                    userId: blogComment.userId
                 })
 
                 res.status(200).json({

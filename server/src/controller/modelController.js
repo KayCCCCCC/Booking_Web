@@ -83,41 +83,240 @@ class ModelController {
                     message: "ModelId is required"
                 });
             } else {
-                const images = await ModelImages.findAll({
+                const model = await Model.findOne({
                     where: {
-                        modelId: modelId
-                    },
-                    attributes: ["url"],
-                });
-                const urls = images.map(image => image.url);
-
-                const result = await Model.findByPk(modelId, {
-                    attributes: ["description", "address", "rate", "numberRate"],
-                    include: {
-                        model: ModelType,
-                        attributes: ['typeName']
+                        id: modelId
                     }
                 });
+                if (!model) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Data of Model with Id ${modelId} not found`,
+                    });
+                }
 
-                if (result) {
-                    const data = {
-                        description: result.description,
-                        address: result.address,
-                        rate: result.rate,
-                        numberRate: result.numberRate,
-                        typeName: result.modelType.typeName,
-                        urls: urls
+                if (model.modelTypeId == 2) {
+                    const hotel = await Hotel.findOne({
+                        where: {
+                            modelId: modelId
+                        },
+                        include: [
+                            {
+                                model: Model,
+                                attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                                include: [
+                                    {
+                                        model: ModelImages,
+                                        attributes: ['url'],
+                                    },
+                                    {
+                                        model: ModelType,
+                                        attributes: ['typeName'],
+                                    },
+                                    {
+                                        model: RangeModel,
+                                        include: {
+                                            model: RangeModelDetail,
+                                            include: [
+                                                {
+                                                    model: Bookings,
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        order: [['id', 'ASC']],
+                        distinct: true
+                    });
+
+                    if (!hotel) {
+                        return res.status(400).json({
+                            success: false,
+                            message: `No hotel found for Model with Id ${modelId}`,
+                        });
+                    }
+
+                    const urls = hotel.model.model_images.map(image => image.url);
+                    const formattedModel = {
+                        amenities: hotel.amenities,
+                        numberOfRooms: hotel.numberOfRooms,
+                        numberOfGuestsPerRoom: hotel.numberOfGuestsPerRoom,
+                        pricePerNight: hotel.pricePerNight,
+                        bookingStatus: hotel.status,
+                        contactPerson: hotel.contactPerson,
+                        contactEmail: hotel.contactEmail,
+                        model: {
+                            id: hotel.model.id,
+                            description: hotel.model.description,
+                            address: hotel.model.address,
+                            name: hotel.model.name,
+                            latitude: hotel.model.latitude,
+                            longitude: hotel.model.longitude,
+                            status: hotel.model.status,
+                            rate: hotel.model.rate,
+                            numberRate: hotel.model.numberRate,
+                            iso2: hotel.model.iso2,
+                            address_location: hotel.model.address_location,
+                            urls: urls,
+                            typeName: hotel.model.modelType.typeName,
+                        }
                     };
 
                     return res.status(200).json({
                         success: true,
-                        message: `Data of Model with Id ${modelId}`,
-                        data: data
+                        message: "Get Model Success",
+                        data: formattedModel,
                     });
-                } else {
-                    return res.status(400).json({
-                        success: false,
-                        message: `Data of Model with Id ${modelId} not found`,
+                } else if (model.modelTypeId == 3) {
+                    const car = await Car.findOne({
+                        where: {
+                            modelId: modelId
+                        },
+                        include: [
+                            {
+                                model: Model,
+                                attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                                include: [
+                                    {
+                                        model: ModelImages,
+                                        attributes: ['url'],
+                                    },
+                                    {
+                                        model: ModelType,
+                                        attributes: ['typeName'],
+                                    },
+                                    {
+                                        model: RangeModel,
+                                        include: {
+                                            model: RangeModelDetail,
+                                            include: [
+                                                {
+                                                    model: Bookings,
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        order: [['id', 'ASC']],
+                        distinct: true
+                    });
+
+                    if (!car) {
+                        return res.status(400).json({
+                            success: false,
+                            message: `No car found for Model with Id ${modelId}`,
+                        });
+                    }
+
+
+                    const urls = car.model.model_images.map(image => image.url);
+                    const formattedCar = {
+                        type: car.type,
+                        color: car.color,
+                        size: car.size,
+                        pricePerHour: car.pricePerHour,
+                        availability: car.availability,
+                        location: car.location,
+                        model: {
+                            id: car.model.id,
+                            description: car.model.description,
+                            address: car.model.address,
+                            name: car.model.name,
+                            latitude: car.model.latitude,
+                            longitude: car.model.longitude,
+                            status: car.model.status,
+                            rate: car.model.rate,
+                            numberRate: car.model.numberRate,
+                            iso2: car.model.iso2,
+                            address_location: car.model.address_location,
+                            urls: urls,
+                            typeName: car.model.modelType.typeName,
+                        },
+                    };
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Get Car Success",
+                        data: formattedCar,
+                    });
+                }
+                else if (model.modelTypeId == 1) {
+                    const flight = await Flight.findOne({
+                        where: {
+                            modelId: modelId
+                        },
+                        include: [
+                            {
+                                model: Model,
+                                attributes: ["address", "rate", "description", "numberRate", "id", "name", "status", "address_location"],
+                                include: [
+                                    {
+                                        model: ModelImages,
+                                        attributes: ['url'],
+                                    },
+                                    {
+                                        model: ModelType,
+                                        attributes: ['typeName'],
+                                    },
+                                    {
+                                        model: RangeModel,
+                                        include: {
+                                            model: RangeModelDetail,
+                                            include: [
+                                                {
+                                                    model: Bookings,
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        order: [['id', 'ASC']],
+                        distinct: true
+                    });
+
+                    if (!flight) {
+                        return res.status(400).json({
+                            success: false,
+                            message: `No flight found for Model with Id ${modelId}`,
+                        });
+                    }
+
+                    const urls = flight.model.model_images.map(image => image.url);
+                    const formattedFlight = {
+                        origin: flight.origin,
+                        destination: flight.destination,
+                        flightNumber: flight.flightNumber,
+                        price: flight.price,
+                        seatCapacity: flight.seatCapacity,
+                        availableSeats: flight.availableSeats,
+                        airline: flight.airline,
+                        model: {
+                            id: flight.model.id,
+                            description: flight.model.description,
+                            address: flight.model.address,
+                            name: flight.model.name,
+                            latitude: flight.model.latitude,
+                            longitude: flight.model.longitude,
+                            status: flight.model.status,
+                            rate: flight.model.rate,
+                            numberRate: flight.model.numberRate,
+                            iso2: flight.model.iso2,
+                            address_location: flight.model.address_location,
+                            urls: urls,
+                            typeName: flight.model.modelType.typeName,
+                        },
+                    }
+
+                    return res.status(200).json({
+                        success: true,
+                        message: "Get Flight Success",
+                        data: formattedFlight,
                     });
                 }
             }
@@ -129,6 +328,7 @@ class ModelController {
             });
         }
     }
+
 
     static async CreateModel(req, res) {
         try {

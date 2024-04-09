@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils/cn"
 import { Grid, GridItem, SkeletonGrid } from "../../global/atoms/bento-grid"
-import { Destination } from "@/lib/interface/destination"
+import { Destination } from "@/lib/interface/destination.interface"
 interface ListDestinationProps {
   isShowMap: boolean
   data: Destination[] | null | undefined
@@ -9,7 +9,7 @@ interface ListDestinationProps {
 const ListDestinations = ({ isShowMap, data, loading }: ListDestinationProps) => {
   
   return !loading ? (
-    <Grid className={cn("", isShowMap ? "grid-cols-2" : "grid-cols-4")}>
+    <Grid className={cn("min-h-screen", isShowMap ? "grid-cols-2" : "grid-cols-4")}>
       {data?.map((item, i) => (
         <GridItem
           key={i}

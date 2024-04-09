@@ -1,9 +1,12 @@
 import { Button } from "@/components/global/atoms/button"
+import RouterEndPoint from "@/constants/RouterEndPoint"
 import { getDestinationHighRatings } from "@/lib/services/DestinationServices"
 import { cn } from "@/lib/utils/cn"
 import { useQuery } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 
 const Location = () => {
+  const navigate = useNavigate()
   const highLocations = useQuery({
     queryKey: ["best-location"],
     queryFn: getDestinationHighRatings
@@ -28,12 +31,16 @@ const Location = () => {
             key={index}
           >
             <img
+              loading="lazy"
               src={location.urls[0]}
               alt="image"
               className={cn("rounded-md object-cover  ", index === 3 ? "h-[18rem] w-full" : "h-full w-full")}
             />
             <div className="absolute bottom-0 z-10 w-full">
-              <div className="  bg-blur-[2px] m-3 cursor-pointer rounded-md  bg-slate-50/20 p-4 text-white hover:-translate-y-1">
+              <div
+                className="  bg-blur-[2px] m-3 cursor-pointer rounded-md  bg-slate-50/20 p-4 text-white hover:-translate-y-1"
+                onClick={() => navigate(`${RouterEndPoint.Destinations}/${location.name}`, { state: location })}
+              >
                 <div className="truncate text-ellipsis">{location.address}</div>
                 <div className="font-medium">{location.name}</div>
               </div>
@@ -42,7 +49,10 @@ const Location = () => {
         ))}
       </div>
       <div className="flex w-full items-center justify-center pt-3">
-        <Button className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100">
+        <Button
+          className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100"
+          onClick={() => navigate(`${RouterEndPoint.Destinations}`)}
+        >
           View more
         </Button>
       </div>

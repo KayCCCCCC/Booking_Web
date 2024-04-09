@@ -1,4 +1,5 @@
-export interface Accommodation {
+export interface Destination {
+  id: string
   name: string
   description: string
   address: string
@@ -6,10 +7,11 @@ export interface Accommodation {
   latitude: number
   rate: number
   numberRate: number
-  address_location: {
-    type: string
-    coordinates: number[]
-  }
-  accommodationTypeId: number
+  address_location: string
+  typeName: string
   urls: string[]
+}
+
+export interface DestinationType {
+  typeName: string
 }

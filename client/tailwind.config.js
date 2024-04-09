@@ -35,11 +35,31 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "spotlight": {
+          "0%": {
+            opacity: 0,
+            transform: "translate(-72%, -62%) scale(0.5)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translate(-50%,-40%) scale(1)",
+          },
+        },
+        "move-down": {
+          from : {
+            transform: "translate(0, -100%)"
+          },
+          to : {
+            transform: "translate(0, 0%)"
+          }
+        }
+        
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "spotlight": "spotlight 2s ease .75s 1 forwards",
+        "move-down": "move-down 2s ease-in "
       },
       transitionDuration: {
         '2000': '2000ms',
@@ -50,18 +70,7 @@ module.exports = {
       height: {
         md: "600px"
       },
-      keyframes: {
-        spotlight: {
-          "0%": {
-            opacity: 0,
-            transform: "translate(-72%, -62%) scale(0.5)",
-          },
-          "100%": {
-            opacity: 1,
-            transform: "translate(-50%,-40%) scale(1)",
-          },
-        },
-      },
+      
     },
   },
   plugins: [require("tailwindcss-animate")],

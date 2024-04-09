@@ -1,4 +1,4 @@
-import { Destination } from "@/lib/interface/destination"
+import { Destination } from "@/lib/interface/destination.interface"
 import { cn } from "@/lib/utils/cn"
 import { Heart } from "lucide-react"
 interface CardProps {

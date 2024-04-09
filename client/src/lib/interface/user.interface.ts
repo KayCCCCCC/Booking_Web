@@ -19,7 +19,9 @@ export interface CompletedInformationUser {
 }
 
 export interface User extends RegisterUser, Omit<OtpUser, "email">, Omit<CompletedInformationUser, "email"> {
-  typeRegiter: string
+  typeRegister: string
   roleId: number
   status: string
+  avatar: string
+  name: string
 }

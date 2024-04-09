@@ -1,14 +1,14 @@
-import ModalCustom from "@/components/global/atoms/ModalCustom"
+import ModalCustom from "@/components/global/molecules/HotelCustom"
 import { Grid, SkeletonGrid } from "@/components/global/atoms/bento-grid"
-import { Accommodation } from "@/lib/interface/accommodation"
+import { Hotel } from "@/lib/interface/hotel.interface"
 import { cn } from "@/lib/utils/cn"
 
-interface ListAccommodationProps {
+interface ListHotelProps {
   isShowMap: boolean
-  data: Accommodation[] | null | undefined
+  data: Hotel[] | null | undefined
   loading: boolean
 }
-const ListAccommodation = ({ isShowMap, data, loading }: ListAccommodationProps) => {
+const ListHotel = ({ isShowMap, data, loading }: ListHotelProps) => {
   return !loading ? (
     <Grid className={cn("", isShowMap ? "grid-cols-2" : "grid-cols-4")}>
       {data?.map((item, i) => (
@@ -25,4 +25,4 @@ const ListAccommodation = ({ isShowMap, data, loading }: ListAccommodationProps)
     </Grid>
   )
 }
-export default ListAccommodation
+export default ListHotel

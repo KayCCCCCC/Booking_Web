@@ -1,5 +1,5 @@
 import { errorNotify } from "@/components/global/atoms/notify"
-import { HOST } from "@/contants/API"
+import { HOST } from "@/constants/API"
 import axios, { AxiosError, AxiosResponse } from "axios"
 
 const api = axios.create({

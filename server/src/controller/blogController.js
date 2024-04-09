@@ -10,6 +10,7 @@ const BlogRating = db.blogRating
 const BlogComment = db.blogComment
 const Notification = db.notification
 const cloudinary = require("../utils/cloudinary");
+const data = require('../database/dataProvincesJson');
 class BlogController {
     static async createBlog(req, res) {
         try {
@@ -178,9 +179,10 @@ class BlogController {
         try {
             const page = parseInt(req.query.page) || 1;
             let sort = req.query.sort || "desc"; // Default sort order if not provided
-            const limit = 12;
+            const limit = 13;
             const offset = (page - 1) * limit;
 
+            const totalCount = await Blog.count();
             const blogs = await Blog.findAll({
                 include: [
                     {
@@ -226,8 +228,15 @@ class BlogController {
                 subQuery: false,
             });
 
+            const totalPages = Math.ceil(totalCount / limit);
 
-            res.status(200).json({ blogs: blogs });
+            res.status(200).json({
+                success: true,
+                message: "Get All Blogs Success",
+                totalCount: totalCount,
+                totalPages: totalPages,
+                data: blogs
+            });
         } catch (error) {
             console.error(error);
             res.status(500).send({ message: "Something went wrong." });
@@ -319,7 +328,9 @@ class BlogController {
     static async getCommentsBlog(req, res) {
         try {
             const { id } = req.params;
-            const comment = await BlogComment.findAll({
+
+            // Fetch all comments for the specified blog id
+            const allComments = await BlogComment.findAll({
                 where: { blogId: id },
                 attributes: [
                     "id",
@@ -336,11 +347,39 @@ class BlogController {
                     },
                 ],
             });
-            res.status(200).json({ comment });
+
+            // Filter out top-level comments that are not replies to other comments
+            const topLevelComments = allComments.filter(comment => !comment.replyCommentId);
+
+            // Function to recursively find replies for a comment
+            const findReplies = (commentId) => {
+                const replies = allComments.filter(comment => comment.replyCommentId === commentId);
+                return replies.map(reply => ({
+                    id: reply.id,
+                    text: reply.content,
+                    replies: findReplies(reply.id) // Recursively find replies for each reply
+                }));
+            };
+
+            // Map top-level comments and find their replies recursively
+            const commentData = topLevelComments.map(comment => ({
+                id: comment.id,
+                text: comment.content,
+                replies: findReplies(comment.id)
+            }));
+
+            res.status(200).json({
+                success: true,
+                message: "Get Comment Success",
+                data: commentData,
+            });
         } catch (error) {
-            res.status(500).json({ message: "somehitng went wrong" });
+            console.error(error);
+            res.status(500).json({ message: "Something went wrong" });
         }
     }
+
+
     static async replyCommentBlog(req, res) {
         try {
             const { content, userId, blogId, replyCommentId } = req.body;

@@ -87,11 +87,12 @@ class ModelController {
                     where: {
                         modelId: modelId
                     },
-                    attributes: ["url", "publicId", "id"],
+                    attributes: ["url"],
                 });
+                const urls = images.map(image => image.url);
 
                 const result = await Model.findByPk(modelId, {
-                    attributes: ["description", "address", "nameOfModel", "rate", "numberRate"],
+                    attributes: ["description", "address", "rate", "numberRate"],
                     include: {
                         model: ModelType,
                         attributes: ['typeName']
@@ -102,11 +103,10 @@ class ModelController {
                     const data = {
                         description: result.description,
                         address: result.address,
-                        nameOfModel: result.nameOfModel,
                         rate: result.rate,
                         numberRate: result.numberRate,
                         typeName: result.modelType.typeName,
-                        images: images
+                        urls: urls
                     };
 
                     return res.status(200).json({
@@ -855,7 +855,6 @@ class ModelController {
                 if (contactEmail) hotelFilterOptions.contactEmail = { [Op.like]: `%${contactEmail}%` };
 
                 if (checkInDate && checkOutDate) {
-                    console.log(11111111111111111111)
                     if (new Date(checkInDate) >= new Date(checkOutDate)) {
                         return res.status(400).json({ success: false, message: "Invalid date range: Check-in date must be before check-out date" });
                     }
@@ -941,15 +940,22 @@ class ModelController {
                     const totalPages = Math.ceil(totalCount / perPage);
                     const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
 
+                    let lowestPrice = Infinity;
+
+                    currentPageData.forEach(model => {
+                        if (model.pricePerNight < lowestPrice) {
+                            lowestPrice = model.pricePerNight;
+                        }
+                    });
                     return res.status(200).json({
                         success: true,
                         message: "Filtered hotels successfully",
                         totalCount,
                         totalPages,
+                        lowestPrice,
                         data: currentPageData,
                     });
                 } else {
-                    console.log(2222222222222222)
                     const filteredHotels = await Hotel.findAndCountAll({
                         where: hotelFilterOptions,
                         include: [
@@ -1018,11 +1024,20 @@ class ModelController {
                     const totalPages = Math.ceil(totalCount / perPage);
                     const currentPageData = filteredFormattedModels.slice(offset, offset + perPage);
 
+                    let lowestPrice = Infinity;
+
+                    currentPageData.forEach(model => {
+                        if (model.pricePerNight < lowestPrice) {
+                            lowestPrice = model.pricePerNight;
+                        }
+                    });
+
                     return res.status(200).json({
                         success: true,
                         message: "Filtered hotels successfully",
                         totalCount,
                         totalPages,
+                        lowestPrice,
                         data: currentPageData,
                     });
                 }

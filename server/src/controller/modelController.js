@@ -679,9 +679,9 @@ class ModelController {
             return res.status(200).json({
                 success: true,
                 message: "Models retrieved successfully",
-                data: formattedModels,
                 totalCount: totalCount,
-                totalPages: totalPages
+                totalPages: totalPages,
+                data: formattedModels,
             });
         } catch (error) {
             console.error("Error in GetAllModels:", error);
@@ -1615,12 +1615,27 @@ class ModelController {
 
     static async GetNearbyModels(req, res) {
         try {
-            const { address, distance = 50, rate } = req.query;
+            const page = parseInt(req.query.page) || 1;
+            const limit = 12;
+            const offset = (page - 1) * limit;
+            const { address, distance = 50, rate, typeName } = req.query;
 
             const modelFind = await Model.findOne({
                 where: { address: address },
                 attributes: ['latitude', 'longitude']
             });
+
+            const type = await ModelType.findOne({
+                where: {
+                    typeName
+                }
+            })
+            if (!type) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Type of model not found."
+                });
+            }
 
             if (!modelFind) {
                 return res.status(404).json({
@@ -1633,45 +1648,197 @@ class ModelController {
 
             const modelPoint = turf.point([longitude, latitude]);
 
-            const models = await Model.findAll({
-                include: [
-                    {
-                        model: ModelImages,
-                        attributes: ['url'],
+            if (type.typeName == "Hotel") {
+                const hotels = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
                     },
-                    {
-                        model: ModelType,
-                        attributes: ['typeName'],
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Hotel,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
+                const nearbyModelsHotel = hotels.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(modelPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
                     }
-                ],
-            });
+                    return false;
+                });
+                const formattedNearbyModels = nearbyModelsHotel.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        amenities: model.hotel.dataValues.amenities,
+                        numberOfRooms: model.hotel.dataValues.numberOfRooms,
+                        numberOfGuestsPerRoom: model.hotel.dataValues.numberOfGuestsPerRoom,
+                        pricePerNight: model.hotel.dataValues.pricePerNight,
+                        bookingStatus: model.hotel.dataValues.bookingStatus,
+                        contactPerson: model.hotel.dataValues.contactPerson,
+                        contactEmail: model.hotel.dataValues.contactEmail,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
 
-            const nearbyModels = models.filter(model => {
-                if (model.longitude !== longitude || model.latitude !== latitude) {
-                    const distanceInKilometers = turf.distance(modelPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
-                    return distanceInKilometers <= distance;
-                }
-                return false;
-            });
+                const totalCount = formattedNearbyModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedNearbyModels.slice(offset, offset + limit);
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Model Hotel Success",
+                    data: currentPageData
+                });
+            } else if (type.typeName == "Flight") {
+                const flights = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Flight,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
 
-            const formattedNearbyModels = nearbyModels.map(model => {
-                const urls = model.model_images.map(image => image.url);
-                return {
-                    id: model.id,
-                    description: model.description,
-                    address: model.address,
-                    name: model.name,
-                    rate: model.rate,
-                    numberRate: model.numberRate,
-                    urls: urls,
-                    typeName: model.modelType.typeName
-                };
-            });
+                const nearbyModelsFlight = flights.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(modelPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
+                    }
+                    return false;
+                });
 
-            return res.status(200).json({
-                success: true,
-                data: formattedNearbyModels
-            });
+                const formattedModels = nearbyModelsFlight.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        origin: model.flight.dataValues.origin,
+                        destination: model.flight.dataValues.destination,
+                        flightNumber: model.flight.dataValues.flightNumber,
+                        price: model.flight.dataValues.price,
+                        seatCapacity: model.flight.dataValues.seatCapacity,
+                        availableSeats: model.flight.dataValues.availableSeats,
+                        airline: model.flight.dataValues.airline,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+                const totalCount = formattedModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedModels.slice(offset, offset + limit);
+
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Model Flight Success.",
+                    data: currentPageData
+                });
+            } else if (type.typeName == "Car") {
+                const cars = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Car,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
+
+                const nearbyModelsCar = cars.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(modelPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
+                    }
+                    return false;
+                });
+
+                const formattedModels = nearbyModelsCar.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        type: model.car.dataValues.type,
+                        color: model.car.dataValues.color,
+                        size: model.car.dataValues.size,
+                        pricePerHour: model.car.dataValues.pricePerHour,
+                        availability: model.car.dataValues.availability,
+                        location: model.car.dataValues.location,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+
+                const totalCount = formattedModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedModels.slice(offset, offset + limit);
+
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Car Hotel Success.",
+                    data: currentPageData
+                });
+            }
         } catch (error) {
             console.error("Error in GetNearbyModels:", error);
             return res.status(500).json({
@@ -1763,8 +1930,8 @@ class ModelController {
             const { address, distance = 50, rate, typeName } = req.query;
 
             const page = parseInt(req.query.page) || 1;
-            const perPage = 12;
-            const offset = (page - 1) * perPage;
+            const limit = 12;
+            const offset = (page - 1) * limit;
 
             const destinationFind = await Destination.findOne({
                 where: { address: address },
@@ -1778,59 +1945,213 @@ class ModelController {
                 });
             }
 
+            const type = await ModelType.findOne({
+                where: {
+                    typeName
+                }
+            })
+            if (!type) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Type of model not found."
+                });
+            }
+
             const { longitude, latitude } = destinationFind.dataValues;
 
             const destinationPoint = turf.point([longitude, latitude]);
 
-            const models = await Model.findAll({
-                include: [
-                    {
-                        model: ModelImages,
-                        attributes: ['url'],
+            if (type.typeName == "Hotel") {
+                const hotels = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
                     },
-                    {
-                        model: ModelType,
-                        attributes: ['typeName'],
-                        where: {
-                            typeName: typeName
-                        }
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Hotel,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
+                const nearbyModelsHotel = hotels.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(destinationPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
                     }
-                ],
-            });
+                    return false;
+                });
+                const formattedNearbyModels = nearbyModelsHotel.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        amenities: model.hotel.dataValues.amenities,
+                        numberOfRooms: model.hotel.dataValues.numberOfRooms,
+                        numberOfGuestsPerRoom: model.hotel.dataValues.numberOfGuestsPerRoom,
+                        pricePerNight: model.hotel.dataValues.pricePerNight,
+                        bookingStatus: model.hotel.dataValues.bookingStatus,
+                        contactPerson: model.hotel.dataValues.contactPerson,
+                        contactEmail: model.hotel.dataValues.contactEmail,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
 
-            const nearbyModels = models.filter(model => {
-                if (model.longitude !== longitude || model.latitude !== latitude) {
-                    const distanceInKilometers = turf.distance(destinationPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
-                    return distanceInKilometers < distance;
-                } else {
-                    return false
-                }
-            });
+                const totalCount = formattedNearbyModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedNearbyModels.slice(offset, offset + limit);
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Model Hotel Success",
+                    data: currentPageData
+                });
+            } else if (type.typeName == "Flight") {
+                const flights = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Flight,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
 
-            const formattedNearbyModels = nearbyModels.map(model => {
-                const urls = model.model_images.map(image => image.url);
-                return {
-                    id: model.id,
-                    description: model.description,
-                    address: model.address,
-                    name: model.name,
-                    rate: model.rate,
-                    numberRate: model.numberRate,
-                    urls: urls,
-                    typeName: model.modelType.typeName
-                };
-            });
+                const nearbyModelsFlight = flights.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(destinationPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
+                    }
+                    return false;
+                });
 
-            const totalCount = formattedNearbyModels.length;
-            const totalPages = Math.ceil(totalCount / perPage);
-            const currentPageData = formattedNearbyModels.slice(offset, offset + perPage);
+                const formattedModels = nearbyModelsFlight.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        origin: model.flight.dataValues.origin,
+                        destination: model.flight.dataValues.destination,
+                        flightNumber: model.flight.dataValues.flightNumber,
+                        price: model.flight.dataValues.price,
+                        seatCapacity: model.flight.dataValues.seatCapacity,
+                        availableSeats: model.flight.dataValues.availableSeats,
+                        airline: model.flight.dataValues.airline,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+                const totalCount = formattedModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedModels.slice(offset, offset + limit);
 
-            return res.status(200).json({
-                success: true,
-                totalCount,
-                totalPages,
-                data: currentPageData
-            });
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Model Flight Success.",
+                    data: currentPageData
+                });
+            } else if (type.typeName == "Car") {
+                const cars = await Model.findAll({
+                    where: {
+                        modelTypeId: type.id
+                    },
+                    include: [
+                        {
+                            model: ModelImages,
+                            attributes: ['url'],
+                        },
+                        {
+                            model: ModelType,
+                            attributes: ['typeName'],
+                        },
+                        {
+                            model: Car,
+                        },
+                    ],
+                    order: [['id', 'ASC']],
+                });
+
+                const nearbyModelsCar = cars.filter(model => {
+                    if (model.longitude !== longitude || model.latitude !== latitude) {
+                        const distanceInKilometers = turf.distance(destinationPoint, turf.point([model.longitude, model.latitude]), { units: 'kilometers' });
+                        return distanceInKilometers <= distance;
+                    }
+                    return false;
+                });
+
+                const formattedModels = nearbyModelsCar.map(model => {
+                    const urls = model.dataValues.model_images.map(image => image.url);
+                    return {
+                        type: model.car.dataValues.type,
+                        color: model.car.dataValues.color,
+                        size: model.car.dataValues.size,
+                        pricePerHour: model.car.dataValues.pricePerHour,
+                        availability: model.car.dataValues.availability,
+                        location: model.car.dataValues.location,
+                        model: {
+                            id: model.dataValues.id,
+                            description: model.dataValues.description,
+                            address: model.dataValues.address,
+                            name: model.dataValues.name,
+                            status: model.dataValues.status,
+                            rate: model.dataValues.rate,
+                            numberRate: model.dataValues.numberRate,
+                            address_location: model.dataValues.address_location,
+                            urls: urls,
+                            typeName: model.dataValues.modelType.typeName
+                        }
+                    };
+                });
+
+                const totalCount = formattedModels.length;
+                const totalPages = Math.ceil(totalCount / limit);
+                const currentPageData = formattedModels.slice(offset, offset + limit);
+
+                return res.status(200).json({
+                    success: true,
+                    totalCount,
+                    totalPages,
+                    message: "Get Near By Car Hotel Success.",
+                    data: currentPageData
+                });
+            }
 
         } catch (error) {
             console.error("Error in GetModelsNearByDestination:", error);

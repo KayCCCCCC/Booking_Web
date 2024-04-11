@@ -4,7 +4,7 @@ import { Blog } from "@/lib/interface/blog.interface"
 import { cn } from "@/lib/utils/cn"
 import { useNavigate } from "react-router-dom"
 
-const ListBlog = ({ blogs }: { blogs: Blog[] }) => {
+const ListBlog = ({ blogs, latestBlog }: { blogs: Blog[]; latestBlog: Blog | null }) => {
   const navigate = useNavigate()
   return (
     <div className="mx-20">
@@ -13,17 +13,20 @@ const ListBlog = ({ blogs }: { blogs: Blog[] }) => {
           <div
             className={cn(
               "col-span-1 flex flex-col gap-2 rounded-md border border-slate-300 p-3 hover:shadow-md",
-              index === 0 && "col-span-3 row-span-1 flex flex-row  gap-4"
+              latestBlog?.id === blog.id && "col-span-3 row-span-1 flex flex-row  gap-4"
             )}
             key={index}
           >
             <img
               src={blog.thumbnail}
-              alt={`${blog.title}-{index}`}
-              className={cn("h-60 w-full rounded-md object-cover", index === 0 && "h-full w-2/3 ")}
+              alt={`${blog.title}-${index}`}
+              className={cn("h-60 w-full rounded-md object-cover", latestBlog?.id === blog.id && "h-full w-2/3 ")}
             />
             <div
-              className={cn("flex flex-col gap-2 hover:translate-x-1 cursor-pointer ", index === 0 && "w-1/3")}
+              className={cn(
+                "flex cursor-pointer flex-col gap-2 hover:translate-x-1 ",
+                latestBlog?.id === blog.id && "w-1/3"
+              )}
               onClick={() => navigate(`${RouterEndPoint.Blogs}/${blog.title}`, { state: blog })}
             >
               <div className="line-clamp-2 min-h-12 text-ellipsis font-semibold">{blog.title}</div>

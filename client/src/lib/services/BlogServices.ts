@@ -5,10 +5,11 @@ interface responseBlogProps {
   blogs: Blog[]
   data: Blog[]
   success?: boolean
+  totalPages: number
 }
 
-export const getAllBlog = async (): Promise<responseBlogProps> => {
-  const response = await get<responseBlogProps>(`blog/get-all`)
+export const getAllBlog = async ({ page }: { page: number }): Promise<responseBlogProps> => {
+  const response = await get<responseBlogProps>(`blog/get-all?page=${page}`)
   return response.data
 }
 

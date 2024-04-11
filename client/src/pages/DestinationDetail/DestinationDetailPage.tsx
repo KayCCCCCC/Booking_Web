@@ -7,7 +7,7 @@ const DestinationDetailPage = () => {
   const location = useLocation().state as Destination
 
   return (
-    <div className="flex items-center justify-center gap-x-6 gap-y-8 py-4">
+    <div className="flex   justify-center gap-x-6 gap-y-8 py-4">
       <LocationDetail location={location} />
       <RecommendHotel name={location.name} address={location.address} />
     </div>

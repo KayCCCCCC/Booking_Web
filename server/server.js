@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+require("dotenv").config();
 const path = require('path');
 
 const webRoutes = require('./src/routes/index');
@@ -57,5 +58,5 @@ scheduleCheckCancelledBookings();
 
 // Start server
 app.listen(port, function () {
-    console.log(`Example app listening on http://localhost:${port}`);
+    console.log(`Example app listening on ${process.env.DB_HOST}:${port}`);
 });

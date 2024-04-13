@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom"
 const RecommendHotel = ({ address, name }: { address: string; name: string }) => {
   const listHotelNearly = useQuery({
     queryKey: ["hotel-near", name],
-    queryKey: ["hotel-near", name],
     queryFn: () => getNearlyHotel({ address, distance: 3000 })
   })
   const hotelCanShow =

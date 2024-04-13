@@ -6,9 +6,9 @@ require("dotenv").config();
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER_PG,
-    process.env.DB_PASSWORD,
+    process.env.POSTGRESDB_ROOT_PASSWORD,
     {
-        host: process.env.DB_HOST || '34.126.124.146',
+        host: process.env.HOST_NAME || 'database-1.cnw6w4ueoxn0.us-east-1.rds.amazonaws.com',
         port: process.env.DB_PORT || '5434',
         dialect: "postgres",
         pool: {

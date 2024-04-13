@@ -7,8 +7,8 @@ const BlogDetailPage = () => {
   const blog = useLocation().state as Blog
 
   return (
-    <div className="my-10 flex flex-col gap-4 px-48">
-      <div className="flex flex-col gap-4">
+    <div className="my-10 flex gap-10 px-48">
+      <div className="flex flex-col gap-4 w-2/3 ">
         <div className="space-x-2 text-4xl font-medium">{blog.title}</div>
         <div className="flex items-center gap-2 ">
           <div className="col-span-1 flex items-center gap-2  text-slate-600">

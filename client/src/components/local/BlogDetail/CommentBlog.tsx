@@ -2,7 +2,7 @@ import { Input } from "@/components/global/atoms/input"
 
 const CommentBlog = ({ id }: { id: string }) => {
   return (
-    <div className="my-2">
+    <div className="my-2 w-full">
       <div>
         <Input placeholder="Comment here" className="h-14 w-full rounded-lg px-4" />
         <span>{id}</span>

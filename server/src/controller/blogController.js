@@ -343,7 +343,7 @@ class BlogController {
                 include: [
                     {
                         model: User,
-                        attributes: ["name", "avatar", "email"],
+                        attributes: ["name", "avatar", "email", "id"],
                     },
                 ],
             });
@@ -354,9 +354,11 @@ class BlogController {
             // Function to recursively find replies for a comment
             const findReplies = (commentId) => {
                 const replies = allComments.filter(comment => comment.replyCommentId === commentId);
+                console.log(replies)
                 return replies.map(reply => ({
                     id: reply.id,
                     text: reply.content,
+                    user: reply.user,
                     replies: findReplies(reply.id) // Recursively find replies for each reply
                 }));
             };
@@ -365,6 +367,7 @@ class BlogController {
             const commentData = topLevelComments.map(comment => ({
                 id: comment.id,
                 text: comment.content,
+                user: comment.user,
                 replies: findReplies(comment.id)
             }));
 

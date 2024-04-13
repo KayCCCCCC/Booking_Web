@@ -18,7 +18,7 @@ export const GridItem = ({
   data: Destination
 }) => {
   const navigate = useNavigate()
-  
+
   const handleClick = () => {
     navigate(`${RouterEndPoint.Destinations}/${data.name}`, { state: data })
   }
@@ -30,7 +30,7 @@ export const GridItem = ({
       )}
     >
       <img src={data.urls[0]} alt="img" className={cn("w-full rounded-md object-cover", classUrl)} />
-      <div className="transition duration-200 group-hover:translate-x-2 cursor-pointer" onClick={handleClick}>
+      <div className="cursor-pointer transition duration-200 group-hover:translate-x-2" onClick={handleClick}>
         <div className="z-0 my-1 font-bold text-neutral-600 dark:text-neutral-200">{data.name}</div>
         <div className="z-0 truncate text-xs text-neutral-600 dark:text-neutral-200">{data.address}</div>
       </div>

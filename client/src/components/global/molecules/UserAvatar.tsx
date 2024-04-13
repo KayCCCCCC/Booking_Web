@@ -1,10 +1,19 @@
 import { cn } from "@/lib/utils/cn"
 import { Avatar, AvatarFallback, AvatarImage } from "../atoms/avatar"
 
-const UserAvatar = ({url, size}: {url: string, size?: string}) => {
+interface AvatarProps {
+  url: string
+  size?: string
+}
+
+const UserAvatar = ({ url, size }: AvatarProps) => {
   return (
     <Avatar>
-      <AvatarImage src={url} alt="@defaultAvatar" className={cn("h-8 w-8 object-cover rounded-full ", size === "large" && "h-14 w-14")} />
+      <AvatarImage
+        src={url}
+        alt="@defaultAvatar"
+        className={cn("h-8 w-8 rounded-full object-cover ", size === "large" && "h-14 w-14")}
+      />
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   )

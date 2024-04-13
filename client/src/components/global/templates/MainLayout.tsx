@@ -7,7 +7,7 @@ const MainLayout = () => {
   return (
     <ThemeProvider>
       <div className="relative">
-        <div className="bg-opacity-70   dark:from-slate-700 dark:via-slate-800 dark:to-slate-700 shadow-sm">
+        <div className="bg-opacity-70   shadow-sm dark:from-slate-700 dark:via-slate-800 dark:to-slate-700">
           <Header />
         </div>
         <div className="w-full">

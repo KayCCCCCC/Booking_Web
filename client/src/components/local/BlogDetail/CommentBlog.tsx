@@ -11,3 +11,4 @@ const CommentBlog = ({ id }: { id: string }) => {
 }
 
 export default CommentBlog
+export default CommentBlog

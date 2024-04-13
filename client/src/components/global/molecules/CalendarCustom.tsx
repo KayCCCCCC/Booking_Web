@@ -1,5 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../atoms/form"
+import { FormControl, FormField, FormItem, FormLabel } from "../atoms/form"
 import { Button } from "react-day-picker"
 import { cn } from "@/lib/utils/cn"
 import { format } from "date-fns"
@@ -14,7 +14,7 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
       control={form.control}
       name={"date"}
       render={({ field }) => (
-        <FormItem className="col-span-2 flex items-center justify-center relative">
+        <FormItem className="relative col-span-2 flex items-center justify-center">
           {field.value.from !== undefined && (
             <FormLabel className="absolute left-0 top-0 ">Check-in -&gt; Checkout</FormLabel>
           )}
@@ -24,7 +24,7 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
                 <Button
                   id="date"
                   className={cn(
-                    "flex w-full items-center justify-start text-left font-normal py-2",
+                    "flex w-full items-center justify-start py-2 text-left font-normal",
                     !field.value && "text-muted-foreground"
                   )}
                 >
@@ -35,14 +35,14 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
                         {format(field.value.from, "LLL dd, y") || "_"} - {format(field.value.to, "LLL dd, y") || "_"}
                       </>
                     ) : (
-                      format(field.value.from, "LLL dd, y") || "_" 
+                      format(field.value.from, "LLL dd, y") || "_"
                     )
                   ) : (
                     <span>When?</span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50 " align="center" >
+              <PopoverContent className="z-50 w-auto p-0 " align="center">
                 <Calendar
                   initialFocus
                   mode="range"
@@ -50,7 +50,7 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
                   selected={field.value}
                   onSelect={field.onChange}
                   numberOfMonths={2}
-                  className="rounded-sm border border-slate-100 bg-white shadow  z-20"
+                  className="z-20 rounded-sm border border-slate-100 bg-white  shadow"
                 />
               </PopoverContent>
             </Popover>

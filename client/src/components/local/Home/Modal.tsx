@@ -30,8 +30,10 @@ const Modal = () => {
             superior quality services
           </div>
           <div className="mt-2">
-            <Button className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100 "
-            onClick={() => navigate(`${RouterEndPoint.Stays}`)}>
+            <Button
+              className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100 "
+              onClick={() => navigate(`${RouterEndPoint.Stays}`)}
+            >
               View more
             </Button>
           </div>

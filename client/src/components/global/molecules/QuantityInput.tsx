@@ -1,5 +1,3 @@
-import { ChangeEvent } from "react"
-import { Input } from "../atoms/input"
 import { Minus, Plus } from "lucide-react"
 
 interface QuantityInputProps {
@@ -8,7 +6,7 @@ interface QuantityInputProps {
   value: number
   onChange: (input: number) => void
 }
-const QuantityInput = ({ fieldName,description, value, onChange }: QuantityInputProps) => {
+const QuantityInput = ({ fieldName, description, value, onChange }: QuantityInputProps) => {
   const handleIncrement = () => {
     onChange(value + 1)
   }
@@ -21,10 +19,10 @@ const QuantityInput = ({ fieldName,description, value, onChange }: QuantityInput
 
   return (
     <div className="flex items-center gap-2 ">
-     <div className="flex flex-col w-40">
-          <div className="">{fieldName}</div>
-          <div className="text-slate-700 text-sm">{description}</div>
-     </div>
+      <div className="flex w-40 flex-col">
+        <div className="">{fieldName}</div>
+        <div className="text-sm text-slate-700">{description}</div>
+      </div>
       <button
         type="button"
         onClick={handleDecrement}

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { QueryClient, keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import Map from "@/components/global/molecules/Map"
 import { cn } from "@/lib/utils/cn"
 import { MapIcon, PanelRightClose } from "lucide-react"
@@ -12,16 +12,15 @@ import FilterHotels from "@/components/global/molecules/FilterHotel"
 import { useForm } from "react-hook-form"
 import { SearchSchema, SearchSchemaType } from "@/lib/schema/Accommodation/Search.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Hotel } from "@/lib/interface/hotel.interface"
+// import { Hotel } from "@/lib/interface/hotel.interface"
 
 const HotelsPage = () => {
   const [isOpenMap, setIsOpenMap] = useState<boolean>(false)
   const [page, setPage] = useState<number>(1)
-  const [totalPages, setTotalPages] = useState<number | undefined>(1)
-  const [dataSearch, setDataSearch] = useState<Hotel[] | null>([])
+  // const [totalPages, setTotalPages] = useState<number | undefined>(1)
+  // const [dataSearch, setDataSearch] = useState<Hotel[] | null>([])
   const [isOverlayScrollType, setIsOverlayScrollType] = useState<boolean>(false)
   const { scrollY } = useScroll()
-  const queryClient = useQueryClient()
   useMotionValueEvent(scrollY, "change", (current) => {
     if (current > 173 && isOverlayScrollType === false) {
       setIsOverlayScrollType(true)
@@ -37,13 +36,13 @@ const HotelsPage = () => {
     // scaleTime:
   })
   const { mutate } = useMutation({
-    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data }),
-    onSuccess: (data) => {
-      // queryClient.invalidateQueries({ queryKey: ["hotels", page] })
-      setDataSearch(data?.data)
-      setPage(1)
-      setTotalPages(data?.totalPages)
-    }
+    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data })
+    // onSuccess: (data) => {
+    //   // queryClient.invalidateQueries({ queryKey: ["hotels", page] })
+    //   // setDataSearch(data?.data)
+    //   setPage(1)
+    //   // setTotalPages(data?.totalPages)
+    // }
   })
   const form = useForm<SearchSchemaType>({
     resolver: zodResolver(SearchSchema),

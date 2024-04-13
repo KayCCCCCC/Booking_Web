@@ -2,13 +2,11 @@ import { Input } from "../atoms/input"
 import CalendarCustom from "./CalendarCustom"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../atoms/form"
 import { UseFormReturn } from "react-hook-form"
-import { DropdownMenu, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { Button } from "react-day-picker"
 import { SearchSchemaType } from "@/lib/schema/Accommodation/Search.schema"
-import { DropdownMenuContent } from "../atoms/dropdown-menu"
 import QuantityInput from "./QuantityInput"
 import { Users } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "../atoms/popover"
+import { Button } from "../atoms/button"
 
 const FilterHotels = ({
   form,
@@ -58,8 +56,8 @@ const FilterHotels = ({
                           : `${field.value.adult} adults ${field.value.child !== 0 ? `, ${field.value.child} children` : ""}`}
                         {field.value.pet !== 0 && " ,pets"}
                       </PopoverTrigger>
-                      <PopoverContent className="rounded-lg p-0 border-2 border-slate-200" align="start">
-                        <div className="flex flex-col gap-2 bg-white px-4 py-2 rounded-lg">
+                      <PopoverContent className="rounded-lg border-2 border-slate-200 p-0" align="start">
+                        <div className="flex flex-col gap-2 rounded-lg bg-white px-4 py-2">
                           <QuantityInput
                             fieldName="Adult"
                             description="Above 12 years old"

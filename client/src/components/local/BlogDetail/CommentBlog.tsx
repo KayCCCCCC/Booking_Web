@@ -4,7 +4,8 @@ const CommentBlog = ({ id }: { id: string }) => {
   return (
     <div className="my-2">
       <div>
-        <Input placeholder="Comment here" className="w-full rounded-lg h-14 px-4" />
+        <Input placeholder="Comment here" className="h-14 w-full rounded-lg px-4" />
+        <span>{id}</span>
       </div>
     </div>
   )

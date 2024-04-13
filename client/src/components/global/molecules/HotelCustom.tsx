@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 interface ModalCustomProps {
   data: Hotel
 }
- 
+
 const HotelCustom = ({ data }: ModalCustomProps) => {
   const navigate = useNavigate()
   const handleNavigate = () => {

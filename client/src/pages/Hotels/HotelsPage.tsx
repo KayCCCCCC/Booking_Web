@@ -112,7 +112,7 @@ const HotelsPage = () => {
             )}
           </div>
           <div className="flex items-center justify-center">
-            {isOpenMap && <Map isHideHeader={isOverlayScrollType} />}
+            {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="hotel" />}
           </div>
         </div>
       </div>

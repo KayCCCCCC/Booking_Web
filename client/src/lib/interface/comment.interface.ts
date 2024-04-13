@@ -1,5 +1,5 @@
 export interface Comment {
-    id: string;
-    text: string
-    replies: Comment[]
+  id: string
+  text: string
+  replies: Comment[]
 }

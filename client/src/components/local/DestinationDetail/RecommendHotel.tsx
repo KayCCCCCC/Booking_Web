@@ -31,7 +31,7 @@ const RecommendHotel = ({ address, name }: { address: string; name: string }) =>
                 <span>{hotel.model.rate}</span>
               </div>
               <div
-                className="bottom-1 flex h-full cursor-pointer flex-col items-center justify-center rounded-r-md px-2 py-1 hover:translate-x-1 bg-white "
+                className="bottom-1 flex h-full cursor-pointer flex-col items-center justify-center rounded-r-md bg-white px-2 py-1 hover:translate-x-1 "
                 onClick={() => navigate(`${RouterEndPoint.Stays}/${hotel.model.name}`, { state: hotel })}
               >
                 <span className="truncate font-medium">{hotel.model.name}</span>

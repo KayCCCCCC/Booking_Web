@@ -8,6 +8,7 @@ const Rating = ({ rating }: { rating: number }) => {
           <Star key={index} stroke="none" style={{ backgroundColor: "transparent" }} fill="rgb(250 204 21)" />
         ))}
       </div>
+      <div>{rating}</div>
     </div>
   )
 }

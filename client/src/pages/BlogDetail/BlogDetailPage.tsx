@@ -7,7 +7,7 @@ const BlogDetailPage = () => {
   const blog = useLocation().state as Blog
 
   return (
-    <div className="my-10 px-48 flex flex-col gap-4">
+    <div className="my-10 flex flex-col gap-4 px-48">
       <div className="flex flex-col gap-4">
         <div className="space-x-2 text-4xl font-medium">{blog.title}</div>
         <div className="flex items-center gap-2 ">

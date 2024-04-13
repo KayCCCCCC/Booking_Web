@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils/cn"
 import useArrangeImage from "@/lib/utils/useArrangeImage"
-import { Menu } from "lucide-react"
 import { ShowAllImage } from "./ShowAllImage"
 
 const ImagePost = ({ urls }: { urls: string[] }) => {

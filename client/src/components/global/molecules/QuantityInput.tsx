@@ -1,5 +1,3 @@
-import { ChangeEvent } from "react"
-import { Input } from "../atoms/input"
 import { Minus, Plus } from "lucide-react"
 
 interface QuantityInputProps {

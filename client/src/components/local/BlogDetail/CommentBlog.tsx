@@ -1,7 +1,10 @@
-import React from "react";
+interface CommentBlogProps {
+  id: string
+}
+const CommentBlog = ({ id }: CommentBlogProps) => {
+  console.log(id)
 
-const CommentBlog = ({id}: {id: string}) => {
-  return <div>CommentBlog</div>;
-};
+  return <div>CommentBlog</div>
+}
 
-export default CommentBlog;
+export default CommentBlog

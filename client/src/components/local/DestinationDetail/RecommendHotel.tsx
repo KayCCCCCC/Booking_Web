@@ -1,6 +1,5 @@
 import { getNearlyHotel } from "@/lib/services/HotelServices";
 import { useQuery } from "@tanstack/react-query";
-import React from "react"
 
 const RecommendHotel = ({ address, name }: { address: string; name: string }) => {
   const listHotelNearly = useQuery({

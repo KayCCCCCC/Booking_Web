@@ -19,8 +19,10 @@ const Blog = () => {
           Discover the fascinating universe
         </div>
         <div className="mt-2">
-          <Button className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100 "
-          onClick={() => navigate(`${RouterEndPoint.Blogs}`)}>
+          <Button
+            className="w-fit rounded-lg border border-stone-200 bg-transparent px-3 hover:bg-slate-100 "
+            onClick={() => navigate(`${RouterEndPoint.Blogs}`)}
+          >
             View more
           </Button>
         </div>

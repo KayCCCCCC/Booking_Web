@@ -11,7 +11,6 @@ const BlogsPage = () => {
   return (
     <div className="m-14">
       <ListBlog blogs={blogList.data?.blogs ?? []} />
-      
     </div>
   )
 }

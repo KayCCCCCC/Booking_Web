@@ -1,6 +1,5 @@
-
 const ListRoom = () => {
-  return <div className="md:w-1/5">ListRoom</div>;
-};
+  return <div className="md:w-1/5">ListRoom</div>
+}
 
-export default ListRoom;
+export default ListRoom

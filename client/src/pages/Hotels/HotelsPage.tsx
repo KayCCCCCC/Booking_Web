@@ -36,7 +36,7 @@ const HotelsPage = () => {
     // scaleTime:
   })
   const { mutate } = useMutation({
-    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data }),
+    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data })
     // onSuccess: (data) => {
     //   // queryClient.invalidateQueries({ queryKey: ["hotels", page] })
     //   // setDataSearch(data?.data)

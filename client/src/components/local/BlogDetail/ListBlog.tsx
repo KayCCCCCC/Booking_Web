@@ -23,7 +23,7 @@ const ListBlog = ({ blogs }: { blogs: Blog[] }) => {
               className={cn("h-60 w-full rounded-md object-cover", index === 0 && "h-full w-2/3 ")}
             />
             <div
-              className={cn("flex flex-col gap-2 hover:translate-x-1 cursor-pointer ", index === 0 && "w-1/3")}
+              className={cn("flex cursor-pointer flex-col gap-2 hover:translate-x-1 ", index === 0 && "w-1/3")}
               onClick={() => navigate(`${RouterEndPoint.Blogs}/${blog.title}`, { state: blog })}
             >
               <div className="line-clamp-2 min-h-12 text-ellipsis font-semibold">{blog.title}</div>

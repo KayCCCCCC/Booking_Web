@@ -4,9 +4,9 @@ require("dotenv").config();
 // console.log("postgres", process.env.DB_DSN)
 // const sequelize = new Sequelize(process.env.DB_DSN)
 const sequelize = new Sequelize(
-    process.env.DB_NAME || 'booking_web',
-    process.env.DB_USER_PG || 'postgres',
-    process.env.DB_PASSWORD || '123456',
+    process.env.DB_NAME,
+    process.env.DB_USER_PG,
+    process.env.DB_PASSWORD,
     {
         host: process.env.DB_HOST || '34.126.124.146',
         port: process.env.DB_PORT || '5434',
@@ -19,5 +19,12 @@ const sequelize = new Sequelize(
         },
     }
 );
+sequelize.authenticate()
+    .then(() => {
+        console.log('Connected to the database successfully');
+    })
+    .catch((error) => {
+        console.error('Unable to connect to the database:', error);
+    });
 
 module.exports = sequelize;

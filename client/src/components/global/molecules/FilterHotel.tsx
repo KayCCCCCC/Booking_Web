@@ -56,8 +56,8 @@ const FilterHotels = ({
                           : `${field.value.adult} adults ${field.value.child !== 0 ? `, ${field.value.child} children` : ""}`}
                         {field.value.pet !== 0 && " ,pets"}
                       </PopoverTrigger>
-                      <PopoverContent className="rounded-lg p-0 border-2 border-slate-200" align="start">
-                        <div className="flex flex-col gap-2 bg-white px-4 py-2 rounded-lg">
+                      <PopoverContent className="rounded-lg border-2 border-slate-200 p-0" align="start">
+                        <div className="flex flex-col gap-2 rounded-lg bg-white px-4 py-2">
                           <QuantityInput
                             fieldName="Adult"
                             description="Above 12 years old"

@@ -6,7 +6,7 @@ import { SearchSchemaType } from "../schema/Accommodation/Search.schema"
 interface accommodationResponseProps {
   success: boolean
   message: string
-  data: Hotel[] | null 
+  data: Hotel[] | null
   totalPages?: number
 }
 interface FilterHotelProps {
@@ -38,6 +38,8 @@ interface getNearlyHotelProps {
   distance?: number
 }
 export const getNearlyHotel = async ({ address, distance }: getNearlyHotelProps) => {
-  const response = await get<accommodationResponseProps>(`model/getModelByDestinations?address=${address}&distance=${distance}&typeName=Hotel`)
+  const response = await get<accommodationResponseProps>(
+    `model/getModelByDestinations?address=${address}&distance=${distance}&typeName=Hotel`
+  )
   return response.data
 }

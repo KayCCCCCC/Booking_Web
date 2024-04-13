@@ -1,10 +1,14 @@
-interface CommentBlogProps {
-  id: string
-}
-const CommentBlog = ({ id }: CommentBlogProps) => {
-  console.log(id)
+import { Input } from "@/components/global/atoms/input"
 
-  return <div>CommentBlog</div>
+const CommentBlog = ({ id }: { id: string }) => {
+  return (
+    <div className="my-2">
+      <div>
+        <Input placeholder="Comment here" className="h-14 w-full rounded-lg px-4" />
+        <span>{id}</span>
+      </div>
+    </div>
+  )
 }
 
 export default CommentBlog

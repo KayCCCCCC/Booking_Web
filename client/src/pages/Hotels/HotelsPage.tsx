@@ -36,7 +36,7 @@ const HotelsPage = () => {
     // scaleTime:
   })
   const { mutate } = useMutation({
-    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data }),
+    mutationFn: (data: SearchSchemaType) => filterHotels({ page: 1, data })
     // onSuccess: (data) => {
     //   // queryClient.invalidateQueries({ queryKey: ["hotels", page] })
     //   // setDataSearch(data?.data)
@@ -112,7 +112,7 @@ const HotelsPage = () => {
             )}
           </div>
           <div className="flex items-center justify-center">
-            {isOpenMap && <Map isHideHeader={isOverlayScrollType} />}
+            {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="hotel" />}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Modal } from "./modal.interface";
+import { Modal } from "./modal.interface"
 
 export interface Hotel {
   model: Modal

@@ -10,7 +10,7 @@ import { ChevronsUp } from "lucide-react"
 import { useState } from "react"
 
 const HomeLayout = () => {
-  const [scope ] = useAnimate()
+  const [scope] = useAnimate()
   const [isScrollBack, setIsScrollBack] = useState<boolean>(false)
   const { scrollYProgress } = useScroll()
   useMotionValueEvent(scrollYProgress, "change", (current) => {

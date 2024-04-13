@@ -39,7 +39,7 @@ const NavBar = () => {
           key={item.key}
           to={item.key}
           className={cn(
-            "flex cursor-pointer items-center justify-center rounded-lg px-4 py-2  bg- text-gray-700 font-medium hover:translate-x-[0.5px] hover:bg-rose-600/90 hover:text-white",
+            "bg- flex cursor-pointer items-center justify-center rounded-lg px-4  py-2 font-medium text-gray-700 hover:translate-x-[0.5px] hover:bg-rose-600/90 hover:text-white",
             item.key === activeItem && "bg-rose-600 text-slate-50"
           )}
           onClick={() => setActiveItem(item.key)}

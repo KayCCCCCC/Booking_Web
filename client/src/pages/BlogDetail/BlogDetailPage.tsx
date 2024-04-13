@@ -7,17 +7,17 @@ const BlogDetailPage = () => {
   const blog = useLocation().state as Blog
 
   return (
-    <div className="my-10 px-48">
+    <div className="my-10 flex flex-col gap-4 px-48">
       <div className="flex flex-col gap-4">
-        <div className="text-4xl space-x-2 font-medium">{blog.title}</div>
-        <div className="items-center gap-2 flex ">
+        <div className="space-x-2 text-4xl font-medium">{blog.title}</div>
+        <div className="flex items-center gap-2 ">
           <div className="col-span-1 flex items-center gap-2  text-slate-600">
-            <UserAvatar url={blog.user.avatar} size="large"/>
-            <span className="truncate w-40">{blog.user.name}</span>
+            <UserAvatar url={blog.user.avatar} size="large" />
+            <span className="w-40 truncate">{blog.user.name}</span>
           </div>
           <div className="truncate text-base  text-slate-900">{new Date(blog.createdAt).toLocaleString()}</div>
         </div>
-        <img src={blog.thumbnail} alt="url" className="h-[40rem] w-full rounded-sm object-cover" />
+        <img src={blog.thumbnail} alt="url" className="h-[32rem] w-full rounded-sm object-cover" />
         <div>{blog.content}</div>
       </div>
       <div>

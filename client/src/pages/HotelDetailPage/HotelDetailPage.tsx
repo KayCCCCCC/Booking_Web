@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom"
 
 const HotelDetailPage = () => {
   const hotel = useLocation().state as Hotel
-  console.log(hotel)
 
   return (
     <div className="flex items-center justify-center gap-x-6 gap-y-8 py-4">

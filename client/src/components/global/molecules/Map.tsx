@@ -37,37 +37,22 @@ const Map = ({ isHideHeader, useFor }: MapProps) => {
     //   type: "geojson",
     //   data: geojson
     // })
-    map.current!.addLayer({
-      id: "rio_cats",
-      type: "fill",
-      source: "rio_cats",
-      layout: {},
-      paint: {
-        "fill-color": "#98b",
-        "fill-opacity": 0.8
-      }
-    })
 
     map.current.on("load", async function () {
       const geojson = await maptilersdk.data.get(endpoint)
       geojson.features.forEach((feature) => {
         if (feature.id) {
           const customGeometry = feature.geometry as GeoProps
-          new maptilersdk.Marker({ color: "rgb(225,29,72)" }).setLngLat(customGeometry.coordinates).addTo(map.current!)
-          const container = document.createElement("div")
-
-          // Render the React JSX element into the div
-          // ReactDOM.render(<div>Hhi</div>, container)
-          new maptilersdk.Popup({ className: "my-class", offset: 40 })
-            .setLngLat(customGeometry.coordinates)
-            .setDOMContent(container)
-            // .setHTML("&lt;h1&gt;Hello World!&lt;/h1&gt;")
-            .setMaxWidth("300px")
-            .addTo(map.current!)
+          new maptilersdk.Marker({ color: "rgb(225,29,72)" ,}).setLngLat(customGeometry.coordinates).addTo(map.current!)
+          // new maptilersdk.Popup({ className: "my-class", offset: 40, anchor: "top", maxWidth: "400" })
+          //   .setLngLat(customGeometry.coordinates)
+          //   .setHTML(`<h1>${feature?.properties?.description}</h1>`)
+          //   .setMaxWidth("300px")
+          //   .addTo(map.current!)
         }
       })
     })
-    new maptilersdk.Marker({ color: "rgb(225,29,72)", scale: 1.2 }).setLngLat([HCM.lng, HCM.lat]).addTo(map.current!)
+    new maptilersdk.Marker({ color: "rgb(225,29,72)", scale: 1.2, }).setLngLat([HCM.lng, HCM.lat]).addTo(map.current!)
   }, [HCM.lng, HCM.lat, zoom])
 
   return (

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import RouterEndPoint from "@/constants/RouterEndPoint"
 
 export const Grid = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
-  return <div className={cn("mx-auto grid gap-2 md:auto-rows-[20rem] ", className)}>{children}</div>
+  return <div className={cn("mx-auto grid gap-4 md:auto-rows-[20rem] ", className)}>{children}</div>
 }
 
 export const GridItem = ({

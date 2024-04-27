@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useMotionValueEvent, useScroll } from "framer-motion"
-import Map from "@/components/global/molecules/Map"
+// import Map from "@/components/global/molecules/Map"
 import ListDestinations from "@/components/local/Destination/ListDestination"
 import { filterDestinationByType, getAllDestinationType } from "@/lib/services/DestinationServices"
 import { cn } from "@/lib/utils/cn"
 import ScrollbarType from "@/components/global/molecules/ScrollbarType"
 import PaginationCustom from "@/components/global/molecules/PaginationCustom"
 import { MapIcon, PanelRightClose } from "lucide-react"
+import MapCustom from "@/components/global/molecules/Map"
 
 const DestinationPage = () => {
   const [isOpenMap, setIsOpenMap] = useState<boolean>(false)
@@ -80,7 +81,8 @@ const DestinationPage = () => {
             )}
           </div>
           <div className="flex items-center justify-center">
-            {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="destination" />}
+            {/* {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="destination" />} */}
+            {isOpenMap && <MapCustom />}
           </div>
         </div>
       </div>

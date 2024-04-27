@@ -1,5 +1,5 @@
+import FormReserve from "@/components/local/HotelDetail/FormReserve"
 import HotelDetails from "@/components/local/HotelDetail/HotelDetail"
-import ListRoom from "@/components/local/HotelDetail/ListRoom"
 import { Hotel } from "@/lib/interface/hotel.interface"
 import { useLocation } from "react-router-dom"
 
@@ -9,7 +9,7 @@ const HotelDetailPage = () => {
   return (
     <div className="flex items-center justify-center gap-x-6 gap-y-8 py-4">
       <HotelDetails hotel={hotel} />
-      <ListRoom />
+      <FormReserve />
     </div>
   )
 }

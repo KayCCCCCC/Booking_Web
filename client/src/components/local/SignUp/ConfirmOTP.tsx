@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../global/atoms/card"
 import { Button } from "../../global/atoms/button"
-import Timer from "../../global/molecules/Timer"
+import Timer from "../../global/molecules/TimeCount"
 import { useForm } from "react-hook-form"
 import { OTPConfirmSchema, OTPConfirmSchemaType } from "../../../lib/schema/SignUp/OTPConfirm.schema"
 import { zodResolver } from "@hookform/resolvers/zod"

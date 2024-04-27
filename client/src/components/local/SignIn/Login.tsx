@@ -123,7 +123,7 @@ const Login = () => {
                 )}
               /> */}
             </div>
-            <Button type="submit" className="bg-blue rounded text-white" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="rounded bg-primary text-white" disabled={form.formState.isSubmitting}>
               Submit
             </Button>
           </div>
@@ -137,11 +137,11 @@ const Login = () => {
       </div>
       <div className="text-main font-semibold">OR</div>
       <div className="text-main flex gap-x-4 py-2 ">
-        <div className="bg-secondary flex h-12 w-12 cursor-pointer items-center justify-center  rounded hover:opacity-85">
+        <div className=" flex h-12 w-12 cursor-pointer items-center justify-center  rounded hover:opacity-85">
           <img src="/assets/facebook.webp" className="h-10 w-10" />
         </div>
         <div
-          className="bg-secondary flex h-12 w-12 cursor-pointer  items-center justify-center  rounded hover:opacity-85"
+          className=" flex h-12 w-12 cursor-pointer  items-center justify-center  rounded hover:opacity-85"
           onClick={handleLoginWithGG}
         >
           <img src="/assets/google.png" className="h-10 w-10" />

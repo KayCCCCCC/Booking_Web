@@ -1,29 +1,18 @@
+import { useTime } from "@/lib/utils/useTime"
 import { useEffect, useState } from "react"
 
-type TimerProps = {
-  minuteNumber: number
-  isResend: boolean
-}
-const Timer = ({ minuteNumber, isResend }: TimerProps) => {
-  const [seconds, setSeconds] = useState<number>(0)
-  const [minutes, setMinutes] = useState<number>(minuteNumber || 0)
+const Timer = ({ time }: { time: string }) => {
+  const [timeAgo, setTimeAgo] = useState<string>("")
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds(seconds - 1)
-
-      if (seconds === 0) {
-        setMinutes(minutes - 1)
-        setSeconds(59)
-      }
-      isResend && clearInterval(timer)
-    }, 1000)
-    return () => clearInterval(timer)
-  })
-  return (
-    <div>
-      {minutes < 10 ? "0" + minutes : minutes}:{seconds < 10 ? "0" + seconds : seconds}
-    </div>
-  )
+    const getTime = () => {
+      const newTime = useTime(time)
+      setTimeAgo(newTime)
+    }
+    getTime()
+    const interval = setInterval(getTime, 60000)
+    return () => clearInterval(interval)
+  }, [time])
+  return <div className="">{timeAgo}</div>
 }
 
 export default Timer

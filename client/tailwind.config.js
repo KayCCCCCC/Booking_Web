@@ -33,12 +33,12 @@ module.exports = {
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          to: { height: "0" }
         },
         "spotlight": {
           "0%": {
             opacity: 0,
-            transform: "translate(-72%, -62%) scale(0.5)",
+            transform: "translate(-72%, -62%) scale(0.5)"
           },
           "100%": {
             opacity: 1,
@@ -46,14 +46,14 @@ module.exports = {
           },
         },
         "move-down": {
-          from : {
+          from: {
             transform: "translate(0, -100%)"
           },
-          to : {
+          to: {
             transform: "translate(0, 0%)"
           }
         }
-        
+
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -70,7 +70,7 @@ module.exports = {
       height: {
         md: "600px"
       },
-      
+
     },
   },
   plugins: [require("tailwindcss-animate")],

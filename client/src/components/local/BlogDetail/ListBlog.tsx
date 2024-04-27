@@ -33,7 +33,7 @@ const ListBlog = ({ blogs, latestBlog }: { blogs: Blog[]; latestBlog: Blog | nul
               <div
                 className={cn(
                   "line-clamp-3  justify-end overflow-hidden text-ellipsis text-sm text-slate-400/90",
-                  index === 0 && "line-clamp-10"
+                  latestBlog?.id === blog?.id && "line-clamp-10"
                 )}
               >
                 {blog.content}

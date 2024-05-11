@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { useMotionValueEvent, useScroll } from "framer-motion"
-// import Map from "@/components/global/molecules/Map"
 import ListDestinations from "@/components/local/Destination/ListDestination"
 import { filterDestinationByType, getAllDestinationType } from "@/lib/services/DestinationServices"
 import { cn } from "@/lib/utils/cn"
 import ScrollbarType from "@/components/global/molecules/ScrollbarType"
 import PaginationCustom from "@/components/global/molecules/PaginationCustom"
-import { MapIcon, PanelRightClose } from "lucide-react"
 import MapCustom from "@/components/global/molecules/Map"
+import { Coordinates } from "@/lib/interface/coordinates.interface"
+import { useDispatch } from "react-redux"
+import { saveListPlace } from "@/store/slices/DestinationSlice"
+import { MapIcon, PanelRightClose } from "lucide-react"
 
 const DestinationPage = () => {
   const [isOpenMap, setIsOpenMap] = useState<boolean>(false)
+  const [hoverPlace, setHoverPlace] = useState<Coordinates | null>(null)
   const [page, setPage] = useState<number>(1)
-  const [isOverlayScrollType, setIsOverlayScrollType] = useState<boolean>(false)
   const [typeName, setTypeName] = useState<string>("")
-  const { scrollY } = useScroll()
+  const dispatch = useDispatch()
   const destinationTypes = useQuery({
     queryKey: ["destinationType"],
     queryFn: getAllDestinationType
@@ -26,15 +27,13 @@ const DestinationPage = () => {
     queryFn: () => filterDestinationByType({ typeName, page }),
     placeholderData: keepPreviousData
   })
+  useEffect(() => {
+    if (destinationFilterList.data?.data) {
+      dispatch(saveListPlace(destinationFilterList.data.data))
+    }
+  }, [destinationFilterList.data?.data])
 
-  useMotionValueEvent(scrollY, "change", (current) => {
-    if (current > 178 && isOverlayScrollType === false) {
-      setIsOverlayScrollType(true)
-    }
-    if (current < 178 && isOverlayScrollType) {
-      setIsOverlayScrollType(false)
-    }
-  })
+  const openMap = () => setIsOpenMap(true)
   useEffect(() => {
     setPage(1)
   }, [typeName])
@@ -46,28 +45,23 @@ const DestinationPage = () => {
             <PanelRightClose />
           </div>
         ) : (
-          <div className="flex cursor-pointer gap-2 p-2  " onClick={() => setIsOpenMap(true)}>
+          <div className="flex cursor-pointer gap-2 p-2  " onClick={openMap}>
             <MapIcon />
           </div>
         )}
       </div>
       <div className="flex flex-col items-center justify-center gap-2 py-2">
-        <div className="flex items-center justify-center gap-4 rounded-full border border-slate-200 px-20 dark:bg-slate-700 md:w-4/5">
-          <div className=" flex py-2 md:w-full ">
+        <div className="flex items-center justify-center gap-4 rounded-full px-4 dark:bg-slate-700 md:w-4/5">
+          <div className=" fixed left-0 right-0 top-20 z-10 mx-auto flex h-[60px] items-center justify-center gap-4 rounded-full border border-slate-100 bg-white px-4 opacity-95 dark:bg-slate-700 md:w-4/5">
             <ScrollbarType data={destinationTypes.data?.data} setTypeName={setTypeName} typeName={typeName} />
           </div>
         </div>
-        {isOverlayScrollType && (
-          <div className=" h-70 fixed left-0 right-0 top-1 z-10 mx-auto flex items-center justify-center gap-4 rounded-full border border-slate-100 bg-white px-20 opacity-95 dark:bg-slate-700 md:w-4/5">
-            <div className=" flex py-4 md:w-[90%] ">
-              <ScrollbarType data={destinationTypes.data?.data} setTypeName={setTypeName} typeName={typeName} />
-            </div>
-          </div>
-        )}
-        <div className={cn("mx-20 grid pt-2", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
+        <div className={cn("mx-20 mt-8 grid pt-2", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
           <div className="">
             <ListDestinations
+              setHoverPlace={setHoverPlace}
               isShowMap={isOpenMap}
+              openMap={openMap}
               data={destinationFilterList.data?.data}
               loading={destinationFilterList.isLoading}
             />
@@ -80,9 +74,8 @@ const DestinationPage = () => {
               />
             )}
           </div>
-          <div className="flex items-center justify-center">
-            {/* {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="destination" />} */}
-            {isOpenMap && <MapCustom />}
+          <div className="fixed bottom-0 right-0 flex items-center justify-center">
+            {isOpenMap && <MapCustom hoverPlace={hoverPlace ?? null} />}
           </div>
         </div>
       </div>

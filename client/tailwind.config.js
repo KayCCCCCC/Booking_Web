@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-    './src/pages/SignInPage.tsx'
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "./src/pages/SignInPage.tsx",
+    "./src/**/**/**/*.{ts,tsx}"
   ],
   prefix: "",
   theme: {
@@ -14,8 +15,8 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
-      },
+        "2xl": "1400px"
+      }
     },
     extend: {
       colors: {
@@ -53,7 +54,6 @@ module.exports = {
             transform: "translate(0, 0%)"
           }
         }
-
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -62,15 +62,14 @@ module.exports = {
         "move-down": "move-down 2s ease-in "
       },
       transitionDuration: {
-        '2000': '2000ms',
-      },
-      width: {
-
+        "2000": "2000ms"
       },
       height: {
         md: "600px"
       },
-
+      boxShadow: {
+        'red': '0 4px 6px -1px rgba(255, 0, 0, 0.1), 0 2px 4px -1px rgba(255, 0, 0, 0.06)',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

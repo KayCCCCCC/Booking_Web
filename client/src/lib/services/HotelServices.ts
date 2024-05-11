@@ -25,8 +25,8 @@ export const getAllHotels = async ({ page }: { page: number }): Promise<accommod
 
 export const filterHotels = async ({ page, data }: FilterHotelProps): Promise<accommodationResponseProps> => {
   const address = data?.address ?? ""
-  const dateFrom = data?.date.from.toISOString() ?? ""
-  const dateTo = data?.date.to.toISOString() ?? ""
+  const dateFrom = data?.date.from.toLocaleDateString() ?? ""
+  const dateTo = data?.date.to.toLocaleDateString() ?? ""
 
   const response = await get<accommodationResponseProps>(
     `model/filter-hotel?page=${page}&address=${address}&checkInDate=${dateFrom}&checkOutDate=${dateTo}`

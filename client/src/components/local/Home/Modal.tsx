@@ -20,7 +20,7 @@ const Modal = () => {
         <div className="grid grid-cols-2 items-center  gap-6 md:col-span-2 md:auto-rows-[20rem]">
           {highHotels.data.data.map((acc, index) => (
             <div key={index}>
-              <ModalCustom data={acc} />
+              <ModalCustom data={acc} isHome />
             </div>
           ))}
         </div>

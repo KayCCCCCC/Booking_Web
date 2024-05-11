@@ -16,7 +16,7 @@ const FilterHotels = ({
   onSubmit: (value: SearchSchemaType) => Promise<void>
 }) => {
   return (
-    <div className="flex h-24 w-full items-center justify-center gap-2  rounded-full border-2 border-slate-200 p-2">
+    <div className="h-18 fixed top-20 z-10 flex w-2/3 items-center justify-center  gap-2 rounded-full border-2 border-slate-200 bg-white p-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <div className=" grid w-full grid-cols-7 gap-10">
@@ -33,6 +33,7 @@ const FilterHotels = ({
                       placeholder="Location"
                       className="flex h-full truncate border-none py-2 text-base  shadow-none focus-visible:ring-0"
                       {...field}
+                      // onChange={() =>}
                     />
                   </FormControl>
                 </FormItem>
@@ -44,37 +45,41 @@ const FilterHotels = ({
               name="quantity"
               render={({ field }) => (
                 <FormItem className="w-50 relative col-span-2">
-                  {(field.value.adult !== 0 || field.value.child !== 0 || field.value.pet !== 0) && (
-                    <FormLabel className="absolute left-0 top-0 ">Quantity</FormLabel>
-                  )}
+                  {field?.value !== null &&
+                    (field?.value?.adult !== 0 || field?.value.child !== 0 || field?.value.pet !== 0) && (
+                      <FormLabel className="absolute left-0 top-0 ">Quantity</FormLabel>
+                    )}
                   <FormControl>
                     <Popover>
                       <PopoverTrigger className="w-50 flex items-center truncate py-2 text-left">
                         <Users className="mr-2 h-5 w-5" />
-                        {field.value.adult === 0 && field.value.child === 0 && field.value.pet === 0
+                        {field?.value !== null &&
+                        field?.value?.adult === 0 &&
+                        field?.value?.child === 0 &&
+                        field?.value?.pet === 0
                           ? "Who?"
-                          : `${field.value.adult} adults ${field.value.child !== 0 ? `, ${field.value.child} children` : ""}`}
-                        {field.value.pet !== 0 && " ,pets"}
+                          : `${field?.value?.adult} adults ${field?.value?.child !== 0 ? `, ${field?.value?.child} children` : ""}`}
+                        {field?.value?.pet !== 0 && " ,pets"}
                       </PopoverTrigger>
-                      <PopoverContent className="rounded-lg border-2 border-slate-200 p-0" align="start">
+                      <PopoverContent className="rounded-lg  p-0" align="start">
                         <div className="flex flex-col gap-2 rounded-lg bg-white px-4 py-2">
                           <QuantityInput
                             fieldName="Adult"
                             description="Above 12 years old"
-                            value={field.value.adult}
-                            onChange={(value) => field.onChange({ ...field.value, adult: value })}
+                            value={field?.value?.adult ?? 1}
+                            onChange={(value) => field.onChange({ ...field?.value, adult: value })}
                           />
                           <QuantityInput
                             fieldName="Children"
                             description="0 - 12 years old"
-                            value={field.value.child}
-                            onChange={(value) => field.onChange({ ...field.value, child: value })}
+                            value={field?.value?.child ?? 0}
+                            onChange={(value) => field.onChange({ ...field?.value, child: value })}
                           />
                           <QuantityInput
                             fieldName="Pet"
                             description=""
-                            value={field.value.pet}
-                            onChange={(value) => field.onChange({ ...field.value, pet: value })}
+                            value={field?.value?.pet ?? 0}
+                            onChange={(value) => field.onChange({ ...field?.value, pet: value })}
                           />
                         </div>
                       </PopoverContent>

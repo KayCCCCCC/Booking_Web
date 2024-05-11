@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 // import Map from "@/components/global/molecules/Map"
 import { cn } from "@/lib/utils/cn"
@@ -14,6 +14,11 @@ import { SearchSchema, SearchSchemaType } from "@/lib/schema/Accommodation/Searc
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Hotel } from "@/lib/interface/hotel.interface"
 import MapCustom from "@/components/global/molecules/Map"
+import { Coordinates } from "@/lib/interface/coordinates.interface"
+import { useDispatch } from "react-redux"
+import { saveListHotel } from "@/store/slices/HotelSlice"
+import { saveListPlace } from "@/store/slices/DestinationSlice"
+import { saveReserveInformation } from "@/store/slices/UserSlice"
 
 const HotelsPage = () => {
   const [isOpenMap, setIsOpenMap] = useState<boolean>(false)
@@ -21,7 +26,9 @@ const HotelsPage = () => {
   const [totalPages, setTotalPages] = useState<number | undefined>(1)
   const [dataSearch, setDataSearch] = useState<Hotel[] | null>(null)
   const [isOverlayScrollType, setIsOverlayScrollType] = useState<boolean>(false)
+  const [hoverPlace, setHoverPlace] = useState<Coordinates | null>(null)
   const { scrollY } = useScroll()
+  const dispatch = useDispatch()
   useMotionValueEvent(scrollY, "change", (current) => {
     if (current > 173 && isOverlayScrollType === false) {
       setIsOverlayScrollType(true)
@@ -60,11 +67,27 @@ const HotelsPage = () => {
   })
   const onSubmit = async (data: SearchSchemaType): Promise<void> => {
     mutate(data)
+    console.log(data)
+
+    dispatch(saveReserveInformation(data))
+  }
+  const openMap = () => {
+    setIsOpenMap(true)
   }
   const handleResetData = () => {
     setDataSearch(null)
     setTotalPages(undefined)
   }
+
+  useEffect(() => {
+    if (dataSearch) {
+      dispatch(saveListPlace(dataSearch))
+    } else {
+      dispatch(saveListHotel(hotelList?.data?.data))
+    }
+  }, [dataSearch, hotelList?.data?.data])
+  console.log(dataSearch)
+
   return (
     <div className="">
       <div className="fixed bottom-6 right-8  z-10 mb-3 ml-4 rounded-full bg-white shadow-md">
@@ -92,7 +115,7 @@ const HotelsPage = () => {
         {isOverlayScrollType && (
           <div
             className={cn(
-              "w-2/3items-center fixed top-0 z-10 mx-auto my-2 flex justify-center rounded-full bg-white opacity-95"
+              "fixed top-0 z-10 mx-auto my-2 flex w-2/3 items-center justify-center rounded-full bg-white opacity-95"
             )}
           >
             <DayPickerProvider
@@ -105,17 +128,19 @@ const HotelsPage = () => {
             </DayPickerProvider>
           </div>
         )}
-        <div className={cn("mx-20 grid w-[80%] pt-2", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
-          <div className="">
-            {Array.isArray(dataSearch) ? (
-              <>
+        <div className={cn("mx-20 mt-8 grid w-[80%] pt-2", isOpenMap ? "grid-cols-2" : "grid-cols-1")}>
+          <div className=" ">
+            {dataSearch?.length === 0 ? (
+              <div className="ml-24 mt-8">
                 <div>Not data find</div>
                 <div onClick={handleResetData} className="cursor-pointer">
                   <RotateCcw />
                 </div>
-              </>
+              </div>
             ) : (
               <ListHotel
+                setHoverPlace={setHoverPlace}
+                openMap={openMap}
                 isShowMap={isOpenMap}
                 data={dataSearch ?? hotelList.data?.data}
                 loading={hotelList.isLoading}
@@ -129,9 +154,8 @@ const HotelsPage = () => {
               />
             )}
           </div>
-          <div className="flex items-center justify-center">
-            {/* {isOpenMap && <Map isHideHeader={isOverlayScrollType} useFor="hotel" />} */}
-            {isOpenMap && <MapCustom />}
+          <div className="fixed bottom-0 right-0 flex items-center justify-center">
+            {isOpenMap && <MapCustom hoverPlace={hoverPlace ?? null} />}
           </div>
         </div>
       </div>

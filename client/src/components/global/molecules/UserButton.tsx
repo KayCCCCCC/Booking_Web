@@ -18,19 +18,19 @@ const UserButton: React.FC = () => {
           <AvatarImage src="/img1.jpg" alt="@defaultAvatar" className="h-12 w-12 object-cover " />
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="">
-        <DropdownMenuLabel>My account</DropdownMenuLabel>
+      <DropdownMenuContent className=" bg-white font-medium">
+        <DropdownMenuLabel className="text-md">My account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             Profile
             <DropdownMenuShortcut></DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Booking History
             <DropdownMenuShortcut></DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
+          </DropdownMenuItem> */}
+          <DropdownMenuItem className="text-normal cursor-pointer font-normal hover:bg-slate-50">
             Log out
             <DropdownMenuShortcut></DropdownMenuShortcut>
           </DropdownMenuItem>

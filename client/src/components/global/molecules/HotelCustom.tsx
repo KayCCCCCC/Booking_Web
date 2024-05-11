@@ -1,20 +1,45 @@
 import RouterEndPoint from "@/constants/RouterEndPoint"
+import { Coordinates } from "@/lib/interface/coordinates.interface"
 import { Hotel } from "@/lib/interface/hotel.interface"
 import { cn } from "@/lib/utils/cn"
-import { Star } from "lucide-react"
+import { EyeIcon, Star } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../atoms/tooltip"
 interface ModalCustomProps {
   data: Hotel
+  setHoverPlace: (coordinate: Coordinates) => void
+  openMap: () => void
+  isHome?: boolean
 }
 
-const HotelCustom = ({ data }: ModalCustomProps) => {
+const HotelCustom = ({ data, setHoverPlace, openMap, isHome }: ModalCustomProps) => {
   const navigate = useNavigate()
   const handleNavigate = () => {
     navigate(`${RouterEndPoint.Stays}/${data.model.name}`, { state: data })
   }
+  const onSelectPlace = () => {
+    const LngLat = data.model.address_location.split(",")
+    setHoverPlace({ lng: Number(LngLat[0]!), lat: Number(LngLat[1]!) })
+    openMap()
+  }
+
   return (
     <div className={cn("relative md:col-span-1 md:row-span-1")}>
-      <img src={data.model.urls[0]} alt="" className={cn("h-[19rem] w-full rounded-md object-cover")} loading="lazy" />
+      <img src={data.model.urls[0]} alt="" className={cn("h-[16rem] w-full rounded-md object-cover")} loading="lazy" />
+      {!isHome && (
+        <div onClick={onSelectPlace} className="absolute bottom-24 right-6 z-0">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <EyeIcon color="red" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-medium">Show on map</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
       <div className="z-1 absolute bottom-0 w-full cursor-pointer" onClick={handleNavigate}>
         <div className="m-3 rounded-md  bg-slate-50/20 p-3 text-white backdrop-blur-[2px] hover:-translate-y-1">
           <div className="truncate text-ellipsis">{data.model.address}</div>
@@ -30,4 +55,9 @@ const HotelCustom = ({ data }: ModalCustomProps) => {
   )
 }
 
+HotelCustom.defaultProps = {
+  setHoverPlace: () => {},
+  openMap: () => {},
+  isHome: false
+}
 export default HotelCustom

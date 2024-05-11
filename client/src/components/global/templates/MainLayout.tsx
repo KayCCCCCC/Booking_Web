@@ -7,10 +7,10 @@ const MainLayout = () => {
   return (
     <ThemeProvider>
       <div className="relative">
-        <div className="bg-opacity-70   shadow-sm dark:from-slate-700 dark:via-slate-800 dark:to-slate-700">
+        <div className="fixed top-0 z-40 w-full bg-white shadow-sm dark:from-slate-700 dark:via-slate-800 dark:to-slate-700">
           <Header />
         </div>
-        <div className="w-full">
+        <div className="mt-20 w-full">
           <Outlet />
         </div>
         {/* <Footer/> */}

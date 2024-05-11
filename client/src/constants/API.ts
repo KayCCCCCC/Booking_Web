@@ -6,4 +6,7 @@ export const HOTEL_API = "d3312afa-be71-422a-a53c-c231f226432d"
 
 export const DESTINATION_API = "bfc96bd8-122d-4942-9bd2-eb0892422765"
 
-export const MAP_API = "pk.eyJ1IjoiaGlldXR0MTIzIiwiYSI6ImNsdjZhc3kxMTBjNmEyaWw3YzU1dGVwa20ifQ.hfyf-99KSUpqgNztg-Vvow"
+export const MAP_API_KEY =
+  "pk.eyJ1IjoiaGlldXNlcnZpY2VzIiwiYSI6ImNsdmlidHppNzA5cjAya3M0N3c1NTRtY3IifQ.ne-z1KUE3g8g2HeKyVrtuw"
+
+export const BASE_MAP_URL = "https://api.mapbox.com/search/searchbox/v1/suggest";

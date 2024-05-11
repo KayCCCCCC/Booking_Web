@@ -37,14 +37,14 @@ const ScrollbarType = ({ data, setTypeName, typeName }: ScrollbarTypeProps) => {
   }
 
   return (
-    <div className=" relative flex h-[70px] items-center gap-2 overflow-hidden bg-white px-10 dark:bg-slate-700">
+    <div className="relative flex h-[50px] w-full items-center gap-2 overflow-hidden bg-white px-10 dark:bg-slate-700">
       <div
-        className=" absolute left-0 ml-1 cursor-pointer rounded-lg  border-slate-50 p-1 shadow shadow-black/60 duration-1000 hover:-translate-y-1 dark:shadow-white"
+        className=" absolute left-0 ml-1 flex cursor-pointer items-center justify-center rounded-lg  border-slate-50 p-1 shadow shadow-black/60 duration-1000 hover:-translate-y-1 dark:shadow-white"
         onClick={handleScrollLeft}
       >
         <ChevronLeft />
       </div>
-      <div className="scrollbar-custom flex gap-2 overflow-x-auto" ref={containerRef}>
+      <div className="scrollbar-custom mt-2 flex gap-2 overflow-x-auto" ref={containerRef}>
         {data?.map((item, index) => (
           <div
             key={index}
@@ -53,7 +53,7 @@ const ScrollbarType = ({ data, setTypeName, typeName }: ScrollbarTypeProps) => {
             }}
             className="flex items-center justify-center"
           >
-            <TagType key={index} content={item.typeName} isActive={item.typeName === typeName} />
+            <TagType key={index} index={index} content={item.typeName} isActive={item.typeName === typeName} />
           </div>
         ))}
       </div>

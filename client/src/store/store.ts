@@ -5,10 +5,16 @@ import { composeWithDevTools } from "@redux-devtools/extension"
 import storage from "redux-persist/lib/storage"
 import AuthSlice from "./slices/AuthSlice"
 import GlobalSlice from "./slices/GlobalSlice"
+import DestinationSlice from "./slices/DestinationSlice"
+import HotelSlice from "./slices/HotelSlice"
+import UserSlice from "./slices/UserSlice"
 
 const rootReducer = combineReducers({
   auth: AuthSlice,
-  global: GlobalSlice
+  global: GlobalSlice,
+  place: DestinationSlice,
+  hotel: HotelSlice,
+  user: UserSlice
 })
 const persistConfig = {
   key: "root",

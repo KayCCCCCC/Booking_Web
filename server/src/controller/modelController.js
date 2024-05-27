@@ -1992,6 +1992,7 @@ class ModelController {
                 const formattedNearbyModels = nearbyModelsHotel.map(model => {
                     const urls = model.dataValues.model_images.map(image => image.url);
                     return {
+                        hotelId: model.id,
                         amenities: model.hotel.dataValues.amenities,
                         numberOfRooms: model.hotel.dataValues.numberOfRooms,
                         numberOfGuestsPerRoom: model.hotel.dataValues.numberOfGuestsPerRoom,

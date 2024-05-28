@@ -1104,6 +1104,7 @@ class ModelController {
                         if (hasRangeModelDetails && hotelFilterOptions) {
                             const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                             return {
+                                hotelId: model.id,
                                 checkInDate: model.dataValues.checkInDate,
                                 checkOutDate: model.dataValues.checkOutDate,
                                 amenities: model.dataValues.amenities,
@@ -1183,11 +1184,11 @@ class ModelController {
                         order: [['id', 'ASC']],
                         distinct: true
                     });
-
                     const formattedModels = filteredHotels.rows.map(model => {
                         if (hotelFilterOptions) {
                             const urls = model.dataValues.model.dataValues.model_images.map(image => image.url);
                             return {
+                                hotelId: model.id,
                                 checkInDate: model.dataValues.checkInDate,
                                 checkOutDate: model.dataValues.checkOutDate,
                                 amenities: model.dataValues.amenities,
@@ -1991,6 +1992,7 @@ class ModelController {
                 const formattedNearbyModels = nearbyModelsHotel.map(model => {
                     const urls = model.dataValues.model_images.map(image => image.url);
                     return {
+                        hotelId: model.id,
                         amenities: model.hotel.dataValues.amenities,
                         numberOfRooms: model.hotel.dataValues.numberOfRooms,
                         numberOfGuestsPerRoom: model.hotel.dataValues.numberOfGuestsPerRoom,

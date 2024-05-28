@@ -1,32 +1,48 @@
 import { Input } from "../atoms/input"
 import CalendarCustom from "./CalendarCustom"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../atoms/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../atoms/form"
 import { UseFormReturn } from "react-hook-form"
 import { SearchSchemaType } from "@/lib/schema/Accommodation/Search.schema"
 import QuantityInput from "./QuantityInput"
 import { Users } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "../atoms/popover"
 import { Button } from "../atoms/button"
+import { cn } from "@/lib/utils/cn"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store/store"
 
 const FilterHotels = ({
   form,
-  onSubmit
+  onSubmit,
+  isDetail,
+  hotelAddress
 }: {
   form: UseFormReturn<SearchSchemaType>
   onSubmit: (value: SearchSchemaType) => Promise<void>
+  isDetail: boolean
+  hotelAddress: string
 }) => {
+  hotelAddress !== "" && form.setValue("address", hotelAddress)
+
   return (
-    <div className="h-18 fixed top-20 z-10 flex w-2/3 items-center justify-center  gap-2 rounded-full border-2 border-slate-200 bg-white p-2">
+    <div
+      className={cn(
+        " border-2 border-slate-200 bg-white p-2",
+        isDetail
+          ? "flex w-fit rounded-md p-4"
+          : "h-18 fixed top-20 z-10 flex w-2/3 items-center justify-center  gap-2 rounded-full border-2 border-slate-200"
+      )}
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-          <div className=" grid w-full grid-cols-7 gap-10">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full ">
+          <div className={cn(" grid w-full grid-cols-7 gap-10", isDetail && "grid grid-cols-2  ")}>
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
-                <FormItem className="relative col-span-2 ml-10 flex w-60">
-                  {field.value !== "" && (
-                    <FormLabel className="absolute left-0 top-0 bg-inherit px-4">Location</FormLabel>
+                <FormItem className={cn("relative col-span-2   flex w-60", isDetail ? "-ml-3" : "ml-10")}>
+                  {field.value.trim() !== "" && (
+                    <FormLabel className="absolute left-0 top-0 bg-inherit px-4">Where?</FormLabel>
                   )}
                   <FormControl>
                     <Input
@@ -85,6 +101,7 @@ const FilterHotels = ({
                       </PopoverContent>
                     </Popover>
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -94,7 +111,7 @@ const FilterHotels = ({
               disabled={form.formState.isLoading}
               onClick={form.handleSubmit(onSubmit)}
             >
-              Search
+              {isDetail ? "Check available" : "Search"}
             </Button>
           </div>
         </form>

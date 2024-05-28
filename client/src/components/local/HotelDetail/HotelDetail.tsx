@@ -1,10 +1,11 @@
 import ImagePost from "@/components/global/molecules/ImagePost"
 import Rating from "@/components/global/molecules/Rating"
+import { HotelRoomType } from "@/lib/interface/destination.interface"
 import { Hotel } from "@/lib/interface/hotel.interface"
 import { Mail, User } from "lucide-react"
 
-const HotelDetails = ({ hotel }: { hotel: Hotel }) => {
-  console.log(hotel)
+const HotelDetails = ({ hotel, roomDetail }: { hotel: Hotel, roomDetail: HotelRoomType[] | []}) => {
+  console.log(roomDetail)
 
   return (
     <div className="flex flex-col gap-4 rounded-lg   p-6 md:w-3/5">

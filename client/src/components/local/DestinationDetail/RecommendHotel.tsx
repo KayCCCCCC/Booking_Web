@@ -36,7 +36,7 @@ const RecommendHotel = ({ address, name }: { address: string; name: string }) =>
               >
                 <span className="truncate font-medium">{hotel.model.name}</span>
                 {/* <span className="line-clamp-3 w-[8rem] truncate ">{hotel.model.description}</span> */}
-                <div className="truncate">From {hotel.pricePerNight} $ night</div>
+                <div className="truncate">Only from <strong>{hotel.pricePerNight} $</strong> night</div>
               </div>
             </div>
           </div>

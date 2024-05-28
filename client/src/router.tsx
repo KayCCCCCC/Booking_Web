@@ -12,6 +12,7 @@ import BlogsPage from "./pages/Blogs/BlogsPage"
 import DestinationDetailPage from "./pages/DestinationDetail/DestinationDetailPage"
 import HotelDetailPage from "./pages/HotelDetailPage/HotelDetailPage"
 import BlogDetailPage from "./pages/BlogDetail/BlogDetailPage"
+import PaymentPage from "./pages/PaymentPage/PaymentPage"
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
       {
         path: RouterEndPoint.BlogDetail,
         element: <BlogDetailPage />
+      },
+      {
+        path: RouterEndPoint.Payment,
+        element: <PaymentPage />
       }
     ]
   },

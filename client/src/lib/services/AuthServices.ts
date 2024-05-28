@@ -1,10 +1,11 @@
 import { z } from "zod"
 import { RegisterUser, User } from "../interface/user.interface"
-import { post } from "./RootServices"
+import { patch, post } from "./RootServices"
 import { OTPConfirmSchema } from "../schema/SignUp/OTPConfirm.schema"
 import { UpdateInforUserSchemaType } from "../schema/SignUp/UpdateInfoUser.schema"
 import { LoginUserSchemaType } from "../schema/SignIn/LoginUser.schema"
 import { GGAccountType } from "../schema/SignUp/GGAcount.schema"
+import { PhoneSchemaType } from "../schema/SignUp/UpdateUser.schema"
 
 interface authResponseProps {
   success: boolean
@@ -60,4 +61,14 @@ export const loginWithGG = async ({ data }: LoginWithGGProps): Promise<authRespo
   // } catch (error) {
   //   throw error
   // }
+}
+
+export const logout = async (): Promise<authResponseProps> => {
+  const response = await post<authResponseProps>("auth/logout")
+  return response.data
+}
+
+export const updatePhone = async (data: PhoneSchemaType): Promise<authResponseProps> => {
+  const response = await patch<authResponseProps>("auth/setInfo", data)
+  return response.data
 }

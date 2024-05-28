@@ -1,7 +1,7 @@
 import { User } from "./user.interface"
 
 export interface Blog {
-  id: string
+  id: number
   title: string
   thumbnail: string
   description: string

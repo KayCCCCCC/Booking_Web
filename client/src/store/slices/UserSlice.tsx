@@ -17,8 +17,10 @@ const userSlice = createSlice({
       console.log(date)
 
       state.address = address
-      state.dateFrom = date?.from ? date?.from.toISOString() : ""
-      // state.dateTo = new Date(date?.to).toISOString
+      state.dateFrom = date?.from?.toISOString()
+      state.dateTo = date?.to?.toISOString()
+      console.log(date?.from.toISOString())
+
       state.quantity.adult = quantity.adult
       state.quantity.child = quantity.child
     }

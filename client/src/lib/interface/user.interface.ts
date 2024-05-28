@@ -24,4 +24,5 @@ export interface User extends RegisterUser, Omit<OtpUser, "email">, Omit<Complet
   status: string
   avatar: string
   name: string
+  id: number
 }

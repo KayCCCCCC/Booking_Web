@@ -2,22 +2,25 @@ import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover
 import { FormControl, FormField, FormItem, FormLabel } from "../atoms/form"
 import { Button } from "react-day-picker"
 import { cn } from "@/lib/utils/cn"
-import { format } from "date-fns"
+import { format, isBefore, startOfToday } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "../atoms/calendar"
 import { UseFormReturn } from "react-hook-form"
 import { SearchSchemaType } from "@/lib/schema/Accommodation/Search.schema"
 
 const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => {
+  // const fullyBookedDates: Date[] =
+  const today = startOfToday()
+  // const isFullyBookingDates = (date: Date) => {
+  //   return fullyBookedDates.some((bookdate) => isSameDay(date, bookdate))
+  // }
   return (
     <FormField
       control={form.control}
       name={"date"}
       render={({ field }) => (
         <FormItem className="relative col-span-2 flex items-center justify-center">
-          {field.value.from !== undefined && (
-            <FormLabel className="absolute left-0 top-0 ">Check-in -&gt; Checkout</FormLabel>
-          )}
+          {<FormLabel className="absolute left-0 top-0 ">Check-in -&gt; Checkout</FormLabel>}
           <FormControl>
             <Popover>
               <PopoverTrigger asChild>
@@ -42,7 +45,7 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="z-50 w-auto p-0 " align="center">
+              <PopoverContent className="z-50 w-auto p-0 shadow-md" align="center">
                 <Calendar
                   initialFocus
                   mode="range"
@@ -51,6 +54,7 @@ const CalendarCustom = ({ form }: { form: UseFormReturn<SearchSchemaType> }) => 
                   onSelect={field.onChange}
                   numberOfMonths={2}
                   className="z-20 rounded-sm border border-slate-100 bg-white  shadow"
+                  disabled={(date) => isBefore(date, today)}
                 />
               </PopoverContent>
             </Popover>

@@ -24,7 +24,10 @@ enum RouterEndPoint {
 
   // BLOGS
   Blogs = "/blogs",
-  BlogDetail = "/blogs/:title"
+  BlogDetail = "/blogs/:title",
+
+  //PAYMENT
+  Payment = "/payment"
 }
 
 export default RouterEndPoint

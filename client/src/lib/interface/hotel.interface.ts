@@ -11,4 +11,5 @@ export interface Hotel {
   bookingStatus: string
   contactPerson: string
   contactEmail: string
+  hotelId: number
 }

@@ -31,7 +31,7 @@ export const get = async <T>(url: string): Promise<AxiosResponse<T>> => {
   }
 }
 
-export const post = async <T>(url: string, data: unknown): Promise<AxiosResponse<T>> => {
+export const post = async <T>(url: string, data?: unknown): Promise<AxiosResponse<T>> => {
   try {
     const response = await api.post<T>(url, data)
     console.log(response)
@@ -47,6 +47,18 @@ export const post = async <T>(url: string, data: unknown): Promise<AxiosResponse
 export const put = async <T>(url: string, data: unknown): Promise<AxiosResponse<T>> => {
   try {
     const response = await api.put<T>(url, data)
+    return response
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      handleApiError(error)
+    }
+    throw error
+  }
+}
+
+export const patch = async <T>(url: string, data: unknown): Promise<AxiosResponse<T>> => {
+  try {
+    const response = await api.patch<T>(url, data)
     return response
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

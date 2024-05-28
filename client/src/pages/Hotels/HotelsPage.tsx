@@ -50,13 +50,18 @@ const HotelsPage = () => {
       setTotalPages(data?.totalPages)
     }
   })
+
+  let fromDate = new Date()
+  let toDate = new Date()
+  toDate.setDate(fromDate.getDate() + 1)
+
   const form = useForm<SearchSchemaType>({
     resolver: zodResolver(SearchSchema),
     defaultValues: {
       address: "",
       date: {
-        from: undefined,
-        to: undefined
+        from: new Date(),
+        to: toDate
       },
       quantity: {
         adult: 0,
@@ -86,7 +91,6 @@ const HotelsPage = () => {
       dispatch(saveListHotel(hotelList?.data?.data))
     }
   }, [dataSearch, hotelList?.data?.data])
-  console.log(dataSearch)
 
   return (
     <div className="">
@@ -109,7 +113,7 @@ const HotelsPage = () => {
               numberOfMonths: 2
             }}
           >
-            <FilterHotels form={form} onSubmit={onSubmit} />
+            <FilterHotels form={form} onSubmit={onSubmit} isDetail={false} hotelAddress=""/>
           </DayPickerProvider>
         </div>
         {isOverlayScrollType && (
@@ -124,7 +128,7 @@ const HotelsPage = () => {
                 numberOfMonths: 2
               }}
             >
-              <FilterHotels form={form} onSubmit={onSubmit} />
+              <FilterHotels form={form} onSubmit={onSubmit} isDetail={false} hotelAddress=""/>
             </DayPickerProvider>
           </div>
         )}

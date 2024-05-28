@@ -48,6 +48,8 @@ const Login = () => {
       name: user.displayName,
       avatar: user.photoURL
     }
+    console.log(user)
+
     try {
       const response = await loginWithGG({ data })
 
@@ -62,7 +64,7 @@ const Login = () => {
     }
   }
   return (
-    <div className="text-main flex h-fit w-[420px] flex-col  items-center justify-center rounded bg-white py-9">
+    <div className="text-main flex h-fit w-[420px] flex-col  items-center justify-center rounded bg-white py-9 ring-1 ring-red-300">
       <div className="text-center text-2xl font-bold">Sign in </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

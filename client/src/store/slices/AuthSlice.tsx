@@ -5,7 +5,8 @@ const initUser = {
   address: "",
   country: "",
   avatar: "",
-  phone: ""
+  phone: "",
+  id: -1
 }
 const initialAuth = {
   user: initUser,
@@ -52,6 +53,7 @@ const authSlice = createSlice({
       state.token = null
       state.loading = false
       state.error = null
+      state.isAuthenticated = false
     },
     signUpFirstStep: (state, action) => {
       state.user.email = action.payload

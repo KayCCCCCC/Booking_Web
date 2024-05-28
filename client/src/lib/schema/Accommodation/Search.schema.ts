@@ -3,8 +3,8 @@ import { z } from "zod"
 export const SearchSchema = z.object({
   address: z.string(),
   date: z.object({
-    from: z.date().optional(),
-    to: z.date().optional()
+    from: z.date(),
+    to: z.date()
   }),
 
   quantity: z.object({

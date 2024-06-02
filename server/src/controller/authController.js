@@ -495,7 +495,6 @@ class AuthController {
                     message: "User not found."
                 });
             }
-            console.log(user.avatar);
 
             let avatarUp = "";
             if (req.file) {
@@ -515,7 +514,13 @@ class AuthController {
             user.address = address || user.address;
             user.phone = phone || user.phone;
             user.roleId = 2;
-            // user.avatar = avatarUp.trim() === "" ? avatar : avatarUp
+            if (avatarUp.trim() !== "") {
+                user.avatar = avatarUp
+            } else if (avatar.trim() !== "") {
+                user.avatar = avatar
+            } else {
+                user.avatar = user.avatar
+            }
 
             await user.save();
 

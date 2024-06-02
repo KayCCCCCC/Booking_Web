@@ -10,7 +10,7 @@ const UserAvatar = ({ url, size }: AvatarProps) => {
   return (
     <Avatar>
       <AvatarImage
-        src={url}
+        src={url ?? ""}
         alt="@defaultAvatar"
         className={cn("h-8 w-8 rounded-full object-cover ", size === "large" && "h-14 w-14")}
       />

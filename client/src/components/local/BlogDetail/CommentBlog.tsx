@@ -65,7 +65,7 @@ const CommentBlog = ({ id }: { id: number }) => {
             {cmt.replies &&
               cmt.replies.map((reply) => (
                 <div className="ml-6" key={reply.id}>
-                  <CommentLine data={reply} isRoot={false} commentFor={cmt.user.name} />
+                  <CommentLine data={reply} isRoot={false} commentFor={cmt?.user?.name} />
                 </div>
               ))}
             {isReply && (
@@ -73,7 +73,7 @@ const CommentBlog = ({ id }: { id: number }) => {
                 {/* <UserAvatar url={user?.avatar} /> */}
                 <Textarea
                   className="h-14 w-full rounded-lg px-4"
-                  defaultValue={`${cmt.user.name} `}
+                  defaultValue={`${cmt?.user?.name} `}
                   value={replyValue}
                   onBlur={(e) => setReplyValue(e.target.value)}
                 />

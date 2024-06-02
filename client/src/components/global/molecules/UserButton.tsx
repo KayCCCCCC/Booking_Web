@@ -17,7 +17,6 @@ import { logOut } from "@/store/slices/AuthSlice"
 
 const UserButton: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
-  console.log(user)
 
   const dispatch = useDispatch()
   const handleLogout = () => {

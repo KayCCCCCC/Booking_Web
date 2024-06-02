@@ -3,7 +3,6 @@ export interface Booking {
   expireDate: string
   quantity: number
   total: number
-  statusBooking: string
   userId: number
-  rangeModelDetailId: number
+  itemId: number
 }

@@ -4,6 +4,7 @@ import UserInformation from "@/components/local/Payment/UserInformation"
 import { HotelRoomType } from "@/lib/interface/destination.interface"
 import { confirmPayment } from "@/lib/services/PaymentServices"
 import { saveSessionId } from "@/store/slices/HotelSlice"
+import { saveInforPayment } from "@/store/slices/UserSlice"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { useLocation } from "react-router-dom"
@@ -21,11 +22,12 @@ const PaymentPage = () => {
       description: roomDetail[0].range_models[0].description
     }
 
+    dispatch(saveInforPayment({ quantity: room, total: Math.floor(data.price * data.amount) }))
     try {
       const payment = await confirmPayment({ data })
-      window.location.href = payment.data.url!
-      console.log(payment.data.payment_status)
+
       dispatch(saveSessionId(payment.data.id))
+      window.location.href = payment.data.url!
     } catch (error) {
       console.error("Error", error)
     }

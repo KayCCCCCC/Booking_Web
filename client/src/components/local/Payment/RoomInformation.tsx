@@ -8,15 +8,15 @@ const RoomInformation = ({ roomDetail }: { roomDetail: HotelRoomType[] | [] }) =
       <div className="flex flex-col gap-3">
         <div>
           <label htmlFor="">Hotel Name</label>
-          <Input value={roomDetail[0].name} />
+          <Input value={roomDetail[0].name} readOnly/>
         </div>
         <div>
           <label htmlFor="">Hotel Address</label>
-          <Input value={roomDetail[0].address} />
+          <Input value={roomDetail[0].address} readOnly/>
         </div>
         <div>
           <label htmlFor="">Room Description</label>
-          <Input value={roomDetail[0].range_models[0].description} />
+          <Input value={roomDetail[0].range_models[0].description} readOnly/>
         </div>
       </div>
     </div>

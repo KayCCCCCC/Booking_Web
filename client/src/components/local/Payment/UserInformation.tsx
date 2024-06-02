@@ -6,18 +6,18 @@ import AlertUpdate from "./AlertUpdate"
 
 const UserInformation = () => {
   const { user } = useSelector((state: RootState) => state.auth)
-   
+
   return (
     <div>
-      <h2 className="text-rose-600 uppercase font-semibold p-3">User information</h2>
+      <h2 className="p-3 font-semibold uppercase text-rose-600">User information</h2>
       <div className="flex flex-col gap-3">
         <div>
           <label>Email</label>
-          <Input value={user.email} readOnly/>
+          <Input value={user.email} readOnly />
         </div>
         <div>
           <label>Name</label>
-          <Input value={user.name} />
+          <Input value={user.name} readOnly />
         </div>
 
         {user.phone === null ? (
@@ -28,7 +28,7 @@ const UserInformation = () => {
         ) : (
           <div>
             <label>Phone Number</label>
-            <Input value={user.phone} />
+            <Input value={user.phone} readOnly />
           </div>
         )}
       </div>

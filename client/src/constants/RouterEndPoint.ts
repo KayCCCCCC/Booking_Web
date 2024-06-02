@@ -27,7 +27,9 @@ enum RouterEndPoint {
   BlogDetail = "/blogs/:title",
 
   //PAYMENT
-  Payment = "/payment"
+  Payment = "/payment",
+  PaymentCompletion = "/payment/success",
+  PaymentStripe = "/payment-stripe"
 }
 
 export default RouterEndPoint

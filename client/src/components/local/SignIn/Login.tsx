@@ -48,10 +48,14 @@ const Login = () => {
       name: user.displayName,
       avatar: user.photoURL
     }
+
     console.log(user)
 
     try {
       const response = await loginWithGG({ data })
+      console.log(data);
+      
+      console.log(response.data)
 
       if (response.success) {
         dispatch(setCredentials(response))

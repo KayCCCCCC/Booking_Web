@@ -4,7 +4,15 @@ import { useSelector } from "react-redux"
 import { RootState } from "@/store/store"
 import QuantityInput from "@/components/global/molecules/QuantityInput"
 
-const BookingInformation = ({ cost }: { cost: number }) => {
+const BookingInformation = ({
+  cost,
+  room,
+  setRoom
+}: {
+  cost: number
+  room: number
+  setRoom: React.Dispatch<React.SetStateAction<number>>
+}) => {
   const { dateFrom, dateTo, quantity } = useSelector((state: RootState) => state.user)
   const totalGuests = quantity.adult + quantity.child
 
@@ -27,7 +35,7 @@ const BookingInformation = ({ cost }: { cost: number }) => {
   })
   const date1 = new Date(dateFrom)
   const date2 = new Date(dateTo)
-  const [room, setRoom] = useState<number>(1)
+
   const differenceInMilliseconds = Math.abs((date2 as any) - (date1 as any))
   const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24)
   const [totalCost, setTotalCost] = useState<number>(room * Math.floor(cost) * differenceInDays)
@@ -37,19 +45,19 @@ const BookingInformation = ({ cost }: { cost: number }) => {
       <div className="flex flex-col gap-3">
         <div>
           <label htmlFor="">Number of guests</label>
-          <Input value={totalGuests} />
+          <Input value={totalGuests} readOnly />
         </div>
         <div>
           <label>Checkin Date - CheckOut Date</label>
-          <Input value={`${formattedFromDate} - ${formattedToDate}`} />
+          <Input value={`${formattedFromDate} - ${formattedToDate}`} readOnly />
         </div>
         <div>
           <label>Total Date</label>
-          <Input value={differenceInDays} />
+          <Input value={differenceInDays} readOnly />
         </div>
         <div>
           <label>Cost per Night $</label>
-          <Input value={Math.floor(cost)} />
+          <Input value={Math.floor(cost)} readOnly />
         </div>
         <div className="pb-3">
           {/* <label>Total Room</label> */}

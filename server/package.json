@@ -30,7 +30,8 @@
     "nodemailer-plugin-inline-base64": "^2.1.1",
     "nodemon": "3.0.2",
     "pg": "^8.11.3",
-    "sequelize": "6.11.0"
+    "sequelize": "6.11.0",
+    "stripe": "^15.8.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1"

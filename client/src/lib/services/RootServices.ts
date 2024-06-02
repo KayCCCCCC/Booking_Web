@@ -1,6 +1,6 @@
 import { errorNotify } from "@/components/global/atoms/notify"
 import { HOST } from "@/constants/API"
-import axios, { AxiosError, AxiosResponse } from "axios"
+import axios, { AxiosError,  AxiosResponse } from "axios"
 
 const api = axios.create({
   baseURL: HOST,
@@ -8,6 +8,13 @@ const api = axios.create({
     "Content-Type": "application/json"
   }
 })
+api.interceptors.request.use((config) => {
+  const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwidXNlcm5hbWUiOiJBIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzExODk3OTI1LCJleHAiOjE3MTE5MDE1MjUsImlhdCI6MTcxMTg5NzkyNX0.SvRViH7qc6hYeLSD__flPN4A-pxfjqSsyd9dpXO8A_A";
+  if (accessToken) {
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+  return config;
+});
 interface errorDataProps {
   success: boolean
   message: string

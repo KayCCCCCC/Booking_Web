@@ -6,7 +6,7 @@ const initUser = {
   country: "",
   avatar: "",
   phone: "",
-  id: -1
+  id: 0
 }
 const initialAuth = {
   user: initUser,

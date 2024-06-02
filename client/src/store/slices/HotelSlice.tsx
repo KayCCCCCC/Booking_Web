@@ -4,7 +4,8 @@ const HotelSlice = createSlice({
   name: "Hotel",
   initialState: {
     listHotel: [],
-    hotelDetail: {}
+    hotelDetail: {},
+    sessionId: "",
   },
   reducers: {
     saveListHotel: (state, action) => {
@@ -12,9 +13,12 @@ const HotelSlice = createSlice({
     },
     saveHotelDetail: (state, action) => {
       state.hotelDetail = action.payload
+    },
+    saveSessionId: (state, action) => {
+      state.sessionId = action.payload
     }
   }
 })
 
 export default HotelSlice.reducer
-export const { saveListHotel } = HotelSlice.actions
+export const { saveListHotel, saveHotelDetail, saveSessionId } = HotelSlice.actions

@@ -1,7 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
 import { persistReducer, persistStore } from "redux-persist"
-import { composeWithDevTools } from "@redux-devtools/extension"
 import storage from "redux-persist/lib/storage"
 import AuthSlice from "./slices/AuthSlice"
 import GlobalSlice from "./slices/GlobalSlice"
@@ -19,7 +18,8 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  version: 1
+  version: 1,
+  // blacklist: ["auth"]
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
@@ -27,9 +27,18 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: true
+      serializableCheck: {
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/PAUSE",
+          "persist/PURGE",
+          "persist/FLUSH",
+          "persist/REGISTER"
+        ]
+      }
     }),
-  devTools: true || composeWithDevTools()
+  devTools: process.env.NODE_ENV !== "production"
 })
 
 export const persistor = persistStore(store)

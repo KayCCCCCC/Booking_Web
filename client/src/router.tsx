@@ -13,6 +13,8 @@ import DestinationDetailPage from "./pages/DestinationDetail/DestinationDetailPa
 import HotelDetailPage from "./pages/HotelDetailPage/HotelDetailPage"
 import BlogDetailPage from "./pages/BlogDetail/BlogDetailPage"
 import PaymentPage from "./pages/PaymentPage/PaymentPage"
+import CheckoutPage from "./pages/Checkout/CheckoutPage"
+import ProtectedRoute from "./components/global/templates/ProtectedRoute"
 
 const router = createBrowserRouter([
   {
@@ -59,7 +61,19 @@ const router = createBrowserRouter([
       },
       {
         path: RouterEndPoint.Payment,
-        element: <PaymentPage />
+        element: (
+          <ProtectedRoute>
+            <PaymentPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: RouterEndPoint.PaymentCompletion,
+        element: (
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        )
       }
     ]
   },

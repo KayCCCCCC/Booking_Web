@@ -17,23 +17,32 @@ import { logOut } from "@/store/slices/AuthSlice"
 
 const UserButton: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth)
+  console.log(user)
+
   const dispatch = useDispatch()
   const handleLogout = () => {
     logout()
     dispatch(logOut())
-
   }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src={user.avatar} alt="@defaultAvatar" className="h-12 w-12 object-cover " />
+          {user.avatar.trim() !== "" ? (
+            <AvatarImage src={user.avatar} alt="@defaultAvatar" className="h-12 w-12 object-cover " />
+          ) : (
+            <AvatarImage src="/img1.jpg" alt="@defaultAvatar" className="h-12 w-12 object-cover " />
+          )}
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className=" bg-white font-medium">
         <DropdownMenuLabel className="text-md">{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+        <DropdownMenuItem className="cursor-pointer text-base font-normal hover:bg-slate-50" >
+           Booking Status
+            <DropdownMenuShortcut></DropdownMenuShortcut>
+          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer text-base font-normal hover:bg-slate-50" onClick={handleLogout}>
             Log out
             <span className="px-3">

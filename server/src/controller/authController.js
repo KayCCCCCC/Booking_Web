@@ -62,6 +62,7 @@ class AuthController {
                 access_token: access_token,
                 data: {
                     user: {
+                        id: user.id,
                         name: user.name,
                         email: user.email,
                         address: user.address,
@@ -112,6 +113,7 @@ class AuthController {
                 access_token: access_token,
                 data: {
                     user: {
+                        id: createUser.id,
                         name: createUser.name,
                         email: createUser.email,
                         address: createUser.address,
@@ -129,6 +131,7 @@ class AuthController {
                 access_token: access_token,
                 data: {
                     user: {
+                        id: userExist.id,
                         name: userExist.name,
                         email: userExist.email,
                         address: userExist.address,
@@ -474,7 +477,7 @@ class AuthController {
 
     static async setInfo(req, res, next) {
         try {
-            const { name, email, country, address, phone } = req.body;
+            const { name, email, country, address, phone, avatar } = req.body;
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -492,15 +495,16 @@ class AuthController {
                     message: "User not found."
                 });
             }
+            console.log(user.avatar);
 
-            let avatar = "";
+            let avatarUp = "";
             if (req.file) {
                 try {
                     const result = await cloundinary.uploader.upload(req.file.path, {
                         upload_preset: 'vnldjdbe',
                         public_id: `unique_id_${Date.now()}`
                     });
-                    avatar = result.secure_url || "";
+                    avatarUp = result.secure_url || "";
                 } catch (error) {
                     console.error("Error uploading avatar:", error);
                 }
@@ -511,7 +515,7 @@ class AuthController {
             user.address = address || user.address;
             user.phone = phone || user.phone;
             user.roleId = 2;
-            user.avatar = avatar;
+            // user.avatar = avatarUp.trim() === "" ? avatar : avatarUp
 
             await user.save();
 

@@ -61,3 +61,5 @@ export const getAllRoomOfHotelById = async ({ hotelId }: getAllRoomOfHotelByIdPr
   const response = await get<hotelRoomResponseProps>(`range-model/get-type-model-hotel/${hotelId}`)
   return response.data
 }
+
+

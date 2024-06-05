@@ -74,8 +74,8 @@ class PaymentController {
                     },
                 ],
                 mode: 'payment',
-                success_url: `${process.env.CLIENT_HOST}payment/success`,
-                cancel_url: `${process.env.CLIENT_HOST}payment/canceled`,
+                success_url: `${process.env.DEPLOY_CLIENT_HOST}payment/success`,
+                cancel_url: `${process.env.DEPLOY_CLIENT_HOST}payment/canceled`,
             });
             return res.status(200).json({
                 success: true,

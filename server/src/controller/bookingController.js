@@ -32,7 +32,7 @@ class BookingController {
                 expireDate: expireDateObj,
                 quantity,
                 total,
-                statusBooking: 'Pending',
+                statusBooking: 'Completed',
                 userId: userId,
                 rangeModelDetailId: itemId
             });

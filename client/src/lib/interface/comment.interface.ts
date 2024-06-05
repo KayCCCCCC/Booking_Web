@@ -4,5 +4,6 @@ export interface Comment {
   id: number
   text: string
   replies: Comment[]
-  user: User
+  user: User,
+  createdAt: string
 }

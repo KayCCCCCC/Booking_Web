@@ -14,7 +14,7 @@ const BlogDetailPage = () => {
         <div className="flex items-center gap-2 ">
           <div className="col-span-1 flex items-center gap-2  text-slate-600">
             <UserAvatar url={blog.user.avatar} size="large" />
-            <span className="w-40 truncate">{blog.user.name}</span>
+            <span className="w-40 truncate">{blog.user?.name}</span>
           </div>
           <div className="truncate text-base  text-slate-900">
             <Timer time={new Date(blog.createdAt).toLocaleString()} />

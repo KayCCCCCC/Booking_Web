@@ -339,6 +339,7 @@ class BlogController {
                     "createdAt",
                     "userId",
                     "replyCommentId",
+                    "createdAt"
                 ],
                 include: [
                     {
@@ -358,6 +359,7 @@ class BlogController {
                 return replies.map(reply => ({
                     id: reply.id,
                     text: reply.content,
+                    createdAt: reply.createdAt,
                     user: reply.user,
                     replies: findReplies(reply.id) // Recursively find replies for each reply
                 }));
@@ -367,6 +369,7 @@ class BlogController {
             const commentData = topLevelComments.map(comment => ({
                 id: comment.id,
                 text: comment.content,
+                createdAt: comment.createdAt,
                 user: comment.user,
                 replies: findReplies(comment.id)
             }));
@@ -397,9 +400,11 @@ class BlogController {
             if (newReply) {
                 const userReplyComment = await User.findOne({
                     where: {
-                        id: newReply.replyCommentId
+                        id: newReply.userId
                     }
                 })
+
+                console.log('userReplyComment: ', userReplyComment)
 
                 const blogComment = await Blog.findOne({
                     where: {
@@ -407,10 +412,14 @@ class BlogController {
                     }
                 })
 
+                console.log('blogComment: ', blogComment)
+
                 const notification = await Notification.create({
                     content: `${userReplyComment.name} has reply comment in ${blogComment.title}`,
                     userId: blogComment.userId
                 })
+
+                console.log('notification: ', notification)
 
                 res.status(200).json({
                     message: "Reply comment successfully",

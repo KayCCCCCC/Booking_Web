@@ -48,7 +48,7 @@ class RangeModelController {
             const { id } = req.params;
 
             const hotel = await Hotel.findOne({
-                where: { id: id }
+                where: { modelId: id }
             })
             if (hotel == null) {
                 return res.status(404).json({
